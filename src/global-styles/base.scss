@@ -1,11 +1,11 @@
-@import "../fontawesome";
+@import "fontawesome";
 
 // 1. Include functions first (so you can manipulate colors, SVGs, calc, etc)
 @import "bootstrap/scss/functions";
 
-@import "default/variables.default";
-@import "../mixins";
-@import "../breakpoints";
+@import "variables.default";
+@import "mixins";
+@import "breakpoints";
 
 // 3. Include remainder of required Bootstrap stylesheets
 @import "bootstrap/scss/variables";

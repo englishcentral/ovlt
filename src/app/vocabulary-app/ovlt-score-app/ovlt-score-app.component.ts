@@ -10,7 +10,7 @@ import {
     LevelTestHistory,
     LevelTestStep,
     VltQuizScore
-} from "../../../../model/reportcard/vocab-level-test";
+} from "../../model/vocab-level-test";
 import { Difficulty } from "../../../../model/types/difficulty";
 import { VocabBuilderProgressService } from "../../../../activity-app/vocab-builder-app/vocab-builder-progress.service";
 import { forkJoin } from "rxjs";

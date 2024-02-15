@@ -1,0 +1,32 @@
+@import "variables.common";
+$primary-color: #D31826;
+$theme-colors: (
+        "primary": $primary-color,
+        "secondary": #25252a,
+        "light": #fff,
+        "warning": #F4C150,
+        "success": #24AAAD,
+        "danger": #D31826,
+        "info": #247f9e,
+        "dark": #29303B,
+);
+
+$custom-colors: (
+        "muted": #EEE,
+        "tertiary": #505763,
+        "weak": #D31826,
+        "average": #F4C150,
+        "strong": #24AAAD,
+        "beginner": #379733,
+        "intermediate": #006395,
+        "advanced": #000,
+);
+
+$theme-colors: map-merge($theme-colors, $custom-colors);
+$link-color: $primary-color;
+
+$accordion-icon-active-color: $primary-color;
+$accordion-button-active-bg: transparent;
+$accordion-button-active-color: $primary-color;
+$accordion-button-focus-border-color: $primary-color;
+$accordion-button-focus-box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.175);
