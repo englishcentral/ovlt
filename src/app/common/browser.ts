@@ -360,6 +360,7 @@ export class Browser {
             }
                 break;
         }
+        return "";
     }
 
     static getOSName(): string {
