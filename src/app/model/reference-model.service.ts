@@ -48,10 +48,24 @@ export class ReferenceModelService {
     }
 
     getAccountWordListsReference(accountId: number, options: object = {}): Observable<WordListReference> {
-        return this.connection
-            .service("bridge")
-            .setPath(`/content/wordlist/reference/account/${accountId}`)
-            .get(options);
+        return of ({
+            "type": "WordListReference",
+            "wordLists": [
+                {
+                    "wordListTypeId": 8,
+                    "name": "Level 2 Wordlist",
+                    "active": true,
+                    "maxWordRank": 354,
+                    "description": "The most important words to learn for Level 2",
+                    "organizationIds": [],
+                    "levelUpList": 2,
+                    "accountSelectable": false,
+                    "standAlone": true,
+                    "autoInclude": false,
+                    "private": false
+                }
+            ]
+        });
     }
 
     getCachedAccountWordListsReference(accountId: number, siteLanguage: string): Observable<WordListReference> {
