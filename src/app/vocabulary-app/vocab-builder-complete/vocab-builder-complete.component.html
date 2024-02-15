@@ -1,0 +1,247 @@
+<div class="end-screen d-flex flex-column justify-content-between text-dark">
+    <!-- End screen header -->
+    <div class="header-wrapper text-dark">
+        <span class="vb-icon"
+              [class.practice-icon]="shouldShowPracticeIcon()"
+              [class.test-icon]="shouldShowTestIcon()"
+              [class.ovlt-icon]="shouldShowOvltIcon()"
+        ></span>
+        <strong *ngIf="isErrorState()" i18n>Error</strong>
+
+        <strong *ngIf="isBandComplete() && !isErrorState()">
+            <ng-template [ngIf]="!isLevelTest() || isClassTest() || isLevelTestPassed()">
+                <span *ngIf="!isRankExceeded()" i18n>Congratulations!</span>
+                <span *ngIf="isRankExceeded()" i18n>Practice Complete</span>
+            </ng-template>
+            <span *ngIf="isLevelTest() && !isClassTest() && !isLevelTestPassed()" i18n>Congratulations!</span>
+        </strong>
+
+        <strong *ngIf="!isBandComplete() && !isErrorState()">
+            <span *ngIf="isPractice()" i18n>Practice Complete</span>
+            <span *ngIf="!isPractice()" i18n>Congratulations!</span>
+        </strong>
+    </div>
+
+    <div class="feedback-wrapper position-relative d-flex flex-column justify-content-center flex-grow-1 text-center mt-2"
+         *ngIf="!isErrorState()">
+
+        <!-- Level test score loading -->
+        <div class="loading-level-test-score" *ngIf="isScoreCalculationLoading()">
+            <span i18n>Calculating your score...</span>
+            <div class="loading ms-2 d-inline">
+                <ec-loading-ring [themeClass]="'dark'" [size]="'small'"></ec-loading-ring>
+            </div>
+        </div>
+
+        <!-- Complete Level Test feedback -->
+        <div class="level-test-feedback-wrapper" *ngIf="shouldShowLevelTestFeedback()">
+            @if (isLevelTest()) {
+                <ec-ovlt-score
+                    [settings]="getSettings()"
+                    [classTest]="isClassTest()"
+                ></ec-ovlt-score>
+            }
+            <div class="quiz-score-feedback w-75 mx-auto mb-5">
+                <span class="fw-bold d-block" *ngIf="isTestResultPerfect()" i18n>You got a perfect score!</span>
+                <span *ngIf="isTestResultPerfect()" class="mt-2 d-block" i18n><b>{{ getCorrectAnswerCount() }}</b> out of <b>{{ getTestRank() }}</b> correct</span>
+                <span *ngIf="!isTestResultPerfect()" class="d-block"  i18n>You got <b>{{ getCorrectAnswerCount() }}</b> out of <b>{{ getTestRank() }}</b> words correct</span>
+            </div>
+            <div class="level-feedback w-75 mx-auto">
+                <ng-template #levelIndicator let-level="difficultyLevel">
+                    @if (getDifficultyType()) {
+                        <span class="d-block fw-bold text-uppercase">{{ getDifficultyTypeName(getDifficultyType()) }} {{ getDifficultyLevelName(level, false) }}</span>
+                    }
+                    <span (click)="launchUserLevelSelector()" class="d-flex justify-content-center align-items-center">
+                        <span class="me-2 ec-level" i18n>Level</span>
+                        <ec-difficulty-indicator [difficultyLevel]="level"></ec-difficulty-indicator>
+                    </span>
+                </ng-template>
+
+                <!-- Class VLT feedback -->
+                <ng-container *ngIf="isClassTest() && shouldShowVltRecommendedLevel()">
+                    <span class="d-block mb-2" i18n>We recommend you focus your study on</span>
+                    <ng-container *ngTemplateOutlet="levelIndicator; context: {difficultyLevel: getRecommendedLevel()}"></ng-container>
+                </ng-container>
+
+                <!-- Account VLT feedback (pass case)-->
+                <ng-container *ngIf="!isClassTest() && isLevelTestPassed()">
+                    <ng-template [ngIf]="!isLastUserLevel(getUserLevel()) && !isExtraLevelTest()">
+                        <span class="d-block mb-2" i18n>You leveled up to</span>
+                        <ng-container *ngTemplateOutlet="levelIndicator; context: {difficultyLevel: getUserLevel()}"></ng-container>
+                    </ng-template>
+
+                    <ng-template [ngIf]="isLastUserLevel(getUserLevel())">
+                        <span class="d-block" *ngIf="isLastLevelTest()" i18n>You have passed the last vocabulary level test in EnglishCentral.</span>
+                        <span class="d-block" *ngIf="isExtraLevelTest() && !isLastLevelTest() && isPerfect()" i18n>You have answered all questions correctly. You can continue studying using Level {{getNextLevelTestDifficulty()}} list.</span>
+                        <span class="d-block" *ngIf="isExtraLevelTest() && !isLastLevelTest() && !isPerfect()" i18n>You can continue studying using Level {{getNextLevelTestDifficulty()}} list.</span>
+                        <span class="d-block" *ngIf="!isExtraLevelTest()" i18n>You have reached to the last level in EnglishCentral. You can continue studying using Level {{getNextLevelTestDifficulty()}} list.</span>
+                    </ng-template>
+                </ng-container>
+
+                <!-- Account VLT feedback (fail case)-->
+                <ng-container *ngIf="!isClassTest() && !isExtraLevelTest()">
+                    <ng-template [ngIf]="isLevelTestScoreUnderDowngradeThreshold()">
+                        <ng-template [ngIf]="isFirstLevel() && !isLevelUpdated() && shouldShowVltRecommendedLevel()">
+                            <span class="d-block mb-2" i18n>We recommend you focus your study on level</span>
+                            <ng-container *ngTemplateOutlet="levelIndicator; context: {difficultyLevel: getUserLevel()}"></ng-container>
+                        </ng-template>
+
+                        <ng-template [ngIf]="!isFirstLevel()">
+                            <span class="d-block" *ngIf="!isLevelUpdated() && !isLevelUpdateProcessing()" i18n>You seem to be having trouble, would you like to try a lower difficulty level?</span>
+                            <div *ngIf="!isLevelUpdated()" class="d-flex flex-wrap justify-content-center mt-3">
+                                <ng-template [ngIf]="!isLevelUpdateProcessing()">
+                                    <button class="level-control-button btn" (click)="goToMyEnglish()" i18n>Stay at current level</button>
+                                    <button class="level-control-button btn" (click)="updateLevel(getUserPreviousLevel())" i18n>Go to Level {{getUserLevel()-1}}</button>
+                                </ng-template>
+
+                                <ng-template [ngIf]="isLevelUpdateProcessing()">
+                                    <span i18n>Updating your level...</span>
+                                    <div class="loading ms-2 d-inline">
+                                        <ec-loading-ring [themeClass]="'dark'" [size]="'small'"></ec-loading-ring>
+                                    </div>
+                                </ng-template>
+                            </div>
+                        </ng-template>
+
+                        <ng-template [ngIf]="isLevelUpdated()">
+                            <span class="d-block" i18n>Your new level is</span>
+                            <ng-container *ngTemplateOutlet="levelIndicator; context: {difficultyLevel: getUserLevel()}"></ng-container>
+                        </ng-template>
+                    </ng-template>
+
+                    <ng-template [ngIf]="!isLevelTestScoreUnderDowngradeThreshold() && !isLevelTestPassed() && shouldShowVltRecommendedLevel()">
+                        <span class="d-block mb-2" i18n>We recommend you focus your study on level</span>
+                        <ng-container *ngTemplateOutlet="levelIndicator; context: {difficultyLevel: getUserLevel()}"></ng-container>
+                    </ng-template>
+                </ng-container>
+
+                <!-- Account VLT feedback (fail case for extra level tests)-->
+                <ng-container *ngIf="!isClassTest() && isExtraLevelTest() && !isLevelTestPassed()">
+                    <span i18n>You seem to be having trouble, we recommend you to keep studying Level {{getCurrentLevelTestDifficulty()}} list.</span>
+                </ng-container>
+            </div>
+        </div>
+
+        <!-- Feedback for complete band -->
+        <div class="complete-band-feedback w-75 mx-auto" *ngIf="isBandComplete() && !isLevelTest()">
+            <span *ngIf="!isActivityQuiz() && !isPronunciationQuiz() && !isRankExceeded()" i18n>You have completed all words in the {{ getCurrentVocabListName() }} list. Select a different word list.</span>
+            <span *ngIf="!isActivityQuiz() && !isPronunciationQuiz() && isRankExceeded()" i18n>You have reached the end of the list, please change quiz settings to review mode or set a different starting rank on the  next quiz on a different rank.</span>
+            <span *ngIf="isActivityQuiz()" i18n>You have completed all words in this quiz!</span>
+            <span *ngIf="isWordPronunciationQuiz()" i18n>You have completed all your weak words!</span>
+            <span *ngIf="isPhonemePronunciationQuiz()" i18n>You have completed all your weak sounds!</span>
+        </div>
+
+        <!-- Feedback for incomplete band -->
+        <div class="incomplete-band-feedback" *ngIf="!isBandComplete() && !isLevelTest()">
+            <span class="d-block fw-bold text-uppercase" *ngIf="isPerfect()" i18n>You got a perfect score!</span>
+            <span class="d-block mt-2" *ngIf="isPerfect()" i18n><b>{{ getCorrectAnswerCount() }}</b> out of <b>{{ getCurrentTotal() }}</b> correct</span>
+            <span class="d-block" *ngIf="!isPerfect() && !isPronunciationQuiz()" i18n>You got <b>{{ getCorrectAnswerCount() }}</b> out of <b>{{ getCurrentTotal() }}</b> words correct</span>
+            <span class="d-block" *ngIf="!isPerfect() && isPronunciationQuiz()" i18n>You spoke <b>{{ getCorrectAnswerCount() }}</b> out of <b>{{ getCurrentTotal() }}</b> correctly</span>
+        </div>
+    </div>
+
+    <!-- Error message -->
+    <div class="error-message-wrapper d-flex flex-column justify-content-center text-center mt-2" *ngIf="isErrorState()">
+        <span i18n>Something went wrong. Please try again later.</span>
+    </div>
+
+    <div class="end-screen-controls-wrapper pb-4 px-4">
+        <!-- Control button for error case -->
+        <ng-template [ngIf]="isErrorState()">
+            <div class="error-state-wrapper d-flex justify-content-center align-items-center mb-1">
+                <button class="adaptive-quiz-button btn btn-primary mt-4 flex-grow-1 py-2" (click)="closeApp()">
+                    <span i18n>Close</span>
+                </button>
+            </div>
+        </ng-template>
+
+        <!-- Control buttons for review your words redirection -->
+        <div class="review-words-redirection-wrapper" *ngIf="isPractice() && !isErrorState() && !isActivityQuiz()">
+            <ng-template [ngIf]="hasMissedWords() && !isPronunciationQuiz()">
+                <span class="review-words-redirection" i18n>Review your <a class="text-underline text-danger" (click)="goToViewWordsUrl()">Missed Words</a></span>
+            </ng-template>
+        </div>
+
+        <!-- Control buttons for restarting quiz for practice quizzes except activity quiz -->
+        <ng-template [ngIf]="!isErrorState() && isRestartQuizEnabled()">
+            <div class="incomplete-band d-flex justify-content-center align-items-center mb-1" *ngIf="!isBandComplete()">
+                <button class="adaptive-quiz-button btn btn-primary mt-4 flex-grow-1 py-2" id="vb-start-new-practice-button"
+                        *ngIf="shouldShowStartNewPracticeButton()"
+                        (click)="onClickStartNewPractice()">
+                    <span i18n>Start a New Practice</span>
+                </button>
+            </div>
+
+            <div class="complete-band d-flex justify-content-center align-items-center mb-1" *ngIf="isBandComplete()">
+                <button class="adaptive-quiz-button btn btn-primary mt-4 flex-grow-1 py-2"
+                        *ngIf="!isPronunciationQuiz() && !isRankExceeded()"
+                        (click)="reset(getCurrentWordListTypeId())">
+                    <span i18n>Start a New Word List</span>
+                </button>
+                <button class="adaptive-quiz-button btn btn-primary mt-4 flex-grow-1 py-2"
+                        *ngIf="!isPronunciationQuiz() && isRankExceeded()"
+                        (click)="reset(); onOpenSettings();">
+                    <span i18n>Update Quiz Settings</span>
+                </button>
+                <button class="adaptive-quiz-button btn btn-primary mt-4 flex-grow-1 py-2"
+                        *ngIf="isPronunciationQuiz()"
+                        (click)="goToVideos()">
+                    <span i18n>Study More Videos</span>
+                </button>
+            </div>
+        </ng-template>
+
+        <!-- Control buttons for activity quizzes-->
+        <ng-template [ngIf]="isActivityQuiz() && !isErrorState()">
+            <div class="course-navigation" *ngIf="isPerfect()">
+                <button class="adaptive-quiz-button btn btn-primary mt-4 w-100"
+                        (click)="goToPreviousActivity()">
+                    <span i18n>Back to Course</span>
+                </button>
+            </div>
+
+            <div class="course-view-words-navigation" *ngIf="!isPerfect()">
+                <button class="adaptive-quiz-button btn btn-primary mt-4 flex-grow-1 py-2 w-100"
+                        (click)="onClickViewWords()">
+                    <span i18n>Review your Missed Words</span>
+                </button>
+            </div>
+        </ng-template>
+
+        <!-- Control buttons for non practice quizzes-->
+        <ng-template [ngIf]="!isPronunciationQuiz() && !isErrorState() && !isPractice() && !isScoreCalculationLoading()">
+            <button class="adaptive-quiz-button btn btn-primary mt-4 flex-grow-1 py-2 w-100"
+                    *ngIf="!isPerfect()"
+                    (click)="goToViewWordsUrl()">
+                <span i18n>Review your Missed Words</span>
+            </button>
+
+            <button class="adaptive-quiz-button btn btn-primary mt-4"
+                    *ngIf="isPerfect() && !isLastLevelTest()"
+                    (click)="goToVocabBuilder()">
+                <span i18n>Study More Words</span>
+            </button>
+
+            <button class="adaptive-quiz-button btn btn-white mt-4 text-primary border border-primary"
+                    [class.btn-primary]="isLastLevelTest()"
+                    *ngIf="isPerfect()"
+                    (click)="goToVideos()">
+                <span i18n>Study More Videos</span>
+            </button>
+        </ng-template>
+
+        <!-- Control buttons for pronunciation quiz-->
+        <ng-template [ngIf]="isPronunciationQuiz() && !isBandComplete()">
+            <button class="adaptive-quiz-button btn btn-primary mt-4 flex-grow-1 py-2 w-100"
+                    *ngIf="isWordPronunciationQuiz()"
+                    (click)="goToPreviousActivity()">
+                <span i18n>Review your Weak Words</span>
+            </button>
+            <button class="adaptive-quiz-button btn btn-primary mt-4 flex-grow-1 py-2 w-100"
+                    *ngIf="isPhonemePronunciationQuiz()"
+                    (click)="goToViewWordsUrl()">
+                <span i18n>Review your Weak Sounds</span>
+            </button>
+        </ng-template>
+    </div>
+</div>

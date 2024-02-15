@@ -1,0 +1,209 @@
+
+@import "global-styles/themes/breakpoints";
+
+.end-screen {
+    height: 100%;
+    background-color: white;
+    a {
+        text-decoration: underline;
+        &:hover {
+            text-decoration: underline;
+            cursor: pointer;
+        }
+    }
+}
+
+.missed-icon {
+    width: 1.5em;
+    height: 1.5em;
+}
+
+.vb-icon {
+    width: 3em;
+    height: 1.75em;
+
+    &.practice-icon {
+        background: url("~global-assets/vocab-builder/vocab-builder-icon-bw.png") no-repeat center center;
+        background-size: contain;
+    }
+
+    &.ovlt-icon {
+        background: url("~global-assets/vocab-builder/ovlt-bw.png") no-repeat center center;
+        background-size: contain;
+    }
+
+    &.test-icon {
+        background: url("~global-assets/vocab-builder/test-icon.png") no-repeat center center;
+        background-size: contain;
+    }
+}
+
+.adaptive-quiz-current-band-icon,
+.adaptive-quiz-next-band-icon {
+    width: 7.5em;
+    height: 3.5em;
+}
+
+.bg-beginner,
+.bg-intermediate,
+.bg-advanced {
+    width: 1em;
+    height: 1em;
+}
+
+.header-wrapper {
+    background-color: #eeeeee;
+    padding: 1.5em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    @include media-breakpoint-down(sm) {
+        margin-bottom: 0;
+    }
+}
+
+.end-screen-controls-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    padding: 0 1.5em;
+
+    @include media-breakpoint-down(sm) {
+        margin-top: 0;
+    }
+
+    .review-words-redirection {
+        font-size: 0.9rem;
+    }
+
+    .adaptive-quiz-button {
+        border-radius: 0.2em;
+        min-width: 6em;
+        width: 100%;
+        max-width: 300px;
+        margin-right: auto;
+        margin-left: auto;
+
+        &.btn-primary {
+            color: white;
+            text-decoration-line: none;
+            &:hover {
+                color: white;
+                text-decoration-line: none;
+            }
+        }
+    }
+}
+
+.start-screen {
+    background-color: #EEE;
+    color: #fff;
+    height: 100%;
+}
+
+.adaptive-quiz-start-animation {
+    width: 100%;
+    height: 9em;
+}
+
+.end-screen-title {
+    height: 3em;
+    line-height: 4em;
+}
+
+.quiz-white-icon {
+    width: 3em;
+    height: 3em;
+}
+
+.start-quiz {
+    min-height: 1.6em;
+    border-radius: 0.3em;
+    width: 95%;
+}
+
+.move-button {
+    width: 12.3em;
+}
+
+.btn-white {
+    background-color: white;
+    max-width: 300px;
+}
+
+
+.level-test-feedback-wrapper {
+    .level-feedback {
+        line-height: 1;
+        font-weight: bold;
+    }
+
+    .quiz-score-feedback {
+        font-size: 0.875rem;
+    }
+}
+
+.level-control-button {
+    color: #0080a1;
+    text-decoration: underline;
+    margin: 0 2em;
+
+    &:focus {
+        box-shadow: none;
+    }
+
+    &:hover {
+        color: #0080a1;
+        text-decoration: none;
+    }
+}
+
+ec-add-to-class {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+}
+
+ec-language-selector-app {
+    font-size: 0.9em;
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 3;
+}
+
+.vocab-builder-modal {
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.vocab-builder-exit-btn {
+    min-width: 5em;
+}
+
+.vocab-builder-back {
+    position: absolute;
+    left: 1em;
+    top: 0.6em;
+}
+
+.vocab-builder-settings-label {
+    font-weight: bold;
+}
+
+.text-underline {
+    text-decoration: underline;
+}
+
+@media (max-width: 767.98px) {
+    ec-language-selector-app {
+        font-size: 0.7em;
+    }
+}
+
+.ec-level {
+    font-size: 0.8em;
+}

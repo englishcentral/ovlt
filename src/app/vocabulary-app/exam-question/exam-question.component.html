@@ -1,0 +1,435 @@
+<div class="ec-exam-question d-flex flex-column justify-content-start w-100 h-100 position-relative">
+    <ng-template #unsupportedBrowserPopup let-close="close">
+        <div class="modal-body">
+            <div class="unsupported-browser-message-body">
+                <i class="fal fa-exclamation-circle"></i>
+                <span class="primary-message" i18n>The browser you are using doesn't support recording.</span>
+                <span class="secondary-message" i18n>Kindly use Safari browser.</span>
+            </div>
+
+            <div class="unsupported-browser-message-footer">
+                <button (click)="onSwitchMode()"
+                        class="primary-button text-tertiary"
+                        i18n>Switch quiz to typing with hints
+                </button>
+                <button (click)="exitQuiz()"
+                        class="secondary-button bg-tertiary btn"
+                        i18n>Ok
+                </button>
+            </div>
+        </div>
+    </ng-template>
+
+    <ng-template [ngIf]="isLoading()">
+        <div class="loading-wrapper h-100 d-flex flex-column justify-content-center">
+            <div class="loading-spinner">
+                <ec-loading-ring [themeClass]="'primary'" [size]="'medium'"></ec-loading-ring>
+            </div>
+        </div>
+    </ng-template>
+
+    <ng-template [ngIf]="!isLoading()">
+        <div class="exit-button"
+             *ngIf="isExitButtonEnabled()">
+                <span class="fal fa-times cursor-pointer"
+                      id="exit-quiz-button"
+                      aria-label="Exit Quiz"
+                      (click)="launchModal(vocabQuizExit, {centered: true})"
+                ></span>
+        </div>
+
+        <ng-template #vocabQuizExit let-close="close">
+            <div class="modal-body p-4">
+                <div class="exit-button">
+                    <span class="fal fa-times cursor-pointer"
+                          id="exit-quiz"
+                          aria-label="Exit Quiz"
+                          (click)="close()"
+                    ></span>
+                </div>
+
+                <div class="text-center" i18n>Are you sure you want to exit the quiz?</div>
+                <div class="mt-4 text-center d-flex">
+                    <button (click)="close()"
+                            class="vocab-builder-exit-btn btn cancel"
+                            i18n>Cancel
+                    </button>
+                    <button (click)="exitQuiz()"
+                            class="vocab-builder-exit-btn btn btn-primary"
+                            i18n>Quit Quiz
+                    </button>
+                </div>
+            </div>
+        </ng-template>
+
+        <div class="question-label" *ngIf="showWordPronunciation()">
+            <div class="word-orthography"
+                 [ngClass]="{'word-playing text-info': isAudioPlaying()}"
+                 ecAudioPlayback
+                 [playbackUrl]="getQuizWord().audioURL"
+                 [playbackTriggers]=getPlayBackTriggers()>
+                <span class="audio-play fas fa-volume-up me-2"></span>
+                <span>{{getQuizWord().label}}</span>
+            </div>
+        </div>
+
+        <div class="video-wrap text-center d-flex justify-content-center align-items-center p-2"
+             [class.compressed]="!isChecked() && !showMultipleChoice() && isMobile()">
+            <div id="video-container"  class="video-container d-inline-block"
+                 [class.active]="shouldShowPlayButton()">
+                <ec-video
+                        *ngIf="shouldEnableVideo()"
+                        [videoId]="getVideoId()"
+                        [videoUrl]="getVideoUrl()"
+                        [poster]="getVideoThumbnailUrl()"
+                        [isDefaultStyleEnabled]="false"
+                        [videoOptions]="{
+                            fluid: true,
+                            controls: false,
+                            controlBar: false,
+                            autoplay: true
+                        }"
+                        (eventError)="reportVideoError($event)"
+                        (eventEnded)="videoEnded()"
+                ></ec-video>
+            </div>
+            <span id="play-again-button" class="play-again-button d-flex fas fa-play align-items-center justify-content-center"
+                  *ngIf="shouldShowPlayButton()"
+                  (click)="playVideo()"
+            ></span>
+        </div>
+
+        <div class="timer w-100 d-flex align-items-center" id="exam-timer"
+             *ngIf="isTimerEnabled()"
+             [class.text-danger]="!getRemainingTime()"
+        >
+
+            <div class="timer-bar-wrapper flex-grow-1 pe-2">
+                <div class="timer-bar"
+                     *ngIf="getRemainingTime()"
+                     role="progressbar"
+                     [class.timer-good]="isTimerWarning() || isTimerGood()"
+                     [class.timer-danger]="isTimerDanger()"
+                     [style.width]="getTimerWidth()"
+                     id="timer-bar"
+                ></div>
+            </div>
+
+            <div class="remaining-time"
+                 id="remaining-time"
+                 [class.remaining-time-good]="isTimerWarning() || isTimerGood()"
+                 [class.remaining-time-danger]="isTimerDanger()">
+                <i class="far fa-clock"></i>
+            </div>
+        </div>
+
+        <div id="transcript-background" class="transcript-background text-center" *ngIf="showTranscript()">
+            <span class="fw-bold pre-post-text">{{ getPre() }}</span>
+            <div class="d-inline-block mt-2">
+            <span *ngFor="let letter of getLetterSet(); let i=index"
+                  class="char-input-wrap"
+                  (click)="setCurrentIndex(i)">
+            <span class="char-input-special"
+                  *ngIf="letter.isSpecialChar"
+                  [class.text-uppercase]="isUppercase(i)">{{letter.value}}
+            </span>
+            <input *ngIf="!letter.isSpecialChar"
+                   #inputContainer
+                   type="text"
+                   autocomplete="off"
+                   autocorrect="off"
+                   autocapitalize="off"
+                   spellcheck="false"
+                   class="char-input"
+                   maxlength="1"
+                   size="1"
+                   [attr.readonly]="isCorrect(i)"
+                   (click)="onClick()"
+                   (keyup.enter)="onEnter()"
+                   (keyup.arrowleft)="moveLeft()"
+                   (keyup.arrowright)="moveRight()"
+                   (keydown.backspace)="onBackSpace()"
+                   (keyup.delete)="onDelete()"
+                   [ngClass]="getCharInputClass(i)"
+                   [class.skipped]="isSkipped()"
+                   [class.times-up]="isTimerExpired()"
+                   [class.highlighted]="shouldShowExampleWord()"
+                   (keydown)="onKeydown(i, $event)"
+                   [ngModel]="getAnswer(i)"
+                   [class.focused]="isSelected(i) && !isMobile() && !isChecked()"
+                   [class.space]="letter.isSpace"
+                   [class.special]="letter.isSpecialChar"
+                   [class.uncertain]="isUncertain(i)"
+                   [class.text-uppercase]="isUppercase(i) && !getPre()"
+                   [class.blinking-cursor]="shouldShowBlinkingCursor(i)"
+                   [ecFocusWhen]="isSelected(i)"/>
+            </span>
+            </div>
+
+            <span class="fw-bold pre-post-text">{{ getPost() }}</span>
+        </div>
+
+        <div class="exam-question-bottom-part h-100">
+            <div class="exam-body">
+                <div class="multiple-choice-wrapper"
+                     *ngIf="showMultipleChoice()">
+                    <div class="question-transcript text-center">
+                        <div class="d-flex flex-column">
+                            <ec-transcript
+                                    class="text-tertiary"
+                                    [transcript]="getExample().transcript"
+                                    [orthography]="getExamplesOrthography(getExample())"
+                            ></ec-transcript>
+                        </div>
+                    </div>
+
+                    <div class="multiple-choice-feedback-wrapper" *ngIf="isChecked()">
+                        <span *ngIf="isAnswerCorrect()" class="correct-feedback-text text-success" i18n>Correct!</span>
+                        <span *ngIf="!isAnswerCorrect() && !isTimerExpired() && !isSkipped()" class="incorrect text-danger" i18n>Incorrect</span>
+                        <span *ngIf="isTimerExpired()" class="times-up-text text-danger" i18n>Time's Up!</span>
+                        <span *ngIf="isSkipped()" class="skipped-text" i18n="@@vb-quiz.skipped">Skipped</span>
+                    </div>
+
+                    <div *ngIf="!isChecked()" class="instruction-text text-success text-center font-small">
+                        <span i18n>Select the matching definition</span>
+                    </div>
+
+                    <div class="question-choices d-flex flex-column ">
+                        <button *ngFor="let choice of getChoices(); index as index"
+                                (click)="checkChoice(choice)"
+                                [attr.wordhead-id]="choice?.wordAdapter?.wordHeadId || 0"
+                                [ngClass]="getButtonClass(choice)"
+                                class="choice-button btn col-xs-12">
+                            <!-- choice-index-icon used on Kids theme -->
+                            <span class="choice-index-icon me-2 d-none" [ngClass]="getChoiceIndexClassName(index)"></span>
+                            <div class="choice-label">
+                                {{ getWordDefinition(choice) }}
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mode-switch cursor-pointer" *ngIf="showFallback()" >
+                    <i class="fas"
+                       [class.fa-list-ul]="isFallbackMultipleChoice()"
+                       [class.fa-keyboard]="isFallbackTyping()"
+                       (click)="switchMode(getFallbackMode())"
+                       ngbTooltip="Switch to Typing"
+                       placement="left"
+                       tooltipClass="mode-switch-tooltip"
+                       triggers="click"
+                       i18n-ngbTooltip></i>
+                </div>
+
+                <div class="hint-wrap" *ngIf="shouldShowHint()">
+                    <div id="exam-hint" class="hint text-center text-secondary">
+                        <span *ngIf="getWordInstance()"
+                              [attr.word-id]="generateAutomationWordId()"
+                              id="word-id">
+                            <i class="me-2">{{ getWordInstance().partOfSpeech }}:</i>
+                            <span>{{ getWordDefinition(getWordInstance()) }}</span>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="scramble d-flex justify-content-center align-items-center"
+                     *ngIf="showScrambleHint() && !isChecked()">
+                    <ng-template [ngIf]="!isMobile() || showMicrophone()">
+                        <span class="me-1" i18n>Hint:</span>
+                        <span *ngFor="let hintLetter of getVirtualLetterInputs()"
+                              class="scramble-hint mx-1"
+                        >{{ hintLetter.value }}</span>
+                    </ng-template>
+                </div>
+
+                <div class="virtual-keyboard-wrap full-keyboard"
+                     *ngIf="isVirtualAdvancedKeyboardVisible()">
+                    <ec-virtual-keyboard
+                            [showSpaceBar]="true"
+                            [showNumbersButton]="true"
+                            [showArrowButton]="true"
+                            [showLettersButton]="true"
+                            [activateBottomCharsClass]="true"
+                            [showCharsButton]="true"
+                            [showLittleBackSpaceButton]="true"
+                            [checkButtonVisible]="true"
+                            [checkButtonDisabled]="isPristine() || (isChecked() && !isAutoComplete())"
+                            [availableLetters]="getKeyboardLetters()"
+                            [pwaEnabled]="isPwaEnabled()"
+                            (eventClickCheckButton)="onEnter()"
+                            (eventClickDelete)="onBackSpace()"
+                            (eventHideKeyboard)="hideVirtualKeyboard()"
+                            (eventNewInput)="onVirtualInput($event)">
+                    </ec-virtual-keyboard>
+                </div>
+
+                <div class="speaking-wrapper" *ngIf="!isChecked() && showMicrophone()">
+                    <div class="instruction">
+                        <div class="instruction-text text-success speaking-instruction text-center">
+                            <ng-template [ngIf]="!shouldShowExampleWord()">
+                                <span *ngIf="isPristine()" i18n>Speak the missing word(s)</span>
+                                <span *ngIf="!isPristine()" i18n>Speak the missing word(s) again</span>
+                            </ng-template>
+                            <ng-template [ngIf]="shouldShowExampleWord()">
+                                <span *ngIf="isPristine()" i18n>Speak the highlighted word(s)</span>
+                                <span *ngIf="!isPristine()" i18n>Speak the highlighted word(s) again</span>
+                            </ng-template>
+                        </div>
+                    </div>
+
+                    <div class="mic-container">
+                        <ec-speech-meter
+                                class="w-100"
+                                [amplification]="2.0"
+                                [waveList]="getWaveList()"
+                        ></ec-speech-meter>
+
+                        <ec-microphone-widget
+                                [micReadyTooltipTemplate]="getRejectionTooltipTemplate(recordingRejectionTooltipTemplate)"
+                                [maxRecordingTimeSeconds]="getRecordingTimeSetting()"
+                                [showLocalRecording]="true"
+                                [recognizerType]="getRecognizerType()"
+                                [fileTransferMode]="getFileTransferMode()"
+                                [trackingContext]="getTrackingContext()"
+                                (eventMicReady)="onMicReady()"
+                                (eventStop)="onStop()"
+                                (eventRecord)="onRecordEnd($event)"
+                        ></ec-microphone-widget>
+
+                        <ng-template #recordingRejectionTooltipTemplate>
+                            <span class="tooltip-error-text" i18n>Please speak again</span>
+                        </ng-template>
+                    </div>
+                </div>
+
+                <div class="typing-wrapper" *ngIf="!isChecked() && showTyping()">
+                    <div id="type-instruction-text" class="instruction-text text-success" *ngIf="!showMicrophone()">
+                        <span i18n>Type the correct answer</span>
+                    </div>
+
+                    <div class="virtual-letters-wrapper" *ngIf="showVirtualKeyboard()">
+                        <ec-virtual-letter-input
+                                *ngIf="!isChecked() "
+                                [virtualLetterSet]="getVirtualLetterInputs()"
+                                (eventVirtualInput)="onVirtualInput($event)"
+                                (eventBackSpace)="onBackSpace()"
+                        >
+                        </ec-virtual-letter-input>
+                    </div>
+                </div>
+
+                <div class="controls w-100" *ngIf="showControls()"
+                     [class.compressed-controls]="!showMicrophone()">
+                    <div class="feedback-wrapper" *ngIf="isChecked()">
+                        <div id="correct-feedback-text" class="correct-feedback-text text-success" *ngIf="isAnswerCorrect()">
+                            <span i18n>Correct!</span>
+                        </div>
+
+                        <ng-template [ngIf]="!shouldShowExampleWord()">
+                            <div *ngIf="!isAnswerCorrect() && !isSkipped()">
+                                <span class="times-up-text text-danger mb-3 d-block" *ngIf="isTimerExpired()" i18n>Time's Up!</span>
+                                <span i18n>Correct Answer</span>:
+                                <span class="correct-answer-text text-success">{{ getCurrentOrthography() | titlecase}}</span>
+                            </div>
+                            <div *ngIf="isSkipped()">
+                                <span i18n>Skipped</span>:
+                                <span class="correct-answer-text text-success">{{ getCurrentOrthography() | titlecase}}</span>
+                            </div>
+                        </ng-template>
+
+                        <ng-template [ngIf]="shouldShowExampleWord()">
+                            <span *ngIf="!isAnswerCorrect() && !isTimerExpired() && !isSkipped()" class="incorrect text-weak" i18n>Incorrect</span>
+                            <span *ngIf="isTimerExpired()" class="times-up-text text-danger" i18n>Time's Up!</span>
+                            <span *ngIf="isSkipped()" class="skipped-text text-success" i18n>Skipped</span>
+                        </ng-template>
+                    </div>
+
+                    <div class="check-wrapper">
+                        <button class="check-button btn"
+                                id="vb-check-button"
+                                *ngIf="(!isChecked() || isAutoComplete()) && !isVirtualAdvancedKeyboardVisible()"
+                                [class.disabled]="isPristine() || (isChecked() && !isAutoComplete())"
+                                [class.m-0]="showVirtualKeyboard() && !isChecked()"
+                                (click)="onEnter()"
+                        >
+                            <span i18n>Check</span>
+                        </button>
+
+                        <i *ngIf="showVirtualKeyboard() && !isChecked()" (click)="onBackSpace()"
+                           id="virtual-keyboard-backspace"
+                           class="far fa-backspace"></i>
+                    </div>
+
+                    <button class="continue-button btn"
+                            id="vb-continue-quiz-button"
+                            *ngIf="isChecked() && !isAutoComplete()"
+                            (click)="setComplete()">
+                        <span i18n>Continue</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="quiz-bottom-wrapper" [class.keyboard-enabled]="isVirtualAdvancedKeyboardVisible()">
+                <div class="quiz-bottom-item progress-label text-secondary">
+                    <div *ngIf="shouldShowBand() && getCurrentBand()" i18n>Band {{ getCurrentBand() }}</div>
+                    <div id="current-rank" *ngIf="shouldShowRank() && getCurrentRank()" i18n>Rank {{ getCurrentRank() }}</div>
+                    <div *ngIf="shouldShowListName() && getCurrentListName() && !isAdaptive()" i18n> {{ getCurrentListName() }}</div>
+
+                    <div *ngIf="shouldShowPreviouslyEncountered()" class="mx-1">
+                        <span *ngIf="isPreviouslyEncountered()" i18n>(Review)</span>
+                        <span *ngIf="!isPreviouslyEncountered()" i18n>(New)</span>
+                    </div>
+                </div>
+
+                <div id="quiz-progress-section" class="quiz-bottom-item progress-section text-center">
+                    @if (shouldShowQuizPagination()) {
+                        @if (isAdaptive()) {
+                            <span i18n>Question #{{ getQuizIndex() }}</span>
+                        } @else if (getQuizLength()) {
+                            <span>{{ getQuizIndex() }}/{{ getQuizLength() }}</span>
+                        }
+                    }
+                </div>
+
+                <div class="quiz-bottom-item button-container">
+                    <span class="bottom-continue-button" *ngIf="shouldShowBottomContinueButton()"
+                          (click)="setComplete()">
+                        <span class="bottom-continue-text me-2" i18n>Continue</span>
+                        <i class="fas fa-step-forward fa-1x"></i>
+                    </span>
+
+                    <span id="skip-button" class="skip-button" *ngIf="showSkipButton()"
+                          (click)="onSkip()">
+                        <span class="button-text me-2" i18n>Skip</span>
+                        <i class="fas fa-step-forward fa-1x"></i>
+                    </span>
+
+                    <ng-template [ngIf]="isMarkAsKnownButtonEnabled()">
+                        <div class="mark-known-container">
+                            <button class="btn btn-reset btn-known"
+                                    id="mark-known-btn"
+                                    (click)="toggleMarkAsKnown()"
+                                    [class.active]="isKnown()"
+                            >
+                                <ng-template [ngIf]="isKnown()">
+                                    <i class="fas fa-reply icon-top text-warning"></i>
+                                    <i class="far fa-head-side-brain icon-main text-warning"></i>
+                                </ng-template>
+                                <ng-template [ngIf]="!isKnown()">
+                                    <i class="fas fa-plus icon-top"></i>
+                                    <i class="far fa-head-side-brain icon-main"></i>
+                                </ng-template>
+
+                                <ec-loading-ring *ngIf="isKnownProcessing()"
+                                                 [themeClass]="'info'"
+                                                 [size]="'small'"></ec-loading-ring>
+                            </button>
+                            <span *ngIf="!isKnown()" class="mt-1 mark-known-text text-center" i18n>Remove from study</span>
+                            <span *ngIf="isKnown()" class="mt-1 mark-known-text text-center known-text" i18n>Word removed from study</span>
+                        </div>
+                    </ng-template>
+                </div>
+            </div>
+        </div>
+    </ng-template>
+</div>

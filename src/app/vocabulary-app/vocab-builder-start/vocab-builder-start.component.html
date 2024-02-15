@@ -1,0 +1,468 @@
+<div class="start-screen d-flex flex-column justify-content-between align-items-center p-2 pb-4" *ngIf="!(isAutoStart() && isVbLoading())">
+    <!-- Settings wrapper-->
+    <div class="vocab-builder-settings w-100 d-flex flex-column align-items-stretch"
+         *ngIf="getWordListReference()">
+
+        <!-- Settings drawer open button -->
+        <div class="open-drawer d-flex justify-content-end">
+            <button ecClickOutside
+                    (clickOutside)="closeSettingsDrawer()"
+                    (click)="openSettingsDrawer()"
+                    [class.disabled]="isFixedStyle()"
+                    [ngbTooltip]="isFixedStyle() ? disabledSettingsPopover : ''"
+                    placement="left"
+                    triggers="click"
+                    tooltipClass="open-drawer-tooltip">
+                <i class="fal fa-cog"></i>
+            </button>
+
+            <ng-template #disabledSettingsPopover>
+                <div class="disabled-settings-popover">
+                    <span i18n>Settings are not editable for this word list</span>
+                </div>
+            </ng-template>
+        </div>
+
+        <!-- Settings drawer -->
+        <div class="vocab-builder-settings-drawer"
+             ecClickOutside
+             (clickOutside)="closeSettingsDrawer()"
+             [class.open]="isSettingsDrawerOpen()">
+
+            <!-- Settings drawer close button-->
+            <div class="close-settings-wrapper">
+                <span class="fal fa-times exit-settings-icon"
+                      id="vb-settings-close"
+                      aria-label="Close Settings"
+                      (click)="closeSettingsDrawer()"
+                ></span>
+            </div>
+
+            <div class="vocab-builder-settings-drawer-item">
+                <!-- Study Mode-->
+                <div class="vocab-builder-drawer-settings-label">
+                    <span i18n>Study Mode</span>
+                </div>
+                <ng-container *ngFor="let vocabBuilderStyle of getStyleReference()">
+                    <div class="vocab-builder-style-selection-list"
+                         *ngIf="!vocabBuilderStyle.internal"
+                         [id]="getCorrectedId(vocabBuilderStyle.translatedName, 'style')"
+                         (click)="updateCurrentStyle(vocabBuilderStyle.vocabBuilderStyleId, vocabBuilderStyle.name)"
+                         [class.selected]="vocabBuilderStyle.vocabBuilderStyleId == getCurrentStyleId()"
+                    >
+                        <div class="setting-text-main" [class.selected]="vocabBuilderStyle.vocabBuilderStyleId == getCurrentStyleId()">
+                            {{ vocabBuilderStyle.translatedName }}
+                        </div>
+                        <div class="setting-text-description" [class.selected]="vocabBuilderStyle.vocabBuilderStyleId == getCurrentStyleId()">
+                            {{ vocabBuilderStyle.description }}
+                        </div>
+                    </div>
+                </ng-container>
+
+                <!-- Starting word rank -->
+                <div class="style-drawer-starting-rank"
+                     *ngIf="isSettingsDrawerOpen() && showStartingWord() && isItemsToStudyChangeable()">
+                    <div class="setting-text-secondary-title" i18n>Set Starting Word</div>
+                    <ec-tally-counter
+                            [currentCount]="getCurrentWordRank()"
+                            [minValue]="getCurrentVocabListMinWordRank()"
+                            [maxValue]="getCurrentVocabListMaxWordRank() - 1"
+                            [disabled]="isSettingsChangeDisabled()"
+                            [automationId]="'vb-starting-rank'"
+                            (eventCountChange)="updateWordRank($event)"
+                    ></ec-tally-counter>
+                </div>
+            </div>
+
+            <div class="section-separator" *ngIf="isRecycleEnabled()"></div>
+
+            <div class="vocab-builder-settings-drawer-item" *ngIf="isRecycleEnabled()">
+                <!-- Recycle Settings -->
+                <div class="vocab-builder-drawer-settings-label">
+                    <span i18n>Recycle Settings</span>
+                </div>
+
+                <!-- Missed words recycle setting -->
+                <div class="toggle-outer" id="recycled-missed-words">
+                    <div class="toggle-inner">
+                        <div class="setting-text">
+                            <span class="setting-text-main" i18n>Missed Words</span>
+                            <span class="setting-text-description" i18n>Include missed words at the end of the Quiz</span>
+                        </div>
+                        <div class="setting-toggle">
+                            <input id="recycled-missed-words-setting" class="round-switch"
+                                   type="checkbox"
+                                   [ngModel]="getLocalUserSetting('recycleMissedWords')"
+                                   (change)="toggleLocalUserSetting('recycleMissedWords')" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Skipped words recycle setting -->
+                <div class="toggle-outer" id="recycled-skipped-words">
+                    <div class="toggle-inner">
+                        <div class="setting-text">
+                            <span class="setting-text-main" i18n>Skipped Words</span>
+                            <span class="setting-text-description" i18n>Include skipped words at the end of the Quiz</span>
+                        </div>
+                        <div class="setting-toggle">
+                            <input id="recycled-skipped-words-setting"
+                                   type="checkbox"
+                                   class="round-switch"
+                                   [ngModel]="getLocalUserSetting('recycleSkippedWords')"
+                                   (change)="toggleLocalUserSetting('recycleSkippedWords')"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="word-list-type-wrapper d-flex flex-wrap">
+            <div class="settings-left flex-grow-1">
+                <!-- Add word list pop up -->
+                <ng-template #addWordListPopup let-close="close">
+                    <div class="add-word-list-wrapper" id="add-word-list-wrapper">
+                        <div class="header text-dark">
+                            <h5 class="header-sub m-0">
+                                <span i18n>Add Word List</span>
+                            </h5>
+                            <button class="btn btn-reset btn-selector-close"
+                                    id="close-add-word-list-popup"
+                                    (click)="onWordlistChange()">
+                                <i class="fal fa-times"></i>
+                            </button>
+                        </div>
+
+                        <ng-template [ngIf]="isWordListsLoading() || isVbLoading()">
+                            <div class="loading-wrapper text-center py-4">
+                                <div class="loading-spinner"><ec-loading-ring [themeClass]="'primary'" [size]="'medium'"></ec-loading-ring></div>
+                            </div>
+                        </ng-template>
+
+                        <ng-template [ngIf]="!(isWordListsLoading() || isVbLoading())">
+                            <div class="selectable-word-list">
+                                <ng-container *ngFor="let wordList of getAccountSelectableWordLists()">
+                                    <ec-add-word-list
+                                            [wordList]="wordList"
+                                            [wordListAdded]="isWordListAdded(wordList.wordListTypeId)"
+                                            (eventWordListTouched)="setWordListTouched(true)"
+                                    ></ec-add-word-list>
+                                </ng-container>
+
+                                <div class="load-more w-100 d-flex align-items-center justify-content-center"
+                                     [class.disabled]="!isLoadMoreEnabled()">
+                                    <button class="btn btn-reset btn-load-more text-info" [class.text-tertiary]="!isLoadMoreEnabled()"
+                                            (click)="onClickLoadMore()">
+                                        <ng-template [ngIf]="isMoreLoading()">
+                                            <ec-loading-ring [themeClass]="'info'" [size]="'small'"></ec-loading-ring>
+                                            <span class="ps-2">Loading...</span>
+                                        </ng-template>
+                                        <ng-template [ngIf]="!isMoreLoading()">
+                                            <span *ngIf="!isLoadMoreEnabled()" i18n>End of list</span>
+                                            <span *ngIf="isLoadMoreEnabled()" i18n>Load More</span>
+                                        </ng-template>
+                                    </button>
+                                </div>
+                            </div>
+                        </ng-template>
+                    </div>
+                </ng-template>
+
+                <div class="d-flex justify-content-start align-items-center">
+                    <div class="vocab-builder-settings-label" i18n>Word List</div>
+                </div>
+
+                <!-- Word List -->
+                <ng-template #wordLists>
+                    <ng-container *ngFor="let wordList of getWordLists()">
+                        <button class="word-list-item" ngbDropdownItem
+                                [class.active]="isActiveWordListTypeId(wordList.wordListTypeId)"
+                                [class.border-primary]="isActiveWordListTypeId(wordList.wordListTypeId)"
+                                *ngIf="shouldShowWordList(wordList)"
+                                (click)="onClickWordList(wordList.wordListTypeId)">
+                            <div class="word-list-item-wrapper" *ngIf="!isMyWordsList(wordList.wordListTypeId)">
+                                <div class="word-list-title">
+                                    <span class="word-list-item-name d-block" i18n>{{ wordList.name }}</span>
+                                    <!-- My words lists counts are fetched in async way after page is initialized-->
+                                    <ec-loading-ring [themeClass]="'dark'" [size]="'small'"
+                                                     *ngIf="isMyWordsListsCountsLoading() && !isVbLoading() && isMyWordsList(wordList.wordListTypeId)">
+                                    </ec-loading-ring>
+                                    <span class="word-list-rank" i18n>
+                                        (List Size: {{ wordList.maxWordRank }})
+                                    </span>
+                                </div>
+                                <span class="word-list-item-description d-block" i18n>{{ wordList.description }}</span>
+                            </div>
+                            <div class="word-list-item-wrapper" *ngIf="isAllWordList(wordList.wordListTypeId)">
+                                <div class="word-list-title">
+                                    <span class="word-list-item-name d-block" i18n>My Words</span>
+                                    <span class="word-list-rank" *ngIf="!isMyWordsListsCountsLoading() || !isMyWordsList(wordList.wordListTypeId)" i18n>
+                                            (List Size: {{ wordList.maxWordRank }})
+                                    </span>
+                                </div>
+                                <span class="word-list-item-description d-block" i18n>All words with progress or favorited</span>
+                            </div>
+                            <div class="word-list-item-wrapper" *ngIf="isMissedWordList(wordList.wordListTypeId)">
+                                <div class="word-list-title">
+                                    <span class="word-list-item-name d-block" i18n>Missed Words</span>
+                                    <span class="word-list-rank" *ngIf="!isMyWordsListsCountsLoading() || !isMyWordsList(wordList.wordListTypeId)" i18n>
+                                            (List Size: {{ wordList.maxWordRank }})
+                                    </span>
+                                </div>
+                                <span class="word-list-item-description d-block" i18n>Words last studied incorrectly</span>
+                            </div>
+                            <div class="word-list-item-wrapper" *ngIf="isMasteredWordList(wordList.wordListTypeId)">
+                                <div class="word-list-title">
+                                    <span class="word-list-item-name d-block" i18n>Mastered Words</span>
+                                    <span class="word-list-rank" *ngIf="!isMyWordsListsCountsLoading() || !isMyWordsList(wordList.wordListTypeId)" i18n>
+                                            (List Size: {{ wordList.maxWordRank }})
+                                    </span>
+                                </div>
+                                <span class="word-list-item-description d-block" i18n>Words you have learned correctly, multiple times, over at least a 90 day period</span>
+                            </div>
+                            <div class="word-list-item-wrapper" *ngIf="isFavoriteWordList(wordList.wordListTypeId)">
+                                <div class="word-list-title">
+                                    <span class="word-list-item-name d-block" i18n>Favorite Words</span>
+                                    <span class="word-list-rank" *ngIf="!isMyWordsListsCountsLoading() || !isMyWordsList(wordList.wordListTypeId)" i18n>
+                                            (List Size: {{ wordList.maxWordRank }})
+                                    </span>
+                                </div>
+                                <span class="word-list-item-description d-block" i18n>Words marked as favorites</span>
+                            </div>
+                            <div class="word-list-item-wrapper" *ngIf="isKnownWordList(wordList.wordListTypeId)">
+                                <div class="word-list-title">
+                                    <span class="word-list-item-name d-block" i18n>Known Words</span>
+                                    <span class="word-list-rank" *ngIf="!isMyWordsListsCountsLoading() || !isMyWordsList(wordList.wordListTypeId)" i18n>
+                                            (List Size: {{ wordList.maxWordRank }})
+                                    </span>
+                                </div>
+                                <span class="word-list-item-description d-block" i18n>Words marked as known</span>
+                            </div>
+                            <ng-container *ngTemplateOutlet="wordListProgress; context:{wordListTypeId: wordList.wordListTypeId}"></ng-container>
+                        </button>
+                    </ng-container>
+                    <button id="add-word-list" class="word-list-item btn-add-list"
+                            ngbDropdownItem
+                            *ngIf="isAddNewListEnabled()"
+                            [disabled]="isWordListsLoading() || isVbLoading()"
+                            (click)="initializeAddWordList()"
+                    ><div class="me-2" i18n>Add List</div><i class="far fa-plus-circle"></i></button>
+                </ng-template>
+
+                <!-- Fixed settings Word List -->
+                <button class="settings-block btn disabled"
+                        [disabled]="isVbLoading() && !isQuizLoading()"
+                        [class.vb-settings-loading]="isVbLoading() && !isQuizLoading() && !isAutoStart()"
+                        *ngIf="isSettingsChangeDisabled()">
+                    <div class="button-title-container">
+                        <div class="title-container">{{ getCurrentVocabListName() }}</div>
+                        <span class="ms-auto">{{ getCurrentVocabListMaxWordRank() }}</span>
+                    </div>
+                </button>
+
+                <!-- Non Fixed settings Word List -->
+                <ng-template [ngIf]="isMobile() && !isSettingsChangeDisabled()">
+                    <button class="settings-block btn"
+                            [disabled]="isVbLoading() && !isQuizLoading()"
+                            [class.vb-settings-loading]="!getCurrentVocabListName() || (isVbLoading() && !isQuizLoading() && !isAutoStart())"
+                            (click)="setMobileWordListRendererOpen(true)">
+                        <div class="button-title-container">
+                            <div class="title-container">{{ getCurrentVocabListName() }}</div>
+                            <ng-container *ngTemplateOutlet="wordListProgress; context:{wordListTypeId: getCurrentWordListTypeId()}"></ng-container>
+                            <i class="fas fa-sort-down mobile-button-arrow ms-2"></i>
+                        </div>
+                        <div *ngIf="getCurrentVocabListName()" class="word-list-rank text-start"><span i18n>(List Size: {{ getCurrentVocabListMaxWordRank() }})</span></div>
+                    </button>
+
+                    <!-- Mobile Word List dropdown-->
+                    <ec-mobile-content-renderer
+                            [isFullScreen]="true"
+                            [isCloseBtnEnabled]="true"
+                            [setScreenInnerHeight]="true"
+                            [isOpen]="isMobileWordListRendererOpen()"
+                            *ngIf="isMobile()">
+                        <div class="vocab-header">
+                            <div class="header-inner">
+                                <i class="far fa-arrow-left" (click)="setMobileWordListRendererOpen(false)"></i>
+                                <span class="ms-2" i18n>Vocab</span>
+                            </div>
+                        </div>
+                        <div class="full-screen-mobile-word-list">
+                            <ng-container *ngTemplateOutlet="wordLists"></ng-container>
+                        </div>
+                    </ec-mobile-content-renderer>
+                </ng-template>
+
+                <!-- Desktop Word List dropdown-->
+                <div ngbDropdown *ngIf="!isMobile() && !isSettingsChangeDisabled()">
+                    <button class="settings-block btn dropdown-toggle"
+                            id="word-list"
+                            [disabled]="isVbLoading() && !isQuizLoading()"
+                            [class.vb-settings-loading]="isVbLoading() && !isQuizLoading() && !isAutoStart()"
+                            ngbDropdownToggle
+                    >
+                        <div class="dropdown-item-container d-flex flex-column w-100"
+                             *ngIf="getCurrentVocabListName()">
+                            <div class="dropdown-title-container d-flex justify-content-between">
+                                <div class="word-list-title">
+                                    <div class="title-container">{{ getCurrentVocabListName() }}</div>
+                                    <span class="word-list-rank ms-2" i18n>(List Size: {{ getCurrentVocabListMaxWordRank() }})</span>
+                                </div>
+                                <ng-container *ngTemplateOutlet="wordListProgress; context:{wordListTypeId: getCurrentWordListTypeId()}"></ng-container>
+                            </div>
+                        </div>
+                    </button>
+
+                    <div ngbDropdownMenu aria-labelledby="word-list" class="w-100" >
+                        <ng-container *ngTemplateOutlet="wordLists; context: {insideMobileRenderer: true}"></ng-container>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <ng-template #wordListProgress let-wordListTypeId="wordListTypeId">
+            <div class="word-list-progress ms-auto me-2" *ngIf="!isMyWordsList(wordListTypeId) && getCurrentVocabListName()">
+                <ec-loading-ring [themeClass]="'dark'" [size]="'small'" *ngIf="isWordListsProgressLoading() && !isVbLoading()"></ec-loading-ring>
+                <span class="word-list-progress-percentage-text fw-bold"
+                      *ngIf="!isWordListsProgressLoading() && !isMyWordsList(wordListTypeId)" i18n>
+                    {{getWordListProgressInPercentage(wordListTypeId)}}% Complete
+                </span>
+            </div>
+        </ng-template>
+
+        <div class="quiz-settings-wrapper d-flex flex-column" *ngIf="getModeReference()">
+            <!-- Question Type Wrapper-->
+            <div class="question-type-wrapper d-flex flex-column flex-grow-1">
+                <div class="vocab-builder-settings-label" i18n>Question Type</div>
+                <div ngbDropdown id="vb-mode-selection">
+                    <button class="settings-block btn w-100 text-start disabled"
+                            *ngIf="isSettingsChangeDisabled()"
+                            [disabled]="isVbLoading() && !isQuizLoading()"
+                            [class.vb-settings-loading]="isVbLoading() && !isQuizLoading() && !isAutoStart()">
+                        <span *ngIf="getCurrentModeName()">{{ getCurrentModeName() }}</span>
+                        <span *ngIf="!getCurrentModeName()" i18n>Mixed</span>
+                    </button>
+
+                    <!-- Desktop Question Type Dropdown-->
+                    <ng-template [ngIf]="!isMobile() && !isSettingsChangeDisabled()">
+                        <button class="settings-block btn dropdown-toggle"
+                                id="mode-list"
+                                [disabled]="isVbLoading() && !isQuizLoading()"
+                                [class.vb-settings-loading]="isVbLoading() && !isQuizLoading() && !isAutoStart()"
+                                ngbDropdownToggle
+                        >
+                            <div class="dropdown-item-container d-flex flex-column">
+                                <div class="dropdown-title-container d-flex justify-content-between">
+                                    <div class="title-container">
+                                        <span *ngIf="getCurrentModeName()">{{ getCurrentModeName() }}</span>
+                                        <span *ngIf="!getCurrentModeName()" i18n>Mixed</span>
+                                    </div>
+                                </div>
+                                <div class="dropdown-item-description-container">{{ getCurrentModeDescription() }}</div>
+                            </div>
+                        </button>
+                    </ng-template>
+
+                    <div ngbDropdownMenu aria-labelledby="mode-list" class="w-100">
+                        <ng-container *ngTemplateOutlet="questionType; context: {insideMobileRenderer: true}"></ng-container>
+                    </div>
+
+                    <!-- Mobile Question Type Dropdown-->
+                    <ng-template [ngIf]="isMobile() && !isSettingsChangeDisabled()">
+                        <button class="settings-block btn"
+                                [disabled]="isVbLoading() && !isQuizLoading()"
+                                [class.vb-settings-loading]="!getCurrentVocabListName() || (isVbLoading() && !isQuizLoading() && !isAutoStart())"
+                                (click)="setMobileQuestionTypeRendererOpen(true)">
+                            <div class="button-title-container">
+                                <span *ngIf="getCurrentModeName()">{{ getCurrentModeName() }}</span>
+                                <span *ngIf="!getCurrentModeName()" i18n>Mixed</span>
+                                <i class="fas fa-sort-down mobile-button-arrow ms-2"></i>
+                            </div>
+                        </button>
+
+                        <ec-mobile-content-renderer
+                                [isFullScreen]="true"
+                                [isCloseBtnEnabled]="true"
+                                [setScreenInnerHeight]="true"
+                                [isOpen]="isMobileQuestionTypeRendererOpen()"
+                                *ngIf="isMobile()">
+                            <div class="vocab-header">
+                                <div class="header-inner">
+                                    <i class="far fa-arrow-left" (click)="setMobileQuestionTypeRendererOpen(false)"></i>
+                                    <span class="ms-2" i18n>Vocab</span>
+                                </div>
+                            </div>
+                            <div class="full-screen-mobile-word-list">
+                                <ng-container *ngTemplateOutlet="questionType; context: {insideMobileRenderer: true}"></ng-container>
+                            </div>
+                        </ec-mobile-content-renderer>
+                    </ng-template>
+
+                    <!-- Question Types -->
+                    <ng-template #questionType>
+                        <div class="dropdown-item mode-item"
+                             [class.border-primary]="!getCurrentModeName()"
+                             [class.active]="!getCurrentModeName()"
+                             *ngIf="showMixedMode()"
+                             (click)="updateModeMixed()"
+                             [id]="getCorrectedId('Mixed', 'mode')"
+                             i18n>Mixed</div>
+                        <div class="dropdown-item mode-item"
+                             *ngFor="let vocabBuilderMode of getModeReference()"
+                             [id]="getCorrectedId(vocabBuilderMode.vocabBuilderModeId, 'mode')"
+                             [class.border-primary]="isActiveModeId(vocabBuilderMode.vocabBuilderModeId)"
+                             [class.active]="isActiveModeId(vocabBuilderMode.vocabBuilderModeId)"
+                             (click)="onClickQuestionMode(vocabBuilderMode.vocabBuilderModeId)"
+                        >{{ vocabBuilderMode.name }}</div>
+                    </ng-template>
+                </div>
+            </div>
+
+            <!-- Setting for number of items to study -->
+            <div class="settings-bottom mx-auto" *ngIf="isItemsToStudyChangeable()">
+                <div class="vocab-builder-settings-label fw-bold text-center" i18n>Number of items to study</div>
+                <div class="num-quiz-items">
+                    <ec-tally-counter
+                            *ngIf="!isVbLoading() || isQuizLoading()"
+                            [currentCount]="getCurrentNumberOfQuizItems()"
+                            [minValue]="getMinQuizItems()"
+                            [maxValue]="getMaxQuizItems()"
+                            [disabled]="isSettingsChangeDisabled()"
+                            [automationId]="'vb-num-quiz-items'"
+                            (eventCountChange)="updateNumberOfQuizItems($event)"
+                    ></ec-tally-counter>
+                    <div class="settings-block btn dropdown-toggle vb-settings-loading disabled"
+                         *ngIf="isVbLoading() && !isQuizLoading()">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Control buttons for quiz start -->
+    <div class="start-screen-buttons-wrapper w-100 d-flex align-items-center justify-content-center">
+        <button class="btn btn-primary btn-start-quiz fw-bold w-100"
+                *ngIf="isFixedSetting()"
+                [disabled]="isVbLoading()"
+                (click)="startQuiz(!isIncomplete())">
+            <span *ngIf="!isIncomplete() && isPractice()" i18n>Start Practice</span>
+            <span *ngIf="!isIncomplete() && !isPractice()" i18n>Start Test</span>
+        </button>
+
+        <button class="btn btn-primary btn-start-quiz fw-bold w-100"
+                *ngIf="!isFixedSetting()"
+                [disabled]="isVbLoading()"
+                id="vb-start-quiz-button"
+                (click)="startQuiz(true)" i18n>Start Quiz</button>
+    </div>
+</div>
+
+<div class="start-screen-overlay" *ngIf="isSettingsDrawerOpen()" (click)="closeSettingsDrawer()"></div>
+
+<ng-template [ngIf]="isQuizLoading() || (isAutoStart() && isVbLoading())">
+    <div class="loading-wrapper h-100 d-flex flex-column justify-content-center">
+        <div class="loading-spinner">
+            <ec-loading-ring [themeClass]="'primary'" [size]="'medium'"></ec-loading-ring>
+        </div>
+    </div>
+</ng-template>

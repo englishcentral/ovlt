@@ -1,0 +1,19 @@
+<div class="word-list-item text-dark">
+    <span class="word-list-item-text">
+        <span class="word-list-item-name d-block">{{ getWordList().name }}</span>
+        <span class="word-list-item-description d-block">{{ getWordList().description }}</span>
+        <span class="rank-container" i18n>List Size: <span class="ms-auto">{{ getWordList().maxWordRank }}</span></span>
+    </span>
+    <div class="selector-wrapper" (click)="toggleWordList()">
+        <ng-template [ngIf]="isListProcessing()">
+            <div class="selector loading-wrapper">
+                <div class="loading-spinner"><ec-loading-ring [themeClass]="'primary'" [size]="'small'"></ec-loading-ring></div>
+            </div>
+        </ng-template>
+
+        <ng-template [ngIf]="!isListProcessing()">
+            <i class="selector fal fa-plus select" *ngIf="!isWordListAdded()"></i>
+            <i class="selector far fa-check selected bg-success" *ngIf="isWordListAdded()"></i>
+        </ng-template>
+    </div>
+</div>
