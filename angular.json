@@ -65,10 +65,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "ovlt:build:production"
+              "buildTarget": "ovlt:build:production"
             },
             "development": {
-              "browserTarget": "ovlt:build:development"
+              "buildTarget": "ovlt:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -76,7 +76,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "ovlt:build"
+            "buildTarget": "ovlt:build"
           }
         },
         "test": {
