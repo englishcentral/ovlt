@@ -38,14 +38,16 @@ export class AdaptiveQuizModelService {
             .get(params);
     }
 
-    getListOfWordsContentService(wordListTypeId: number, params: object): Observable<{wordListWords: WordListWord[]}> {
+    getListOfWordsContentService(wordListTypeId: number, params: object): Observable<{
+        wordListWords: WordListWord[]
+    }> {
         return this.connection
             .service("content")
             .setPath(`/wordlists/${wordListTypeId}/v1/sharedMeanings`)
             .get(params);
     }
 
-    getWordListsByActivityId(activtyId: number, params: object): Observable<{wordListWords: WordListWord[]}> {
+    getWordListsByActivityId(activtyId: number, params: object): Observable<{ wordListWords: WordListWord[] }> {
         return this.connection
             .service("content")
             .setPath(`/wordlists/v1/activityId/${activtyId}/sharedMeanings`)
@@ -148,14 +150,14 @@ export class AdaptiveQuizModelService {
     }
 
     getContentWordFromEcWordRootId(ecWordRootId: number, options?: ContentWordFilter): Observable<ContentWordAdapterList> {
-        let params: ContentWordFilter = { wordRootId: ecWordRootId };
+        let params: ContentWordFilter = {wordRootId: ecWordRootId};
         if (options) {
             params = assign(params, options);
         }
         return this.connection
             .service("content")
             .setPath("/word/adapter/editing/v1")
-            .get(params, "", "", {}, { "Content-Type": "application/vnd.englishcentral-v1+json" });
+            .get(params, "", "", {}, {"Content-Type": "application/vnd.englishcentral-v1+json"});
     }
 
     getWordlistTypeOfWordroot(params: object): Observable<WordListTypeOfWordRoot> {

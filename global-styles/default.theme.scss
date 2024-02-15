@@ -1,0 +1,54 @@
+// 2. Include any default variable overrides here
+@import "variables.default";
+
+/*! purgecss start ignore */
+body {
+    font-size: 15px;
+    line-height: 1.43;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-family: $font-default !important;
+}
+
+body.ja-yl {
+    font-family: $kids-font-ja !important;
+}
+
+a.disabled {
+    color: #29303B;
+    text-decoration: none;
+    cursor: default;
+}
+
+.pwa-v2-bg {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: 0;
+    background-color: white;
+}
+
+.ec-pwa-v2-landing-app {
+    color: #29303B;
+
+    // Button
+    .btn {
+        &.btn-primary {
+            background-color: #D31826;
+            &:hover {
+                background-color: lighten(#D31826, 5%);
+                border-color: #D31826;
+            }
+        }
+
+        &.btn-secondary {
+            background-color: #25252a;
+            &:hover {
+                background-color: lighten(#25252a, 8%);
+                border-color: #25252a;
+            }
+        }
+    }
+}
+/*! purgecss end ignore */

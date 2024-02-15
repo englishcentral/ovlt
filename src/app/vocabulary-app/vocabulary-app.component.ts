@@ -1,11 +1,6 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import { AppRoutingStateService } from "../../routes/app-routing-state.service";
-import { ROUTE_VIEW_WORDS, ROUTE_VOCAB_QUIZ } from "../../views/vocabulary-view/vocabulary-view.routes";
 import { ActivatedRoute, NavigationExtras, Router } from "@angular/router";
-import { DEFAULT_WORD_LIST_TYPE_ID } from "../../../model/types/word-list-reference";
 import { VocabularyAppSharedService } from "./vocabulary-app-shared.service";
-import { assign } from "lodash-es";
-import { ROUTE_VOCABULARY } from "../../routes/routes";
 
 @Component({
     selector: "ec-vocabulary-app",
@@ -16,7 +11,6 @@ export class VocabularyAppComponent implements OnInit, OnDestroy {
     private tabSectionVisible: boolean = true;
 
     constructor(
-        private appRoutingStateService: AppRoutingStateService,
         private vocabularyAppSharedService: VocabularyAppSharedService,
         private route: ActivatedRoute,
         private router: Router) {
@@ -52,36 +46,6 @@ export class VocabularyAppComponent implements OnInit, OnDestroy {
 
     isTabSectionVisible(): boolean {
         return this.tabSectionVisible;
-    }
-
-    navigateToViewWords(): void {
-        if (this.isViewWordsRouteActive()) {
-            return;
-        }
-        const wordListTypeId = this.vocabularyAppSharedService.getWordListTypeId() || DEFAULT_WORD_LIST_TYPE_ID;
-        this.router.navigate(
-            [ROUTE_VOCABULARY, ROUTE_VIEW_WORDS, wordListTypeId],
-            assign(this.getNavigationExtras(), this.getQueryParams())
-        );
-    }
-
-    navigateToVocabQuiz(): void {
-        if (this.isVocabQuizRouteActive()) {
-            return;
-        }
-        const wordListTypeId = this.vocabularyAppSharedService.getWordListTypeId() || DEFAULT_WORD_LIST_TYPE_ID;
-        this.router.navigate(
-            [ROUTE_VOCABULARY, ROUTE_VOCAB_QUIZ, wordListTypeId],
-            assign(this.getNavigationExtras(), this.getQueryParams())
-        );
-    }
-
-    isViewWordsRouteActive(): boolean {
-        return this.appRoutingStateService.isActiveRoute(`${ROUTE_VOCABULARY}/${ROUTE_VIEW_WORDS}`);
-    }
-
-    isVocabQuizRouteActive(): boolean {
-        return this.appRoutingStateService.isActiveRoute(`${ROUTE_VOCABULARY}/${ROUTE_VOCAB_QUIZ}`);
     }
 
     ngOnDestroy(): void {

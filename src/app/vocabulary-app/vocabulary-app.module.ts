@@ -4,7 +4,6 @@ import { VocabularyAppComponent } from "./vocabulary-app.component";
 import { RouterModule } from "@angular/router";
 import { ViewWordsModule } from "../view-words/view-words.module";
 import { VocabBuilderAppModule } from "../vocab-builder-app/vocab-builder-app.module";
-import { VocabularyAppSharedModule } from "./vocabulary-app-shared.module";
 
 @NgModule({
     imports: [

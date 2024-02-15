@@ -1,22 +1,19 @@
-import { ProgressQueueService } from "../../../common-app/progress-app/progress-queue.service";
 import { NgZone } from "@angular/core";
-import { DebugEventHandler } from "../../event-handler/debug-event-handler";
-import { QuizEventHandler } from "../../quiz-app/event-handler/quiz-event-handler";
 import { VocabBuilderProgressService } from "../vocab-builder-progress.service";
 import { VocabBuilderStateService } from "../vocab-builder-state.service";
 import { assign, map } from "lodash-es";
+import { DebugEventHandler } from "src/app/vocabulary-app/event-handler/debug-event-handler";
 
 declare var window: any;
 
-export class VocabBuilderDefaultEventHandler extends DebugEventHandler implements QuizEventHandler {
+export class VocabBuilderDefaultEventHandler extends DebugEventHandler {
     private initializedPublishers: boolean = false;
 
-    constructor(protected zone: NgZone,
-                private progressQueue: ProgressQueueService) {
+    constructor(protected override zone: NgZone) {
         super(zone);
     }
 
-    addExternalInterface(methodName: string) {
+    override addExternalInterface(methodName: string) {
         this.logger.log("Hooking interface for %s", methodName);
 
         if (!window.EcQuizApp) {
@@ -46,7 +43,7 @@ export class VocabBuilderDefaultEventHandler extends DebugEventHandler implement
         this.initializedPublishers = true;
         map(VocabBuilderProgressService.PROGRESS_DATA_EVENTS, (eventName: string) => {
             this.subscribe(eventName, (event) => {
-                this.progressQueue.sendEvent(event);
+                this.logger.log(event);
             });
         });
     }

@@ -56,7 +56,7 @@ export class WordQuizDataSource extends QuizDataSourceAbstract {
     isRecycleEnabled(): boolean {
         return true;
     }
-    
+
     isMarkAsKnownButtonVisible(): boolean {
         return true;
     }

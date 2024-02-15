@@ -1,29 +1,29 @@
 .level {
-    width: 2.5em;
-    height: 2.5em;
+  width: 2.5em;
+  height: 2.5em;
 }
 
 .progress-row {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    gap: 0.5em;
-    line-height: 0.9;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 0.5em;
+  line-height: 0.9;
 }
 
 .failed-band {
-    background-color: rgba(255, 0, 0, 0.3);
+  background-color: rgba(255, 0, 0, 0.3);
 }
 
 .bands {
-    min-height: 11.5em;
+  min-height: 11.5em;
 }
 
 .difficulty-type-selector {
-    position: absolute;
-    top: 0.5em;
-    right: 0.5em;
+  position: absolute;
+  top: 0.5em;
+  right: 0.5em;
 }
 
 .level-subtext {
-    font-size: 0.7em;
+  font-size: 0.7em;
 }

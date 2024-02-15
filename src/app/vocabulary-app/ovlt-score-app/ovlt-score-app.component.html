@@ -9,8 +9,10 @@
         </button>
         <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
             <button (click)="setDifficultyType(undefined)" ngbDropdownItem i18n>EnglishCentral</button>
-            @for (difficultyType of getDifficultyTypes(); track difficultyType) {
-                <button (click)="setDifficultyType(difficultyType) "ngbDropdownItem class="text-uppercase">{{ getDifficultyTypeName(difficultyType) }}</button>
+            @for (difficultyType of getDifficultyTypes();track difficultyType) {
+                <button (click)="setDifficultyType(difficultyType) " ngbDropdownItem
+                        class="text-uppercase">{{ getDifficultyTypeName(difficultyType) }}
+                </button>
             }
         </div>
     </div>
@@ -41,7 +43,7 @@
     } @else {
         <div class="d-flex flex-column align-items-center justify-content-center mb-2">
             <div class="progress-row w-75 mt-2 align-items-center">
-                @for (step of getLevelTestSteps(); track $index) {
+                @for (step of getLevelTestSteps();track $index) {
                     @if (!getDifficultyLevelName(getBandLevel(step))) {
                         <span class="band-level text-start" i18n>Level {{ getBandLevel(step) }}</span>
                     } @else {
@@ -52,10 +54,10 @@
                     }
                     <span class="shadow-sm">
                         <ngb-progressbar
-                            type="success"
-                            [value]="getPercentage(step)"
-                            [class.failed-band]="isFailedBand(step)"
-                            height="1.2em"
+                                type="success"
+                                [value]="getPercentage(step)"
+                                [class.failed-band]="isFailedBand(step)"
+                                height="1.2em"
                         ></ngb-progressbar>
                     </span>
                     <span class="result text-end" [class.fw-bold]="isStepCompleted(step)">{{ getResult(step) }}</span>
@@ -66,25 +68,27 @@
 } @else if (!getLevelTestSteps() && getWordProgressByDifficulty()) {
     <div class="d-flex flex-column align-items-center justify-content-center mb-2">
         <div class="progress-row w-75 mt-2 align-items-center">
-            @for (difficulty of getWordProgressByDifficulty(); track $index) {
+            @for (difficulty of getWordProgressByDifficulty();track $index) {
                 @if (difficulty?.total) {
                     @if (!getDifficultyLevelName(difficulty.difficultyLevel)) {
                         <span class="band-level text-start" i18n>Level {{ difficulty.difficultyLevel }}</span>
                     } @else {
                         <span class="d-flex flex-column justify-content-center align-items-start">
                             <span class="band-level text-start text-uppercase fw-bold mt-2">{{ getDifficultyTypeName(getDifficultyType()) }} {{ getDifficultyLevelName(difficulty.difficultyLevel) }}</span>
-                            <span class="band-level text-start level-subtext" i18n>Level {{ difficulty.difficultyLevel }}</span>
+                            <span class="band-level text-start level-subtext"
+                                  i18n>Level {{ difficulty.difficultyLevel }}</span>
                         </span>
                     }
                     <span class="shadow-sm">
                         <ngb-progressbar
-                            type="success"
-                            [value]="getDifficultyPercent(difficulty)"
-                            [class.failed-band]="isDifficultyFailed(difficulty)"
-                            height="1.2em"
+                                type="success"
+                                [value]="getDifficultyPercent(difficulty)"
+                                [class.failed-band]="isDifficultyFailed(difficulty)"
+                                height="1.2em"
                         ></ngb-progressbar>
                      </span>
-                    <span class="result text-end" [class.fw-bold]="isFirstFail(difficulty)">{{ difficulty.correct }}/{{ difficulty.total }}</span>
+                    <span class="result text-end" [class.fw-bold]="isFirstFail(difficulty)">{{ difficulty.correct }}
+                        /{{ difficulty.total }}</span>
                 }
             }
         </div>

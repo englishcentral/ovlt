@@ -25,7 +25,7 @@ import { ExamType } from "../../model/types/exam-type";
 import { SORT_ASC, StudyLevelModelService } from "../../model/identity/study-level-model.service";
 import { tap } from "rxjs/operators";
 
-@Injectable({ providedIn: "root" })
+@Injectable({providedIn: "root"})
 export class VocabBuilderProgressService {
     static EVENT_ON_WORD_ANSWER = "onVocabBuilderWordAnswer";
     static EVENT_ON_WORD_KNOWN = "onVocabBuilderWordKnown";
@@ -203,7 +203,7 @@ export class VocabBuilderProgressService {
             return;
         }
 
-        this.quizProgress.push({ ...quizWord, correct: examQuestionCheckedEvent.correct });
+        this.quizProgress.push({...quizWord, correct: examQuestionCheckedEvent.correct});
         this.totalAnsweredQuestions = size(this.quizProgress);
 
         if (!examQuestionCheckedEvent.correct) {

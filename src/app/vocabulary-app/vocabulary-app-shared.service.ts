@@ -1,9 +1,8 @@
 import { Injectable } from "@angular/core";
 import { Subscription } from "rxjs";
 import { Emitter } from "../../../core/emitters/emitter";
-import { ReferenceModelService } from "../../../model/content/reference-model.service";
-import { VocabBuilderModelService } from "../../../model/content/vocab-builder-model.service";
 import { IdentityService } from "../../../core/identity.service";
+import { ReferenceModelService } from "src/app/model/reference-model.service";
 
 @Injectable()
 export class VocabularyAppSharedService {
@@ -11,14 +10,13 @@ export class VocabularyAppSharedService {
 
     static EVENT_ON_HIDE_VOCABULARY_TABS = "onHideVocabularyTabs";
 
-    private selectedWordHeadIds: number[];
-    private selectedSharedMeaningIds: number[];
-    private wordListTypeId: number;
+    private selectedWordHeadIds?: number[];
+    private selectedSharedMeaningIds?: number[];
+    private wordListTypeId?: number;
     private backButtonVisible: boolean = true;
     private numberOfWordItems: number = 0;
 
     constructor(private referenceModelService: ReferenceModelService,
-                private vocabBuilderModelService: VocabBuilderModelService,
                 private identityService: IdentityService) {
 
     }

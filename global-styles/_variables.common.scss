@@ -1,0 +1,37 @@
+$fa-font-display: swap;
+
+$enable-gradients: false;
+$enable-shadows: false;
+
+$color-transparent: transparent;
+
+// Thumbnail sizes - Web
+$thumbnail-height: 255;
+$thumbnail-width: 210;
+$thumbnail-pic-height-ratio: 0.47;
+// Thumbnail size - Mobile
+// - General
+$thumbnail-mobile-image-width-px: 140px;
+// - Videos
+$thumbnail-mobile-height: 80;
+$thumbnail-mobile-height-px: unquote($thumbnail-mobile-height + "px");
+// - Courses
+$thumbnail-mobile-height-course: 90;
+$thumbnail-mobile-height-course-px: unquote($thumbnail-mobile-height-course + "px");
+
+// Header height
+$header-height: 65;
+$header-height-px: unquote($header-height + "px");
+
+// Main view min-height. Calculated by considering the height of footer and header
+$main-view-min-height: calc(100vh - 318px); // Header + Main + Footer Main + Footer Bottom
+$main-view-min-height-limited-footer: calc(100vh - 132px); // Header + Main + Footer Bottom
+$main-view-min-height-limited-footer-sm: calc(100vh - 164px); // Header + Main + Footer Bottom
+$main-view-min-height-no-footer: 100vh; // Header + Main
+
+// Activity app mobile header height
+$activity-app-mobile-header-height: 45px;
+
+// Font variables
+$font-default: "Helvetica Neue", helvetica, arial, sans-serif;
+$kids-font-ja: "UD デジタル 教科書体 N-R", "Helvetica Neue", helvetica, arial, sans-serif;

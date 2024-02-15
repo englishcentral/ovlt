@@ -7,7 +7,9 @@
     <div class="selector-wrapper" (click)="toggleWordList()">
         <ng-template [ngIf]="isListProcessing()">
             <div class="selector loading-wrapper">
-                <div class="loading-spinner"><ec-loading-ring [themeClass]="'primary'" [size]="'small'"></ec-loading-ring></div>
+                <div class="loading-spinner">
+                    <ec-loading-ring [themeClass]="'primary'" [size]="'small'"></ec-loading-ring>
+                </div>
             </div>
         </ng-template>
 

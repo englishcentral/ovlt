@@ -15,7 +15,7 @@ export class CourseQuizDataSource extends QuizDataSourceAbstract {
         super(settings);
     }
 
-    fetchSettings(accountId: number,  settingsExtras: VbSettings): Observable<VocabBuilderSettings | undefined> {
+    fetchSettings(accountId: number, settingsExtras: VbSettings): Observable<VocabBuilderSettings | undefined> {
         return this.vocabularyQuizModelService.getActivitySetting(settingsExtras.activityId);
     }
 

@@ -13,7 +13,10 @@ export class VocabBuilderDataSource extends QuizDataSourceAbstract {
         super(settings);
     }
 
-    fetchSettings(accountId: number,  settingsExtras: VbSettings = {useAccountWordLists: false, useCache: false}): Observable<VocabBuilderSettings | undefined> {
+    fetchSettings(accountId: number, settingsExtras: VbSettings = {
+        useAccountWordLists: false,
+        useCache: false
+    }): Observable<VocabBuilderSettings | undefined> {
         return this.vocabBuilderModelService.getAccountVocabBuilderSetting(accountId, settingsExtras);
     }
 

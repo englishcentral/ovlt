@@ -21,7 +21,6 @@ import {
     isLevelTestScoreUnderDowngradeThreshold,
     LAST_LEVEL_TEST_DIFFICULTY
 } from "../../../../model/types/vocab-level-test-reference";
-import { AccountModelService } from "../../../../model/identity/account-model.service";
 import { IdentityService } from "../../../../core/identity.service";
 import { Difficulty } from "../../../../model/types/difficulty";
 import { of } from "rxjs";
@@ -30,7 +29,6 @@ import { Logger } from "../../../../core/logger/logger";
 import { VocabBuilderSetting } from "../../../../model/types/vocab-builder-settings";
 import { ADAPTIVE_OVLT2_SETTINGS, VltQuizScore } from "../../../../model/reportcard/vocab-level-test";
 import { FeatureService } from "../../../../core/feature.service";
-import { WordQuizProgress } from "../../../../activity-app/vocab-builder-app/word-quiz.progress";
 import {
     UserLevelSelectorAppModalComponent
 } from "../../user-level-selector-app/user-level-selector-app-modal.component";

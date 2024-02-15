@@ -1,0 +1,35 @@
+@import "../../node_modules/bootstrap/scss/mixins/breakpoints";
+
+// DO NOT Change breakpoints
+$grid-breakpoints: (
+    xs: 0,
+    sm: 576px,
+    md: 768px,
+    lg: 992px,
+    xl: 1200px,
+    xxl: 1400px
+) !default;
+
+@mixin media-pointer-fine() {
+    @media (pointer: fine) {
+        @content;
+    }
+}
+
+@mixin media-pointer-coarse() {
+    @media (pointer: coarse) {
+        @content;
+    }
+}
+
+@mixin media-phone-and-ipad() {
+    @include media-breakpoint-down(lg) {
+        @media (orientation: portrait) and (-webkit-min-device-pixel-ratio: 1) {
+          @content;
+        }
+    }
+}
+
+@function strip-units($number) {
+    @return $number / ($number * 0 + 1);
+}

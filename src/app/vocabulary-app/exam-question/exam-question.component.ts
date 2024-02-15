@@ -113,7 +113,7 @@ const ALL_VIRTUAL_LETTERS = Array.from("qwertyuiopasdfghjklzxcvbnm1234567890-/:;
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ExamQuestionComponent extends SubscriptionAbstract implements OnChanges, OnDestroy, OnInit, AfterViewChecked {
-    @ViewChild("unsupportedBrowserPopup", { static: false }) unsupportedBrowser: NgbModal;
+    @ViewChild("unsupportedBrowserPopup", {static: false}) unsupportedBrowser: NgbModal;
     @Input() dialogLine: XDialogLine;
     @Input() levelTest: boolean = false;
     @Input() orthography: string = "";
@@ -281,9 +281,9 @@ export class ExamQuestionComponent extends SubscriptionAbstract implements OnCha
             .pipe(
                 takeUntil(this.getDestroyInterceptor())
             ).subscribe((enableKeyboard) => {
-                this.enableKeyboard(enableKeyboard);
-                this.typingSharedService.enableKeyboard(enableKeyboard);
-            });
+            this.enableKeyboard(enableKeyboard);
+            this.typingSharedService.enableKeyboard(enableKeyboard);
+        });
     }
 
     private initialize(): void {
@@ -645,7 +645,7 @@ export class ExamQuestionComponent extends SubscriptionAbstract implements OnCha
     }
 
     private getCacheKey(): object {
-        return { accountId: this.identityService.getAccountId() };
+        return {accountId: this.identityService.getAccountId()};
     }
 
     getKeyboardLetters(): string[] {

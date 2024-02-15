@@ -1,4 +1,5 @@
-<div class="start-screen d-flex flex-column justify-content-between align-items-center p-2 pb-4" *ngIf="!(isAutoStart() && isVbLoading())">
+<div class="start-screen d-flex flex-column justify-content-between align-items-center p-2 pb-4"
+     *ngIf="!(isAutoStart() && isVbLoading())">
     <!-- Settings wrapper-->
     <div class="vocab-builder-settings w-100 d-flex flex-column align-items-stretch"
          *ngIf="getWordListReference()">
@@ -50,10 +51,12 @@
                          (click)="updateCurrentStyle(vocabBuilderStyle.vocabBuilderStyleId, vocabBuilderStyle.name)"
                          [class.selected]="vocabBuilderStyle.vocabBuilderStyleId == getCurrentStyleId()"
                     >
-                        <div class="setting-text-main" [class.selected]="vocabBuilderStyle.vocabBuilderStyleId == getCurrentStyleId()">
+                        <div class="setting-text-main"
+                             [class.selected]="vocabBuilderStyle.vocabBuilderStyleId == getCurrentStyleId()">
                             {{ vocabBuilderStyle.translatedName }}
                         </div>
-                        <div class="setting-text-description" [class.selected]="vocabBuilderStyle.vocabBuilderStyleId == getCurrentStyleId()">
+                        <div class="setting-text-description"
+                             [class.selected]="vocabBuilderStyle.vocabBuilderStyleId == getCurrentStyleId()">
                             {{ vocabBuilderStyle.description }}
                         </div>
                     </div>
@@ -87,13 +90,14 @@
                     <div class="toggle-inner">
                         <div class="setting-text">
                             <span class="setting-text-main" i18n>Missed Words</span>
-                            <span class="setting-text-description" i18n>Include missed words at the end of the Quiz</span>
+                            <span class="setting-text-description"
+                                  i18n>Include missed words at the end of the Quiz</span>
                         </div>
                         <div class="setting-toggle">
                             <input id="recycled-missed-words-setting" class="round-switch"
                                    type="checkbox"
                                    [ngModel]="getLocalUserSetting('recycleMissedWords')"
-                                   (change)="toggleLocalUserSetting('recycleMissedWords')" />
+                                   (change)="toggleLocalUserSetting('recycleMissedWords')"/>
                         </div>
                     </div>
                 </div>
@@ -103,7 +107,8 @@
                     <div class="toggle-inner">
                         <div class="setting-text">
                             <span class="setting-text-main" i18n>Skipped Words</span>
-                            <span class="setting-text-description" i18n>Include skipped words at the end of the Quiz</span>
+                            <span class="setting-text-description"
+                                  i18n>Include skipped words at the end of the Quiz</span>
                         </div>
                         <div class="setting-toggle">
                             <input id="recycled-skipped-words-setting"
@@ -135,7 +140,9 @@
 
                         <ng-template [ngIf]="isWordListsLoading() || isVbLoading()">
                             <div class="loading-wrapper text-center py-4">
-                                <div class="loading-spinner"><ec-loading-ring [themeClass]="'primary'" [size]="'medium'"></ec-loading-ring></div>
+                                <div class="loading-spinner">
+                                    <ec-loading-ring [themeClass]="'primary'" [size]="'medium'"></ec-loading-ring>
+                                </div>
                             </div>
                         </ng-template>
 
@@ -151,7 +158,8 @@
 
                                 <div class="load-more w-100 d-flex align-items-center justify-content-center"
                                      [class.disabled]="!isLoadMoreEnabled()">
-                                    <button class="btn btn-reset btn-load-more text-info" [class.text-tertiary]="!isLoadMoreEnabled()"
+                                    <button class="btn btn-reset btn-load-more text-info"
+                                            [class.text-tertiary]="!isLoadMoreEnabled()"
                                             (click)="onClickLoadMore()">
                                         <ng-template [ngIf]="isMoreLoading()">
                                             <ec-loading-ring [themeClass]="'info'" [size]="'small'"></ec-loading-ring>
@@ -196,7 +204,9 @@
                             <div class="word-list-item-wrapper" *ngIf="isAllWordList(wordList.wordListTypeId)">
                                 <div class="word-list-title">
                                     <span class="word-list-item-name d-block" i18n>My Words</span>
-                                    <span class="word-list-rank" *ngIf="!isMyWordsListsCountsLoading() || !isMyWordsList(wordList.wordListTypeId)" i18n>
+                                    <span class="word-list-rank"
+                                          *ngIf="!isMyWordsListsCountsLoading() || !isMyWordsList(wordList.wordListTypeId)"
+                                          i18n>
                                             (List Size: {{ wordList.maxWordRank }})
                                     </span>
                                 </div>
@@ -205,16 +215,21 @@
                             <div class="word-list-item-wrapper" *ngIf="isMissedWordList(wordList.wordListTypeId)">
                                 <div class="word-list-title">
                                     <span class="word-list-item-name d-block" i18n>Missed Words</span>
-                                    <span class="word-list-rank" *ngIf="!isMyWordsListsCountsLoading() || !isMyWordsList(wordList.wordListTypeId)" i18n>
+                                    <span class="word-list-rank"
+                                          *ngIf="!isMyWordsListsCountsLoading() || !isMyWordsList(wordList.wordListTypeId)"
+                                          i18n>
                                             (List Size: {{ wordList.maxWordRank }})
                                     </span>
                                 </div>
-                                <span class="word-list-item-description d-block" i18n>Words last studied incorrectly</span>
+                                <span class="word-list-item-description d-block"
+                                      i18n>Words last studied incorrectly</span>
                             </div>
                             <div class="word-list-item-wrapper" *ngIf="isMasteredWordList(wordList.wordListTypeId)">
                                 <div class="word-list-title">
                                     <span class="word-list-item-name d-block" i18n>Mastered Words</span>
-                                    <span class="word-list-rank" *ngIf="!isMyWordsListsCountsLoading() || !isMyWordsList(wordList.wordListTypeId)" i18n>
+                                    <span class="word-list-rank"
+                                          *ngIf="!isMyWordsListsCountsLoading() || !isMyWordsList(wordList.wordListTypeId)"
+                                          i18n>
                                             (List Size: {{ wordList.maxWordRank }})
                                     </span>
                                 </div>
@@ -223,7 +238,9 @@
                             <div class="word-list-item-wrapper" *ngIf="isFavoriteWordList(wordList.wordListTypeId)">
                                 <div class="word-list-title">
                                     <span class="word-list-item-name d-block" i18n>Favorite Words</span>
-                                    <span class="word-list-rank" *ngIf="!isMyWordsListsCountsLoading() || !isMyWordsList(wordList.wordListTypeId)" i18n>
+                                    <span class="word-list-rank"
+                                          *ngIf="!isMyWordsListsCountsLoading() || !isMyWordsList(wordList.wordListTypeId)"
+                                          i18n>
                                             (List Size: {{ wordList.maxWordRank }})
                                     </span>
                                 </div>
@@ -232,13 +249,16 @@
                             <div class="word-list-item-wrapper" *ngIf="isKnownWordList(wordList.wordListTypeId)">
                                 <div class="word-list-title">
                                     <span class="word-list-item-name d-block" i18n>Known Words</span>
-                                    <span class="word-list-rank" *ngIf="!isMyWordsListsCountsLoading() || !isMyWordsList(wordList.wordListTypeId)" i18n>
+                                    <span class="word-list-rank"
+                                          *ngIf="!isMyWordsListsCountsLoading() || !isMyWordsList(wordList.wordListTypeId)"
+                                          i18n>
                                             (List Size: {{ wordList.maxWordRank }})
                                     </span>
                                 </div>
                                 <span class="word-list-item-description d-block" i18n>Words marked as known</span>
                             </div>
-                            <ng-container *ngTemplateOutlet="wordListProgress; context:{wordListTypeId: wordList.wordListTypeId}"></ng-container>
+                            <ng-container
+                                    *ngTemplateOutlet="wordListProgress; context:{wordListTypeId: wordList.wordListTypeId}"></ng-container>
                         </button>
                     </ng-container>
                     <button id="add-word-list" class="word-list-item btn-add-list"
@@ -246,7 +266,9 @@
                             *ngIf="isAddNewListEnabled()"
                             [disabled]="isWordListsLoading() || isVbLoading()"
                             (click)="initializeAddWordList()"
-                    ><div class="me-2" i18n>Add List</div><i class="far fa-plus-circle"></i></button>
+                    >
+                        <div class="me-2" i18n>Add List</div>
+                        <i class="far fa-plus-circle"></i></button>
                 </ng-template>
 
                 <!-- Fixed settings Word List -->
@@ -268,10 +290,12 @@
                             (click)="setMobileWordListRendererOpen(true)">
                         <div class="button-title-container">
                             <div class="title-container">{{ getCurrentVocabListName() }}</div>
-                            <ng-container *ngTemplateOutlet="wordListProgress; context:{wordListTypeId: getCurrentWordListTypeId()}"></ng-container>
+                            <ng-container
+                                    *ngTemplateOutlet="wordListProgress; context:{wordListTypeId: getCurrentWordListTypeId()}"></ng-container>
                             <i class="fas fa-sort-down mobile-button-arrow ms-2"></i>
                         </div>
-                        <div *ngIf="getCurrentVocabListName()" class="word-list-rank text-start"><span i18n>(List Size: {{ getCurrentVocabListMaxWordRank() }})</span></div>
+                        <div *ngIf="getCurrentVocabListName()" class="word-list-rank text-start"><span
+                                i18n>(List Size: {{ getCurrentVocabListMaxWordRank() }})</span></div>
                     </button>
 
                     <!-- Mobile Word List dropdown-->
@@ -306,26 +330,31 @@
                             <div class="dropdown-title-container d-flex justify-content-between">
                                 <div class="word-list-title">
                                     <div class="title-container">{{ getCurrentVocabListName() }}</div>
-                                    <span class="word-list-rank ms-2" i18n>(List Size: {{ getCurrentVocabListMaxWordRank() }})</span>
+                                    <span class="word-list-rank ms-2"
+                                          i18n>(List Size: {{ getCurrentVocabListMaxWordRank() }})</span>
                                 </div>
-                                <ng-container *ngTemplateOutlet="wordListProgress; context:{wordListTypeId: getCurrentWordListTypeId()}"></ng-container>
+                                <ng-container
+                                        *ngTemplateOutlet="wordListProgress; context:{wordListTypeId: getCurrentWordListTypeId()}"></ng-container>
                             </div>
                         </div>
                     </button>
 
-                    <div ngbDropdownMenu aria-labelledby="word-list" class="w-100" >
-                        <ng-container *ngTemplateOutlet="wordLists; context: {insideMobileRenderer: true}"></ng-container>
+                    <div ngbDropdownMenu aria-labelledby="word-list" class="w-100">
+                        <ng-container
+                                *ngTemplateOutlet="wordLists; context: {insideMobileRenderer: true}"></ng-container>
                     </div>
                 </div>
             </div>
         </div>
 
         <ng-template #wordListProgress let-wordListTypeId="wordListTypeId">
-            <div class="word-list-progress ms-auto me-2" *ngIf="!isMyWordsList(wordListTypeId) && getCurrentVocabListName()">
-                <ec-loading-ring [themeClass]="'dark'" [size]="'small'" *ngIf="isWordListsProgressLoading() && !isVbLoading()"></ec-loading-ring>
+            <div class="word-list-progress ms-auto me-2"
+                 *ngIf="!isMyWordsList(wordListTypeId) && getCurrentVocabListName()">
+                <ec-loading-ring [themeClass]="'dark'" [size]="'small'"
+                                 *ngIf="isWordListsProgressLoading() && !isVbLoading()"></ec-loading-ring>
                 <span class="word-list-progress-percentage-text fw-bold"
                       *ngIf="!isWordListsProgressLoading() && !isMyWordsList(wordListTypeId)" i18n>
-                    {{getWordListProgressInPercentage(wordListTypeId)}}% Complete
+                    {{ getWordListProgressInPercentage(wordListTypeId) }}% Complete
                 </span>
             </div>
         </ng-template>
@@ -364,7 +393,8 @@
                     </ng-template>
 
                     <div ngbDropdownMenu aria-labelledby="mode-list" class="w-100">
-                        <ng-container *ngTemplateOutlet="questionType; context: {insideMobileRenderer: true}"></ng-container>
+                        <ng-container
+                                *ngTemplateOutlet="questionType; context: {insideMobileRenderer: true}"></ng-container>
                     </div>
 
                     <!-- Mobile Question Type Dropdown-->
@@ -393,7 +423,8 @@
                                 </div>
                             </div>
                             <div class="full-screen-mobile-word-list">
-                                <ng-container *ngTemplateOutlet="questionType; context: {insideMobileRenderer: true}"></ng-container>
+                                <ng-container
+                                        *ngTemplateOutlet="questionType; context: {insideMobileRenderer: true}"></ng-container>
                             </div>
                         </ec-mobile-content-renderer>
                     </ng-template>
@@ -406,14 +437,16 @@
                              *ngIf="showMixedMode()"
                              (click)="updateModeMixed()"
                              [id]="getCorrectedId('Mixed', 'mode')"
-                             i18n>Mixed</div>
+                             i18n>Mixed
+                        </div>
                         <div class="dropdown-item mode-item"
                              *ngFor="let vocabBuilderMode of getModeReference()"
                              [id]="getCorrectedId(vocabBuilderMode.vocabBuilderModeId, 'mode')"
                              [class.border-primary]="isActiveModeId(vocabBuilderMode.vocabBuilderModeId)"
                              [class.active]="isActiveModeId(vocabBuilderMode.vocabBuilderModeId)"
                              (click)="onClickQuestionMode(vocabBuilderMode.vocabBuilderModeId)"
-                        >{{ vocabBuilderMode.name }}</div>
+                        >{{ vocabBuilderMode.name }}
+                        </div>
                     </ng-template>
                 </div>
             </div>
@@ -453,7 +486,8 @@
                 *ngIf="!isFixedSetting()"
                 [disabled]="isVbLoading()"
                 id="vb-start-quiz-button"
-                (click)="startQuiz(true)" i18n>Start Quiz</button>
+                (click)="startQuiz(true)" i18n>Start Quiz
+        </button>
     </div>
 </div>
 

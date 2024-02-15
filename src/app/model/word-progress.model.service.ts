@@ -21,7 +21,7 @@ export class WordProgressModelService {
         return this.connection
             .service("reportcard")
             .setPath(`/report/quiz/account/${accountId}/wordlist/${wordListTypeId}`)
-            .post(undefined, undefined, ConnectionFactoryService.SERVICE_VERSION.v1 );
+            .post(undefined, undefined, ConnectionFactoryService.SERVICE_VERSION.v1);
     }
 
     getWordListProgressContent(accountId: number, wordListTypeId: number, queryParams: object = {}) {

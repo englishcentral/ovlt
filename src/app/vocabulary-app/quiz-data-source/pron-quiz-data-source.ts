@@ -22,7 +22,7 @@ export class PronQuizDataSource extends QuizDataSourceAbstract {
         }
 
         return this.vocabBuilderModelService.generatePronQuizFromContent({
-            quizWordSources:[{
+            quizWordSources: [{
                 wordIds: currentSettings.wordIds
             }],
             applyModeId: currentSettings.vocabBuilderModeIds.toString(),

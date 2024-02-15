@@ -1,8 +1,6 @@
 import { Component, ElementRef, EventEmitter, Input, OnDestroy, Output, TemplateRef, ViewChild } from "@angular/core";
 import { Location } from "@angular/common";
 import { VocabBuilderProgressService } from "../../../../activity-app/vocab-builder-app/vocab-builder-progress.service";
-import { ReferenceModelService } from "../../../../model/content/reference-model.service";
-import { IdentityService } from "../../../../core/identity.service";
 import { FeatureService } from "../../../../core/feature.service";
 import { GlobalSettingService } from "../../../../core/global-setting.service";
 import { NgbModal, NgbModalOptions, NgbModalRef } from "@ng-bootstrap/ng-bootstrap";
@@ -24,7 +22,6 @@ import {
 } from "../../../../model/types/vocab-builder-reference";
 import { MESSAGE_CODE_INCOMPLETE } from "../../../../model/types/vocabulary-quiz";
 import { VocabularyAppSharedService } from "../../vocabulary-app/vocabulary-app-shared.service";
-import { Router } from "@angular/router";
 import { VocabBuilderStateService } from "../../../../activity-app/vocab-builder-app/vocab-builder-state.service";
 import { takeUntil, tap } from "rxjs/operators";
 import { forkJoin } from "rxjs";
@@ -63,12 +60,9 @@ export class VocabBuilderStartComponent extends SubscriptionAbstract implements 
                 private vocabBuilderStateService: VocabBuilderStateService,
                 private vocabBuilderProgressService: VocabBuilderProgressService,
                 private vocabularyAppSharedService: VocabularyAppSharedService,
-                private referenceModelService: ReferenceModelService,
-                private identityService: IdentityService,
                 private featureService: FeatureService,
                 private globalSettingService: GlobalSettingService,
                 private modalService: NgbModal,
-                private router: Router,
                 private location: Location) {
         super();
         this.globalSettingService.initializeFromElement(this.elementRef);

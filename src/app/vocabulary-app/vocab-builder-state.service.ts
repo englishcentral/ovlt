@@ -67,7 +67,6 @@ import {
 import { MyWordState, MyWordStateV2 } from "../../model/types/my-word-state-v2";
 import { WordProgressModelService } from "../../model/reportcard/word-progress.model.service";
 import { catchError, finalize, map as rxJsMap, tap } from "rxjs/operators";
-import { CHANNEL_LEVEL_SELECTION, ChannelService } from "../../core/channel.service";
 import { StudyLevelModelService } from "../../model/identity/study-level-model.service";
 import { isAfter, isBefore } from "date-fns";
 import { ReferenceModelService } from "../../model/content/reference-model.service";
@@ -184,7 +183,6 @@ export class VocabBuilderStateService {
                 private referenceModelService: ReferenceModelService,
                 private studyLevelService: StudyLevelModelService,
                 private identityService: IdentityService,
-                private channelService: ChannelService,
                 private featureService: FeatureService) {
     }
 
@@ -246,7 +244,7 @@ export class VocabBuilderStateService {
     }
 
     fetchMyWordListCounts(): Observable<MyWordStateV2> {
-        const params = { exclude: MyWordStateV1.MASTERED, applyExclusionsTo: MyWordStateV1.APPLY_EXCLUSIONS };
+        const params = {exclude: MyWordStateV1.MASTERED, applyExclusionsTo: MyWordStateV1.APPLY_EXCLUSIONS};
         return this.wordProgressModelService
             .getWordStateV2(params)
             .pipe(
@@ -443,7 +441,6 @@ export class VocabBuilderStateService {
                 rxJsMap((result: number) => {
                     this.setLevelUpdated(true);
                     this.studyLevelService.deleteLevelCache();
-                    this.channelService.publish(CHANNEL_LEVEL_SELECTION, level);
                     return result;
                 })
             );
@@ -716,7 +713,7 @@ export class VocabBuilderStateService {
         }
 
         const currentSetting = assign(this.currentSetting, filteredSetting ?? {});
-        this.currentSetting = assign(currentSetting, { vocabBuilderModeIds: this.getFilteredModesWithCurrentSettings(currentSetting) });
+        this.currentSetting = assign(currentSetting, {vocabBuilderModeIds: this.getFilteredModesWithCurrentSettings(currentSetting)});
 
         this.logger.log("Set Current Setting: ", this.currentSetting);
     }
@@ -740,7 +737,7 @@ export class VocabBuilderStateService {
     }
 
     setReviewItemRatio(ratio: number): void {
-        assign(this.currentSetting, { reviewItemRatio: ratio });
+        assign(this.currentSetting, {reviewItemRatio: ratio});
         this.logger.log("Set Current Setting: ", this.currentSetting);
     }
 
@@ -895,19 +892,19 @@ export class VocabBuilderStateService {
     setMyWordsListsCounts(wordList: WordList, listCounts: MyWordStateV1): void {
         switch (wordList.name) {
             case MY_WORDS_WORD_LIST_NAMES.all:
-                unionBy(this.wordLists, assign(wordList, { maxWordRank: listCounts.all }));
+                unionBy(this.wordLists, assign(wordList, {maxWordRank: listCounts.all}));
                 return;
             case MY_WORDS_WORD_LIST_NAMES.favorites:
-                unionBy(this.wordLists, assign(wordList, { maxWordRank: listCounts.favorites }));
+                unionBy(this.wordLists, assign(wordList, {maxWordRank: listCounts.favorites}));
                 return;
             case MY_WORDS_WORD_LIST_NAMES.known:
-                unionBy(this.wordLists, assign(wordList, { maxWordRank: listCounts.known }));
+                unionBy(this.wordLists, assign(wordList, {maxWordRank: listCounts.known}));
                 return;
             case MY_WORDS_WORD_LIST_NAMES.mastered:
-                unionBy(this.wordLists, assign(wordList, { maxWordRank: listCounts.mastered }));
+                unionBy(this.wordLists, assign(wordList, {maxWordRank: listCounts.mastered}));
                 return;
             case MY_WORDS_WORD_LIST_NAMES.missed:
-                unionBy(this.wordLists, assign(wordList, { maxWordRank: listCounts.missed }));
+                unionBy(this.wordLists, assign(wordList, {maxWordRank: listCounts.missed}));
                 return;
             default:
                 throw "no count for this word list";
