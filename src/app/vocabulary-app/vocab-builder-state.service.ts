@@ -1,46 +1,13 @@
 import { Injectable } from "@angular/core";
 import { BehaviorSubject, forkJoin, Observable, of, Subject, Subscription, throwError } from "rxjs";
-import { Emitter } from "../../core/emitters/emitter";
-import { StopWatch } from "../../core/stopwatch";
-import { Logger } from "../../core/logger/logger";
+
 import { VocabBuilderProgressService } from "./vocab-builder-progress.service";
-import {
-    LevelTestDetail,
-    MESSAGE_CODE_COMPLETE,
-    MESSAGE_CODE_INCOMPLETE,
-    XQuizWord,
-    XWordQuiz
-} from "../../model/types/vocabulary-quiz";
-import {
-    DEFAULT_WORD_LIST_TYPE_IDS,
-    MY_WORDS_WORD_LIST,
-    MY_WORDS_WORD_LIST_COLLECTION,
-    MY_WORDS_WORD_LIST_NAMES,
-    WordList
-} from "../../model/types/word-list-reference";
+
+
 import { VocabBuilderEventHandler } from "./event-handler/vocab-builder-event-handler";
-import {
-    ERROR_BAND_COMPLETE,
-    ERROR_KEY_LIST_RANK_EXCEEDED,
-    ERROR_KEY_NO_WORDS_AVAILABLE,
-    getSupportedModes,
-    MIXED_MODE_STRICT,
-    MODE_ALL,
-    MODE_DEFAULT,
-    modesToScalar,
-    VocabBuilderMode,
-    VocabBuilderReference,
-    VocabBuilderStyle
-} from "../../model/types/vocab-builder-reference";
-import {
-    LocalUserVocabularySettings,
-    VOCAB_BUILDER_STYLE_ID_SEQUENTIAL,
-    VocabBuilderSetting,
-    VocabBuilderSettings
-} from "../../model/types/vocab-builder-settings";
-import { FeatureService } from "../../core/feature.service";
-import { QuizDataSourceAbstract } from "./quiz-data-source/quiz-data-source-abstract";
-import { MyWordStateV1 } from "../../model/types/my-word-state-v1";
+
+
+
 import { LocalForageGeneric } from "../../core/local-forage-generic";
 import {
     assign,
@@ -64,17 +31,57 @@ import {
     unionBy,
     values
 } from "lodash-es";
-import { MyWordState, MyWordStateV2 } from "../../model/types/my-word-state-v2";
-import { WordProgressModelService } from "../../model/reportcard/word-progress.model.service";
+
+
 import { catchError, finalize, map as rxJsMap, tap } from "rxjs/operators";
-import { StudyLevelModelService } from "../../model/identity/study-level-model.service";
+import { StopWatch } from "../common/stopwatch";
+import { Logger } from "../common/logger";
+import { Emitter } from "../common/emitter";
+import {
+  LevelTestDetail,
+  MESSAGE_CODE_COMPLETE,
+  MESSAGE_CODE_INCOMPLETE,
+  XQuizWord,
+  XWordQuiz
+} from "../../types/vocabulary-quiz";
+import {
+  DEFAULT_WORD_LIST_TYPE_IDS,
+  MY_WORDS_WORD_LIST, MY_WORDS_WORD_LIST_COLLECTION,
+  MY_WORDS_WORD_LIST_NAMES,
+  WordList
+} from "../../types/word-list-reference";
+import {
+  ERROR_BAND_COMPLETE,
+  ERROR_KEY_LIST_RANK_EXCEEDED,
+  ERROR_KEY_NO_WORDS_AVAILABLE,
+  getSupportedModes,
+  MIXED_MODE_STRICT,
+  MODE_ALL,
+  MODE_DEFAULT,
+  modesToScalar,
+  VocabBuilderMode,
+  VocabBuilderReference,
+  VocabBuilderStyle
+} from "../../types/vocab-builder-reference";
+import {
+  LocalUserVocabularySettings,
+  VOCAB_BUILDER_STYLE_ID_SEQUENTIAL,
+  VocabBuilderSetting,
+  VocabBuilderSettings
+} from "../../types/vocab-builder-settings";
+import { QuizDataSourceAbstract } from "./quiz-data-source/quiz-data-source-abstract";
+import { WordV1 } from "../../types/word-v1";
+import { WordListLearned } from "../../types/word-list-learned";
+import { MyWordStateV1 } from "../../types/my-word-state-v1";
+import { MyWordState, MyWordStateV2 } from "../../types/my-word-state-v2";
+import { VltQuizScore } from "../../types/vocab-level-test";
 import { isAfter, isBefore } from "date-fns";
-import { ReferenceModelService } from "../../model/content/reference-model.service";
-import { IdentityService } from "../../core/identity.service";
-import { AdaptiveQuizModelService } from "../../model/content/adaptive-quiz-model.service";
-import { WordListLearned } from "../../model/types/word-list-learned";
-import { WordV1 } from "../../model/types/content/word-v1";
-import { VltQuizScore } from "../../model/reportcard/vocab-level-test";
+import { WordProgressModelService } from "../model/word-progress.model.service";
+import { AdaptiveQuizModelService } from "../model/adaptive-quiz-model.service";
+import { ReferenceModelService } from "../model/reference-model.service";
+import { StudyLevelModelService } from "../model/study-level-model.service";
+import { IdentityService } from "../common/identity.service";
+import { FeatureService } from "../common/feature.service";
 
 const LOCAL_VOCABULARY_SETTINGS_KEY = "LocalUserVocabularySettings";
 

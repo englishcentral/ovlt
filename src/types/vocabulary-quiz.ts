@@ -1,9 +1,10 @@
 import { Word } from "./word";
 import { DialogLine, XDialogLine } from "./dialog-line";
 import { has } from "lodash-es";
-import { WordV1 } from "./content/word-v1";
-import { XWordDetail } from "./content/x-word";
-import { DialogLineV1 } from "./content/dialog-line-v1";
+import { XWordDetail } from "./x-word";
+import { WordV1 } from "./word-v1";
+import { DialogLineV1 } from "./dialog-line-v1";
+
 
 export class VocabularyQuiz {
     sessionTitle: string;

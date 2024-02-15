@@ -9,31 +9,24 @@ import {
     Output
 } from "@angular/core";
 import "global-styles/adaptive-quiz.css";
-import { VocabBuilderStateService } from "../../../../activity-app/vocab-builder-app/vocab-builder-state.service";
-import { VocabBuilderProgressService } from "../../../../activity-app/vocab-builder-app/vocab-builder-progress.service";
-import { MESSAGE_CODE_COMPLETE } from "../../../../model/types/vocabulary-quiz";
-import { MyWordsListTypeIds } from "../../../../model/types/word-list-reference";
-import { SubscriptionAbstract } from "../../../../core/subscription.abstract";
+import { VocabBuilderProgressService } from "../vocab-builder-progress.service";
+import { VocabBuilderStateService } from "../vocab-builder-state.service";
+import { IdentityService } from "../../common/identity.service";
+import { FeatureService } from "../../common/feature.service";
+import { Logger } from "../../common/logger";
+import { DEFAULT_MODAL_OPTIONS, ModalService } from "../../common/modal.service";
+import { SubscriptionAbstract } from "../../subscription.abstract";
+import { ADAPTIVE_OVLT2_SETTINGS, VltQuizScore } from "../../../types/vocab-level-test";
 import { finalize, mergeMap, takeUntil } from "rxjs/operators";
-import { includes, isEqual } from "lodash-es";
-import {
-    isLevelTestPassed,
-    isLevelTestScoreUnderDowngradeThreshold,
-    LAST_LEVEL_TEST_DIFFICULTY
-} from "../../../../model/types/vocab-level-test-reference";
-import { IdentityService } from "../../../../core/identity.service";
-import { Difficulty } from "../../../../model/types/difficulty";
 import { of } from "rxjs";
-import { ERROR_KEY_LIST_RANK_EXCEEDED } from "../../../../model/types/vocab-builder-reference";
-import { Logger } from "../../../../core/logger/logger";
-import { VocabBuilderSetting } from "../../../../model/types/vocab-builder-settings";
-import { ADAPTIVE_OVLT2_SETTINGS, VltQuizScore } from "../../../../model/reportcard/vocab-level-test";
-import { FeatureService } from "../../../../core/feature.service";
-import {
-    UserLevelSelectorAppModalComponent
-} from "../../user-level-selector-app/user-level-selector-app-modal.component";
-import { DEFAULT_MODAL_OPTIONS } from "../../../helpers/modal-options-default";
-import { ModalLaunchService } from "../../../../core/modal-launch.service";
+import { Difficulty } from "../../../types/difficulty";
+import { includes, isEqual } from "lodash-es";
+import { LAST_LEVEL_TEST_DIFFICULTY } from "../../../types/vocab-level-test-reference";
+import { MESSAGE_CODE_COMPLETE } from "../../../types/vocabulary-quiz";
+import { ERROR_KEY_LIST_RANK_EXCEEDED } from "../../../types/vocab-builder-reference";
+import { MyWordsListTypeIds } from "../../../types/word-list-reference";
+import { VocabBuilderSetting } from "../../../types/vocab-builder-settings";
+
 
 @Component({
     selector: "ec-vocab-builder-complete",
@@ -65,7 +58,7 @@ export class VocabBuilderCompleteComponent extends SubscriptionAbstract implemen
 
     constructor(private vocabBuilderStateService: VocabBuilderStateService,
                 private vocabBuilderProgressService: VocabBuilderProgressService,
-                private modalLaunchService: ModalLaunchService,
+                private modalService: ModalService,
                 private identityService: IdentityService,
                 private featureService: FeatureService,
                 private changeDetectorRef: ChangeDetectorRef) {
@@ -322,7 +315,7 @@ export class VocabBuilderCompleteComponent extends SubscriptionAbstract implemen
     }
 
     launchUserLevelSelector(): void {
-        const levelSelectorModalRef = this.modalLaunchService.open(
+        const levelSelectorModalRef = this.modalService.open(
             UserLevelSelectorAppModalComponent, {
                 ...DEFAULT_MODAL_OPTIONS,
                 centered: false,
@@ -332,7 +325,7 @@ export class VocabBuilderCompleteComponent extends SubscriptionAbstract implemen
         levelSelectorModalRef.componentInstance.siteLanguage = this.identityService.getSiteLanguage();
         levelSelectorModalRef.componentInstance.eventComplete
             .pipe(takeUntil(this.getDestroyInterceptor()))
-            .subscribe(() => this.modalLaunchService.close());
+            .subscribe(() => this.modalService.close());
     }
 
     isFirstLevel(): boolean {

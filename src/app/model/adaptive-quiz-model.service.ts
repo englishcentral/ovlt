@@ -2,12 +2,12 @@ import { assign } from "lodash-es";
 import { Injectable } from "@angular/core";
 import { ConnectionFactoryService } from "../../core/connection-factory.service";
 import { Observable } from "rxjs";
-import { AvqWordListItem, ContentWordAdapterList, ContentWordFilter, WordListTypeOfWordRoot } from "../types/word";
-import { VocabBuilderReference } from "../types/vocab-builder-reference";
-import { DialogLine } from "../types/dialog-line";
-import { WordList, WordListOrganizationMatch, WordListWord } from "../types/word-list-reference";
-import { MemoryCache } from "../../core/memory-cache";
-import { WordListLearned } from "../types/word-list-learned";
+import { MemoryCache } from "@angular-devkit/build-angular/src/tools/esbuild/cache";
+import { WordList, WordListOrganizationMatch } from "../../types/word-list-reference";
+import { AvqWordListItem, ContentWordAdapterList, ContentWordFilter, WordListTypeOfWordRoot } from "../../types/word";
+import { WordListLearned } from "../../types/word-list-learned";
+import { VocabBuilderReference } from "../../types/vocab-builder-reference";
+import { DialogLine } from "../../types/dialog-line";
 
 export interface WordListMasteryBaseParams {
     accountID: number;

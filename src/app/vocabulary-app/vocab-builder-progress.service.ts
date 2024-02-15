@@ -1,29 +1,20 @@
 import { Injectable } from "@angular/core";
 import { Observable, Subscription } from "rxjs";
-import { Emitter } from "../../core/emitters/emitter";
-import { StopWatch } from "../../core/stopwatch";
-import { Activity } from "../../model/types/content/activity";
-import {
-    EventFactoryService,
-    EventWord,
-    ReportCardEvent,
-    TYPE_WORD
-} from "../../common-app/progress-app/event-factory.service";
-import { LevelTestDetail, XQuizWord } from "../../model/types/vocabulary-quiz";
-import { EventTypes } from "../../common-app/progress-app/event-factory/event-types";
-import { ClassReportModelService } from "../../model/reportcard/class-report-model.service";
-import { ActivitySummaryModelService } from "../../model/reportcard/activity-summary-model.service";
-import { ExamQuestionCheckedEvent } from "../shared-activity/exam-question/mode-handler/mode-handler-abstract";
-import { assign, filter, isString, map, size } from "lodash-es";
-import { IdentityService } from "../../core/identity.service";
-import { XWordDetail } from "../../model/types/content/x-word";
-import { VltQuizScore } from "../../model/reportcard/vocab-level-test";
-import { WordQuizProgress } from "./word-quiz.progress";
-import { Logger } from "../../core/logger/logger";
-import { StudyLevelOption } from "../../model/types/studylevel-option";
-import { ExamType } from "../../model/types/exam-type";
-import { SORT_ASC, StudyLevelModelService } from "../../model/identity/study-level-model.service";
+
 import { tap } from "rxjs/operators";
+import { Logger } from "../common/logger";
+import { Emitter } from "../common/emitter";
+import { StopWatch } from "../common/stopwatch";
+import { WordQuizProgress } from "./word-quiz.progress";
+import { VltQuizScore } from "../../types/vocab-level-test";
+import { LevelTestDetail, XQuizWord } from "../../types/vocabulary-quiz";
+import { assign, filter, isString, map, size } from "lodash-es";
+import { IdentityService } from "../common/identity.service";
+import { SORT_ASC, StudyLevelModelService } from "../model/study-level-model.service";
+import { StudyLevelOption } from "../../types/studylevel-option";
+import { Activity } from "../../types/activity";
+import { XWordDetail } from "../../types/x-word";
+import { ExamType } from "../../types/exam-type";
 
 @Injectable({providedIn: "root"})
 export class VocabBuilderProgressService {

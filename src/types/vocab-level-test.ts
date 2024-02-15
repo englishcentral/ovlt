@@ -1,4 +1,5 @@
-import { LevelTestSetting } from "../types/level-test-setting";
+import { LevelTestSetting } from "./level-test-setting";
+
 
 export class VltQuizScore {
     score: number;

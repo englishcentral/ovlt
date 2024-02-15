@@ -1,33 +1,33 @@
 import { Component, ElementRef, EventEmitter, Input, OnDestroy, Output, TemplateRef, ViewChild } from "@angular/core";
 import { Location } from "@angular/common";
-import { VocabBuilderProgressService } from "../../../../activity-app/vocab-builder-app/vocab-builder-progress.service";
-import { FeatureService } from "../../../../core/feature.service";
-import { GlobalSettingService } from "../../../../core/global-setting.service";
 import { NgbModal, NgbModalOptions, NgbModalRef } from "@ng-bootstrap/ng-bootstrap";
-import {
-    DEFAULT_QUIZ_ITEMS,
-    MAX_QUIZ_ITEMS,
-    MIN_QUIZ_ITEMS,
-    MIN_RANK,
-    MyWordsListTypeIds,
-    WordList
-} from "../../../../model/types/word-list-reference";
-import { Browser } from "../../../../core/browser";
-import {
-    MODE_ALL,
-    QUIZ_TYPE_SEQUENTIAL,
-    scalarToModes,
-    VocabBuilderMode,
-    VocabBuilderStyle
-} from "../../../../model/types/vocab-builder-reference";
-import { MESSAGE_CODE_INCOMPLETE } from "../../../../model/types/vocabulary-quiz";
-import { VocabularyAppSharedService } from "../../vocabulary-app/vocabulary-app-shared.service";
-import { VocabBuilderStateService } from "../../../../activity-app/vocab-builder-app/vocab-builder-state.service";
+
+
+import { VocabularyAppSharedService } from "../vocabulary-app-shared.service";
 import { takeUntil, tap } from "rxjs/operators";
 import { forkJoin } from "rxjs";
-import { SubscriptionAbstract } from "../../../../core/subscription.abstract";
 import { assign, get, isEmpty, isEqual, lowerCase, size } from "lodash-es";
-import { WordListLearned } from "../../../../model/types/word-list-learned";
+import { VocabBuilderProgressService } from "../vocab-builder-progress.service";
+import { VocabBuilderStateService } from "../vocab-builder-state.service";
+import { SubscriptionAbstract } from "../../subscription.abstract";
+import {
+  DEFAULT_QUIZ_ITEMS,
+  MAX_QUIZ_ITEMS,
+  MIN_QUIZ_ITEMS, MIN_RANK,
+  MyWordsListTypeIds,
+  WordList
+} from "../../../types/word-list-reference";
+import { WordListLearned } from "../../../types/word-list-learned";
+import {
+  MODE_ALL,
+  QUIZ_TYPE_SEQUENTIAL,
+  scalarToModes,
+  VocabBuilderMode,
+  VocabBuilderStyle
+} from "../../../types/vocab-builder-reference";
+import { MESSAGE_CODE_INCOMPLETE } from "../../../types/vocabulary-quiz";
+import { Browser } from "../../common/browser";
+import { FeatureService } from "../../common/feature.service";
 
 @Component({
     selector: "ec-vocab-builder-start",

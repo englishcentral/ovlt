@@ -1,17 +1,17 @@
 import { Injectable, NgZone } from "@angular/core";
 import { BehaviorSubject, merge, Observable, of, Subscription } from "rxjs";
-import { Emitter } from "./emitters/emitter";
 import { FeatureModelService } from "../model/identity/feature-model.service";
 import { GlobalSettingService } from "./global-setting.service";
 import { GlobalObservableCache } from "./global-observable-cache";
 import { IdentityService } from "./identity.service";
-import { Logger } from "./logger/logger";
+import { Logger } from "./logger";
 import { filter, mergeMap, share, tap, throttleTime } from "rxjs/operators";
 import { Browser } from "./browser";
 import { Instrumentation } from "./instrumentation/instrumentation";
 import { isEqual } from "lodash-es";
 import { AnalyticsService, TrackerName } from "./analytics";
 import { ActiveFeature } from "../model/types/active-feature";
+import { Emitter } from "./emitter";
 
 @Injectable({providedIn: "root"})
 export class FeatureService {

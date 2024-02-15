@@ -1,0 +1,36 @@
+export class WordListDetails {
+  wordListTypeId?: number;
+  id?: number;
+  name?: String;
+  jaName?: String;
+  zhName?: String;
+  koName?: String;
+  esName?: String;
+  ptName?: String;
+  trName?: String;
+  viName?: String;
+  ruName?: String;
+  heName?: String;
+  arName?: String;
+  frName?: String;
+  enDescription?: String;
+  jaDescription?: String;
+  zhDescription?: String;
+  koDescription?: String;
+  esDescription?: String;
+  ptDescription?: String;
+  trDescription?: String;
+  viDescription?: String;
+  ruDescription?: String;
+  heDescription?: String;
+  arDescription?: String;
+  frDescription?: String;
+  standAlone?: Boolean;
+  active?: Boolean;
+  autoInclude?: Boolean;
+  levelUpList?: Number;
+  private?: Boolean;
+  accountSelectable?: Boolean;
+  maxWordRank?: number;
+  description?: String;
+}

@@ -2,19 +2,19 @@ import { NgModule } from "@angular/core";
 import { CoreModule } from "../../../core/core.module";
 import { VocabularyAppComponent } from "./vocabulary-app.component";
 import { RouterModule } from "@angular/router";
-import { ViewWordsModule } from "../view-words/view-words.module";
-import { VocabBuilderAppModule } from "../vocab-builder-app/vocab-builder-app.module";
+import { VocabBuilderStartComponent } from "./vocab-builder-start/vocab-builder-start.component";
+import { VocabBuilderCompleteComponent } from "./vocab-builder-complete/vocab-builder-complete.component";
 
 @NgModule({
     imports: [
         CoreModule,
         RouterModule,
         VocabularyAppSharedModule,
-        VocabBuilderAppModule,
-        ViewWordsModule
     ],
     declarations: [
-        VocabularyAppComponent
+        VocabularyAppComponent,
+        VocabBuilderStartComponent,
+        VocabBuilderCompleteComponent
     ],
     exports: [
         VocabularyAppComponent

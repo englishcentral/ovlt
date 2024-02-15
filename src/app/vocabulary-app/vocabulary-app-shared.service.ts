@@ -1,8 +1,9 @@
 import { Injectable } from "@angular/core";
 import { Subscription } from "rxjs";
-import { Emitter } from "../../../core/emitters/emitter";
-import { IdentityService } from "../../../core/identity.service";
+
 import { ReferenceModelService } from "src/app/model/reference-model.service";
+import { IdentityService } from "../common/identity.service";
+import { Emitter } from "../common/emitter";
 
 @Injectable()
 export class VocabularyAppSharedService {

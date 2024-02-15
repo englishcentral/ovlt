@@ -1,7 +1,7 @@
-import { MyWordStateV1 } from "./my-word-state-v1";
 import { includes } from "lodash-es";
+import { MyWordStateV1 } from "./my-word-state-v1";
+import { XWordDetail } from "./x-word";
 import { DialogLine } from "./dialog-line";
-import { XWordDetail } from "./content/x-word";
 
 export class WordListReference {
     wordLists: WordList[];

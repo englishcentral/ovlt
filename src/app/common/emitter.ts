@@ -1,7 +1,7 @@
 import { BehaviorSubject, ReplaySubject, Subject, Subscription } from "rxjs";
 import { NgZone } from "@angular/core";
-import { Dictionary } from "../../model/types/dictionary";
 import { map } from "lodash-es";
+import { Dictionary } from "../../types/transcription-result";
 
 declare var window: any;
 

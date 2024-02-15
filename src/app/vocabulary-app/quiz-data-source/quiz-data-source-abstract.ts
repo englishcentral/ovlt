@@ -1,13 +1,13 @@
 import { Observable, of } from "rxjs";
-import { VocabBuilderSetting, VocabBuilderSettings } from "../../../model/types/vocab-builder-settings";
-import { AdaptiveQuizWord, LevelTestDetail, XQuizWord, XWordQuiz } from "../../../model/types/vocabulary-quiz";
-import { Activity, DEFAULT_VOCAB_BUILDER_ACTIVITY } from "../../../model/types/content/activity";
-import { WordList } from "../../../model/types/word-list-reference";
-import { WordV1 } from "../../../model/types/content/word-v1";
-import { VltQuizScore } from "../../../model/reportcard/vocab-level-test";
+
 import { QuizType } from "./quiz-type";
-import { ROUTE_MY_ENGLISH } from "../../../pwa-v2-landing-app/routes/routes";
 import { QuizDataSourceAdapterSettings } from "./quiz-data-source-adapter-settings";
+import { VocabBuilderSetting, VocabBuilderSettings } from "../../../types/vocab-builder-settings";
+import { VltQuizScore } from "../../../types/vocab-level-test";
+import { AdaptiveQuizWord, LevelTestDetail, XQuizWord, XWordQuiz } from "../../../types/vocabulary-quiz";
+import { Activity, DEFAULT_VOCAB_BUILDER_ACTIVITY } from "../../../types/activity";
+import { WordV1 } from "../../../types/word-v1";
+import { WordList } from "../../../types/word-list-reference";
 
 export class VbSettings {
     useAccountWordLists?: boolean;
@@ -48,7 +48,8 @@ export abstract class QuizDataSourceAbstract {
     }
 
     getNavigateOnError(): string {
-        return ROUTE_MY_ENGLISH;
+        //return ROUTE_MY_ENGLISH;
+      return "";
     }
 
     getQuizIndex(currentIndex: number, previousIndex: number): number | undefined {

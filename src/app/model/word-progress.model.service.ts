@@ -1,11 +1,12 @@
 import { Injectable } from "@angular/core";
 import { ConnectionFactoryService } from "../../core/connection-factory.service";
 import { Observable, of } from "rxjs";
-import { MyWordStateV1 } from "../types/my-word-state-v1";
-import { MyWordState, MyWordStateV2 } from "../types/my-word-state-v2";
-import { SharedWordHeadProgress, WordHeadProgress } from "../types/reportcard/word-head-progress";
+import { AccountWordListProgressList } from "../../types/word-root-progress";
+import { SharedWordHeadProgress, WordHeadProgress } from "../../types/word-head-progress";
+import { MyWordStateV1 } from "../../types/my-word-state-v1";
+import { MyWordState, MyWordStateV2 } from "../../types/my-word-state-v2";
 import { assign, isEmpty } from "lodash-es";
-import { AccountWordListProgressList } from "../types/reportcard/word-root-progress";
+
 
 @Injectable()
 export class WordProgressModelService {

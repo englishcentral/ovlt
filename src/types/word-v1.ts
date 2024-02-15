@@ -1,8 +1,8 @@
-import { WordResult } from "../speech/recognizer-result";
-import { Phoneme } from "../phoneme";
 import { WordAdapter } from "./word-adapter";
-import { BookContentWord } from "../book-content";
 import { ContentTranslationItem } from "./x-word";
+import { Phoneme } from "./phoneme";
+import { WordResult } from "./recognizer-result";
+import { BookContentWord } from "./book-content";
 
 export class WordV1 {
     id?: number;
