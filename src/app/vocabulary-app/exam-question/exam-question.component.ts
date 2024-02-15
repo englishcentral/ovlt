@@ -17,9 +17,6 @@ import {
 } from "@angular/core";
 import { XDialogLine } from "../../../../model/types/dialog-line";
 import { XQuizWord } from "../../../../model/types/vocabulary-quiz";
-import { Logger } from "../../../../core/logger/logger";
-import { CountdownTimer, CountdownTimerTick, TIMER_MODE_TOTAL_REMAINING_TIME } from "../../../../core/countdown-timer";
-import { Browser } from "../../../../core/browser";
 import { of, Subject, timer } from "rxjs";
 import {
     createStreamName,
@@ -38,7 +35,6 @@ import {
     MODE_STRICT_TYPING,
     MODE_TYPING
 } from "../../../../model/types/vocab-builder-reference";
-import { Instrumentation } from "../../../../core/instrumentation/instrumentation";
 import { FeatureService } from "../../../../core/feature.service";
 import {
     MicrophoneHandlerService
@@ -59,7 +55,6 @@ import {
     ModeHandlerAdapter
 } from "../../../../activity-app/shared-activity/exam-question/mode-handler/mode-handler-adapter";
 import { TypingSharedService } from "../../../../class-test-app/shared/typing-shared.service";
-import { SubscriptionAbstract } from "../../../../core/subscription.abstract";
 import { VocabBuilderModelService } from "../../../../model/content/vocab-builder-model.service";
 import { extractErrorString } from "../../../../core/instrumentation/instrumentation-utility";
 import { RecognizerSettingService } from "../../../../model/recognizer/recognizer-setting.service";
@@ -93,6 +88,8 @@ import { createAudioInstance } from "../../../../shared/audio/html-audio-instanc
 import { LearnStateService } from "../../player-app/overlay/learn/learn-state.service";
 import { MicrophoneWidgetStateService } from "../../microphone-widget/microphone-widget-state.service";
 import { XWordDetail } from "../../../../model/types/content/x-word";
+import { Logger } from "../../common/logger";
+import { SubscriptionAbstract } from "../../subscription.abstract";
 
 const THRESHOLD_WARNING = 0.5;
 const THRESHOLD_DANGER = 0.25;
@@ -1587,7 +1584,7 @@ export class ExamQuestionComponent extends SubscriptionAbstract implements OnCha
     }
 
     reportVideoError(error: any): void {
-        Instrumentation.sendEvent("VideoLoadFailed", {
+        this.logger.error("VideoLoadFailed", {
             dialogId: get(this.currentDialogLine, "dialogID"),
             dialogLineId: get(this.currentDialogLine, "dialogLineID"),
             videoUrl: this.videoUrl,
@@ -1666,7 +1663,7 @@ export class ExamQuestionComponent extends SubscriptionAbstract implements OnCha
         }, modalOptions));
     }
 
-    ngOnDestroy(): void {
+    override ngOnDestroy(): void {
         this.typingSharedService.destroy();
         this.timer?.destroy();
         this.destroySubscriptions();

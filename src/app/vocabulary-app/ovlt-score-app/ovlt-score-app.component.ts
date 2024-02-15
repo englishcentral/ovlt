@@ -1,20 +1,20 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit } from "@angular/core";
-import { SubscriptionAbstract } from "../../../../core/subscription.abstract";
-import { IdentityService } from "../../../../core/identity.service";
-import { Logger } from "../../../../core/logger/logger";
-import { VocabBuilderModelService } from "../../../../model/content/vocab-builder-model.service";
-import { VocabBuilderSetting } from "../../../../model/types/vocab-builder-settings";
+import { VocabBuilderModelService } from "../../model/vocab-builder-model.service";
+import { VocabBuilderSetting } from "../../../types/vocab-builder-settings";
 import { takeUntil } from "rxjs/operators";
 import {
     ADAPTIVE_OVLT2_SETTINGS,
     LevelTestHistory,
     LevelTestStep,
     VltQuizScore
-} from "../../model/vocab-level-test";
-import { Difficulty } from "../../../../model/types/difficulty";
-import { VocabBuilderProgressService } from "../../../../activity-app/vocab-builder-app/vocab-builder-progress.service";
+} from "../../../types/vocab-level-test";
+import { Difficulty } from "../../../types/difficulty";
 import { forkJoin } from "rxjs";
-import { FeatureService } from "../../../../core/feature.service";
+import { FeatureService } from "../../common/feature.service";
+import { SubscriptionAbstract } from "../../subscription.abstract";
+import { Logger } from "../../common/logger";
+import { IdentityService } from "../../common/identity.service";
+import { VocabBuilderProgressService } from "../vocab-builder-progress.service";
 
 @Component({
     selector: "ec-ovlt-score",
