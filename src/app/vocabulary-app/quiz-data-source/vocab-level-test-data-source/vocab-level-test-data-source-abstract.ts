@@ -1,7 +1,7 @@
 import { QuizDataSourceAbstract } from "../quiz-data-source-abstract";
-import { VocabBuilderModelService } from "../../../../model/content/vocab-builder-model.service";
-import { LevelTestDetail } from "../../../../model/types/vocabulary-quiz";
-import { Activity, VOCAB_LEVEL_TEST_ACTIVITY } from "../../../../model/types/content/activity";
+import { VocabBuilderModelService } from "../../../../model/vocab-builder-model.service";
+import { LevelTestDetail } from "../../../../types/vocabulary-quiz";
+import { Activity, VOCAB_LEVEL_TEST_ACTIVITY } from "../../../../types/activity";
 import { filter, flatten, isEqual, map, size } from "lodash-es";
 import { QuizType } from "../quiz-type";
 import { QuizDataSourceAdapterSettings } from "../quiz-data-source-adapter-settings";

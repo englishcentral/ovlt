@@ -1,9 +1,9 @@
 import { Component, EventEmitter, Input, OnDestroy, Output } from "@angular/core";
 import { SubscriptionAbstract } from "../../../../core/subscription.abstract";
-import { WordList } from "../../../../model/types/word-list-reference";
+import { WordList } from "../../../../types/word-list-reference";
 import { catchError, takeUntil } from "rxjs/operators";
 import { of } from "rxjs";
-import { ReferenceModelService } from "../../../../model/content/reference-model.service";
+import { ReferenceModelService } from "../../../../model/reference-model.service";
 import { IdentityService } from "../../../../core/identity.service";
 
 @Component({

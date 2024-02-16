@@ -11,7 +11,7 @@ import { LoadingRingModule } from "../../../../shared/loading-ring/loading-ring.
 import { VirtualKeyboardModule } from "../../../../shared/virtual-keyboard/virtual-keyboard.module";
 import { ExamQuestionComponent } from "./exam-question.component";
 import { SpeechMeterModule } from "../../speech-meter/speech-meter.module";
-import { VocabBuilderModelService } from "../../../../model/content/vocab-builder-model.service";
+import { VocabBuilderModelService } from "../../../../model/vocab-builder-model.service";
 
 @NgModule({
     imports: [

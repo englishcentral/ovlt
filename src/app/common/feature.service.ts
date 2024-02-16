@@ -10,7 +10,7 @@ import { Browser } from "./browser";
 import { Instrumentation } from "./instrumentation/instrumentation";
 import { isEqual } from "lodash-es";
 import { AnalyticsService, TrackerName } from "./analytics";
-import { ActiveFeature } from "../model/types/active-feature";
+import { ActiveFeature } from "../types/active-feature";
 import { Emitter } from "./emitter";
 
 @Injectable({providedIn: "root"})

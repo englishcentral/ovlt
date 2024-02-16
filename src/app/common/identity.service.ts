@@ -3,17 +3,17 @@ import { AccountModelService } from "../model/identity/account-model.service";
 import { Logger } from "./logger/logger";
 import { BehaviorSubject, Observable, Subscription } from "rxjs";
 import { GlobalSettingService } from "./global-setting.service";
-import { Identity } from "../model/types/identity";
+import { Identity } from "../types/identity";
 import { Emitter } from "./emitters/emitter";
 import { Instrumentation } from "./instrumentation/instrumentation";
 import { GlobalObservableCache } from "./global-observable-cache";
-import { StudentOrganizationData } from "../model/types/student-organization-data";
+import { StudentOrganizationData } from "../types/student-organization-data";
 import { share, tap } from "rxjs/operators";
-import { Partner } from "../model/types/partner";
+import { Partner } from "../types/partner";
 import { isEqual, isUndefined } from "lodash-es";
 import { DateFnsConfig, TIMEZONE_UTC } from "./date-fns-util";
-import { UserType } from "../model/types/user-type";
-import { Ldap } from "../model/types/ldap";
+import { UserType } from "../types/user-type";
+import { Ldap } from "../types/ldap";
 
 export interface AccountPlayerSettings {
     autoStart: boolean;

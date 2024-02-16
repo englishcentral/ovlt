@@ -15,8 +15,8 @@ import {
     TemplateRef,
     ViewChild
 } from "@angular/core";
-import { XDialogLine } from "../../../../model/types/dialog-line";
-import { XQuizWord } from "../../../../model/types/vocabulary-quiz";
+import { XDialogLine } from "../../../../types/dialog-line";
+import { XQuizWord } from "../../../../types/vocabulary-quiz";
 import { of, Subject, timer } from "rxjs";
 import {
     createStreamName,
@@ -27,7 +27,7 @@ import { catchError, finalize, first as rxJsFirst, takeUntil } from "rxjs/operat
 import { IdentityService } from "../../../../core/identity.service";
 import { ConnectionFactoryService } from "../../../../core/connection-factory.service";
 import { buildSessionTimeKey } from "../../../../common-app/progress-app/event-factory.service";
-import { RECOGNIZER_KALDI, RecognizerResult, WordResult } from "../../../../model/types/speech/recognizer-result";
+import { RECOGNIZER_KALDI, RecognizerResult, WordResult } from "../../../../types/speech/recognizer-result";
 import { StorageCache } from "../../../../core/storage-cache";
 import {
     MODE_MULTIPLE_CHOICE,
@@ -55,7 +55,7 @@ import {
     ModeHandlerAdapter
 } from "../../../../activity-app/shared-activity/exam-question/mode-handler/mode-handler-adapter";
 import { TypingSharedService } from "../../../../class-test-app/shared/typing-shared.service";
-import { VocabBuilderModelService } from "../../../../model/content/vocab-builder-model.service";
+import { VocabBuilderModelService } from "../../../../model/vocab-builder-model.service";
 import { RecognizerSettingService } from "../../../../model/recognizer/recognizer-setting.service";
 import { VideoFactoryService } from "../../../../common-app/video-app/video-factory.service";
 import {
@@ -82,11 +82,11 @@ import {
     uniqBy
 } from "lodash-es";
 import { AudioInstance } from "../../../../shared/audio/audio-instance";
-import { HTTP_REQUEST_HANDLER, WEBSOCKET_REQUEST_HANDLER } from "../../../../model/types/speech/transport";
+import { HTTP_REQUEST_HANDLER, WEBSOCKET_REQUEST_HANDLER } from "../../../../types/speech/transport";
 import { createAudioInstance } from "../../../../shared/audio/html-audio-instance";
 import { LearnStateService } from "../../player-app/overlay/learn/learn-state.service";
 import { MicrophoneWidgetStateService } from "../../microphone-widget/microphone-widget-state.service";
-import { XWordDetail } from "../../../../model/types/content/x-word";
+import { XWordDetail } from "../../../../types/x-word";
 import { Logger } from "../../common/logger";
 import { SubscriptionAbstract } from "../../subscription.abstract";
 import { CountdownTimer, CountdownTimerTick, TIMER_MODE_TOTAL_REMAINING_TIME } from "../../common/countdown-timer";

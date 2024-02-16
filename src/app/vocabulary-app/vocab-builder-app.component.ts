@@ -1,6 +1,5 @@
 import {
     Component,
-    ElementRef,
     EventEmitter,
     HostListener,
     Input,
@@ -16,55 +15,28 @@ import { forkJoin, map as rxJsMap, Observable, of, Subject } from "rxjs";
 import "global-styles/adaptive-quiz.css";
 import { Location, LocationStrategy, PathLocationStrategy } from "@angular/common";
 import { catchError, debounceTime, finalize, mergeMap, retryWhen, take, takeUntil, tap } from "rxjs/operators";
-import { Logger } from "../../../core/logger/logger";
-import { VocabBuilderStateService } from "../../../activity-app/vocab-builder-app/vocab-builder-state.service";
-import { VocabBuilderProgressService } from "../../../activity-app/vocab-builder-app/vocab-builder-progress.service";
-import { AdaptiveQuizModelService } from "../../../model/content/adaptive-quiz-model.service";
-import { VocabBuilderModelService } from "../../../model/content/vocab-builder-model.service";
-import { ReferenceModelService } from "../../../model/content/reference-model.service";
-import { FeatureService } from "../../../core/feature.service";
-import { IdentityService } from "../../../core/identity.service";
-import { StopWatch } from "../../../core/stopwatch";
-import { VocabularyQuizModelService } from "../../../model/content/vocabulary-quiz-model.service";
-import { DEFAULT_VOCAB_BUILDER_ACTIVITY } from "../../../model/types/content/activity";
+import { DEFAULT_VOCAB_BUILDER_ACTIVITY } from "../../types/activity";
 import {
     DEFAULT_WORD_LIST_TYPE_ID,
     LAST_LEVEL_LIST,
     MY_WORDS_LISTS,
     MyWordsListTypeIds,
     WordList
-} from "../../../model/types/word-list-reference";
-import { Browser } from "../../../core/browser";
+} from "../../types/word-list-reference";
 import {
     MyWordsWordListSettings,
     VOCAB_BUILDER_STYLE_ID_MY_WORDS,
     VocabBuilderClassSetting,
     VocabBuilderSetting,
     VocabBuilderSettings
-} from "../../../model/types/vocab-builder-settings";
-import { AdaptiveQuizWord, MESSAGE_CODE_COMPLETE, XQuizWord, XWordQuiz } from "../../../model/types/vocabulary-quiz";
-import { servicesRetryStrategy } from "../../../core/retry-helper";
-import { ActivatedRoute, NavigationExtras, ParamMap, Router } from "@angular/router";
-import { VocabularyAppSharedService } from "../vocabulary-app/vocabulary-app-shared.service";
-import { SubscriptionAbstract } from "../../../core/subscription.abstract";
-import { ROUTE_VIEW_WORDS, ROUTE_VOCAB_QUIZ } from "../../views/vocabulary-view/vocabulary-view.routes";
-import {
-    QuizDataSourceAdapter
-} from "../../../activity-app/vocab-builder-app/quiz-data-source/quiz-data-source-adapter";
-import {
-    ExamQuestionCheckedEvent
-} from "../../../activity-app/shared-activity/exam-question/mode-handler/mode-handler-abstract";
-import { WordProgressModelService } from "../../../model/reportcard/word-progress.model.service";
-import { SharedWordHeadProgress } from "../../../model/types/reportcard/word-head-progress";
-import { ProgressQueueService } from "../../../common-app/progress-app/progress-queue.service";
-import { DailyGoalProgressService } from "../../../activity-app/shared-activity/daily-goal-progress.service";
-import { ROUTE_VIDEOS } from "../../views/browse-view/browse-view.routes";
-import {
-    QuizDataSourceAbstract
-} from "../../../activity-app/vocab-builder-app/quiz-data-source/quiz-data-source-abstract";
-import { ROUTE_CLASS_TESTS } from "../../views/my-class-view/my-class-view.routes";
-import { MyWordState } from "../../../model/types/my-word-state-v2";
-import { extractErrorString } from "../../../core/instrumentation/instrumentation-utility";
+} from "../../types/vocab-builder-settings";
+import { AdaptiveQuizWord, MESSAGE_CODE_COMPLETE, XQuizWord, XWordQuiz } from "../../types/vocabulary-quiz";
+import { VocabularyAppSharedService } from "./vocabulary-app-shared.service";
+import { SubscriptionAbstract } from "../subscription.abstract";
+import { QuizDataSourceAdapter } from "./quiz-data-source/quiz-data-source-adapter";
+import { ExamQuestionCheckedEvent } from "./exam-question/mode-handler/mode-handler-abstract";
+import { QuizDataSourceAbstract } from "./quiz-data-source/quiz-data-source-abstract";
+import { MyWordState } from "../../types/my-word-state-v2";
 import {
     assign,
     cloneDeep,
@@ -82,26 +54,24 @@ import {
     merge,
     toNumber
 } from "lodash-es";
-import { ROUTE_MYENGLISH } from "../../../core/routes";
-import { Instrumentation } from "../../../core/instrumentation/instrumentation";
-import { PayWallService } from "../../../activity-app/shared-activity/pay-wall.service";
-import { PaywallAppContext } from "../paywall-app/paywall-app.helpers";
-import { PaywallModalComponent } from "../paywall-app/paywall-modal/paywall-modal.component";
 import { DEFAULT_MODAL_OPTIONS } from "../../helpers/modal-options-default";
-import { ModalLaunchService } from "../../../core/modal-launch.service";
-import {
-    MODE_ALL,
-    MODE_TYPING,
-    scalarToModes,
-    VocabBuilderReference
-} from "../../../model/types/vocab-builder-reference";
-import { PronunciationWordView } from "../../../model/types/pronunciation";
-import { BrowserScreen } from "../../../core/browser-screen";
-import { WordListLearned } from "../../../model/types/word-list-learned";
-import { MyWordStateV1 } from "../../../model/types/my-word-state-v1";
-import { WordV1 } from "../../../model/types/content/word-v1";
-import { QuizType } from "../../../activity-app/vocab-builder-app/quiz-data-source/quiz-type";
-import { ROUTE_BROWSE, ROUTE_MY_CLASS, ROUTE_VOCABULARY } from "../../routes/routes";
+import { ModalLaunchService } from "../common/modal-launch.service";
+import { MODE_ALL, MODE_TYPING, scalarToModes, VocabBuilderReference } from "../../types/vocab-builder-reference";
+import { WordListLearned } from "../../types/word-list-learned";
+import { MyWordStateV1 } from "../../types/my-word-state-v1";
+import { WordV1 } from "../../types/word-v1";
+import { QuizType } from "./quiz-data-source/quiz-type";
+import { Logger } from "../common/logger";
+import { StopWatch } from "../common/stopwatch";
+import { VocabBuilderStateService } from "./vocab-builder-state.service";
+import { VocabBuilderProgressService } from "./vocab-builder-progress.service";
+import { AdaptiveQuizModelService } from "../model/adaptive-quiz-model.service";
+import { VocabBuilderModelService } from "../model/vocab-builder-model.service";
+import { VocabularyQuizModelService } from "../model/vocabulary-quiz-model.service";
+import { ReferenceModelService } from "../model/reference-model.service";
+import { WordProgressModelService } from "../model/word-progress.model.service";
+import { IdentityService } from "../common/identity.service";
+import { FeatureService } from "../common/feature.service";
 
 @Component({
     selector: "ec-vocab-builder-app",
@@ -117,7 +87,6 @@ export class VocabBuilderAppComponent extends SubscriptionAbstract implements On
     // wordInstanceIds to be quizzed, it is used for Pronunciation Quizzes
     @Input() wordInstanceIds: number[];
     @Input() wordIds: number[];
-    @Input() pronunciationQuizWords: PronunciationWordView[];
 
     // It is used for modeId which is available in client but not in services, it helps in mode-handler-adapter
     @Input() questionModeId: number = 0;
@@ -189,8 +158,7 @@ export class VocabBuilderAppComponent extends SubscriptionAbstract implements On
         this.resizeSubject.next(undefined);
     }
 
-    constructor(private elementRef: ElementRef,
-                private vocabularyAppSharedService: VocabularyAppSharedService,
+    constructor(private vocabularyAppSharedService: VocabularyAppSharedService,
                 private vocabBuilderStateService: VocabBuilderStateService,
                 private vocabBuilderProgressService: VocabBuilderProgressService,
                 private adaptiveQuizModelService: AdaptiveQuizModelService,
@@ -198,15 +166,10 @@ export class VocabBuilderAppComponent extends SubscriptionAbstract implements On
                 private vocabularyQuizModelService: VocabularyQuizModelService,
                 private referenceModelService: ReferenceModelService,
                 private wordProgressModelService: WordProgressModelService,
-                private dailyGoalProgressService: DailyGoalProgressService,
-                private payWallService: PayWallService,
                 private identityService: IdentityService,
                 private featureService: FeatureService,
-                private progressQueue: ProgressQueueService,
                 private modalService: NgbModal,
                 private modalLaunchService: ModalLaunchService,
-                private route: ActivatedRoute,
-                private router: Router,
                 private zone: NgZone) {
         super();
     }
@@ -987,14 +950,6 @@ export class VocabBuilderAppComponent extends SubscriptionAbstract implements On
         const wordDetails = this.vocabBuilderStateService.getWordsDetails();
         const quizSource = this.getQuizDataSource();
         return quizSource.getWordInstanceId(this.getCurrentQuizWord(), wordDetails);
-    }
-
-    getAccountPronunciationWordId(): number {
-        const word = find(this.pronunciationQuizWords, (word: PronunciationWordView) => {
-            return isEqual(word.instanceId, this.getWordInstanceId());
-        });
-
-        return word?.id;
     }
 
     getInnerHeightObject(): object {

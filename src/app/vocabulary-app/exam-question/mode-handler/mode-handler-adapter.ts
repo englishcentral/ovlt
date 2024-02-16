@@ -8,7 +8,7 @@ import {
     MODE_STRICT_TYPING,
     MODE_STRICT_TYPING_SECOND_LETTER_HINT,
     MODE_TYPING
-} from "../../../../model/types/vocab-builder-reference";
+} from "../../../../types/vocab-builder-reference";
 import { StrictTypingModeHandler } from "./strict-typing-mode-handler";
 import {
     ReverseMatchMultipleChoiceModeHandler

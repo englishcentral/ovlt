@@ -1,6 +1,6 @@
-import { WordResult } from "../../../../model/types/speech/recognizer-result";
+import { WordResult } from "../../../../types/speech/recognizer-result";
 import { assign, head, isEmpty, map, reduce, split, tail, toLower } from "lodash-es";
-import { XWordDetail } from "../../../../model/types/content/x-word";
+import { XWordDetail } from "../../../../types/x-word";
 
 export class LetterInput {
     isSpace: boolean;

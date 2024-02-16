@@ -1,8 +1,8 @@
 import { QuizDataSourceAbstract, VbSettings } from "./quiz-data-source-abstract";
-import { VocabBuilderModelService } from "../../../model/content/vocab-builder-model.service";
+import { VocabBuilderModelService } from "../../../model/vocab-builder-model.service";
 import { Observable, of } from "rxjs";
-import { VocabBuilderSetting, VocabBuilderSettings } from "../../../model/types/vocab-builder-settings";
-import { XWordQuiz } from "../../../model/types/vocabulary-quiz";
+import { VocabBuilderSetting, VocabBuilderSettings } from "../../../types/vocab-builder-settings";
+import { XWordQuiz } from "../../../types/vocabulary-quiz";
 import { isEmpty } from "lodash-es";
 import { QuizType } from "./quiz-type";
 import { QuizDataSourceAdapterSettings } from "./quiz-data-source-adapter-settings";
