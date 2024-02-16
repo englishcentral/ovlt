@@ -1,14 +1,4 @@
 <div class="vocabulary-app">
-    <div class="vocabulary-app-tabs" *ngIf="isTabSectionVisible()">
-        <div class="vocabulary-app-tabs-inner">
-            <div class="vocabulary-app-tabs-wrapper">
-                <a class="btn btn-reset vocabulary-tab" (click)="navigateToVocabQuiz()"
-                   [ngClass]="{'active text-primary': isVocabQuizRouteActive()}"><span i18n>Quiz</span></a>
-                <a class="btn btn-reset vocabulary-tab" (click)="navigateToViewWords()"
-                   [ngClass]="{'active text-primary': isViewWordsRouteActive()}"><span i18n>View Words</span></a>
-            </div>
-        </div>
-    </div>
     <!-- Child routes -->
     <div class="vocabulary-app-routes w-100">
         <router-outlet></router-outlet>

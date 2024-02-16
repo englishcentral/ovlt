@@ -1,0 +1,98 @@
+<div i18n class="back-button-wrapper quiz-back ms-1" *ngIf="isBackButtonVisible()" (click)="navigateBack()">
+    <i class="fas fa-arrow-left"></i>
+    <div class="back-button-label">
+        Back
+    </div>
+</div>
+
+<div [ngStyle]="getMobileStyleObject()">
+    <div class="renderer-inner">
+        <div [ngStyle]="getFullScreenTopStyleObject()">
+            <div class="vocab-builder-app" id="vocab-builder-app"
+                 [ngStyle]="getInnerHeightObject()"
+                 [class.question-screen-active]="showQuestion()">
+                <ng-template [ngIf]="isLoading() || !isVocabPayWallInitialized()">
+                    <div class="loading-wrapper h-100 d-flex flex-column justify-content-center">
+                        <div class="loading-spinner">
+                            <i class="fa fa-2x fa-spin fa-spinner"></i>
+                        </div>
+                    </div>
+                </ng-template>
+
+                <ng-template [ngIf]="isVocabPayWallInitialized()">
+                    <ec-vocab-builder-start
+                        *ngIf="showStartScreen()"
+                        [practice]="isPractice()"
+                        [autoStart]="isAutoStart()"
+                        [recycleEnabled]="isRecycleEnabled()"
+                        (eventWordListUpdated)="resetWordList()"
+                        (eventStartQuiz)="startQuiz($event)"
+                        (eventWordListSelected)="onWordListChanged($event)"
+                    ></ec-vocab-builder-start>
+
+                    <ec-exam-question
+                        *ngIf="showQuestion() && getCurrentQuizWord()"
+                        [levelTest]="isLevelTest()"
+                        [quizWord]="getCurrentQuizWord()"
+                        [wordInstanceId]="getWordInstanceId()"
+                        [accountPronunciationWordId]="getAccountPronunciationWordId()"
+                        [activityTypeId]="getActivityTypeId()"
+                        [courseId]="getCourseId()"
+                        [hintLength]="1"
+                        [quizIndex]="getQuizIndex()"
+                        [quizLength]="getQuizLength()"
+                        [currentRank]="getCurrentRank()"
+                        [currentBand]="getCurrentBand()"
+                        [currentListName]="getCurrentVocabListName()"
+                        [mode]="getCurrentModeSetting()"
+                        [fallbackMode]="getFallbackMode()"
+                        [timerExpirationInSeconds]="getLockTimerSetting()"
+                        [markAsKnownButtonVisible]="isMarkAsKnownButtonVisible()"
+                        [autoMarkAsKnownEnabled]="isAutoMarkAsKnownEnabled()"
+                        [showRank]="shouldShowRank()"
+                        [showBand]="shouldShowBand()"
+                        [showQuizPagination]="shouldShowQuizPagination()"
+                        [showListName]="shouldShowListName()"
+                        [practice]="isPractice()"
+                        [recycleEnabled]="isRecycleEnabled()"
+                        [isRecyclingMissedWordsEnabled]="isRecyclingMissedWordsEnabled()"
+                        [isRecyclingSkippedWordsEnabled]="isRecyclingSkippedWordsEnabled()"
+                        [isSkipBehaviorEnabled]="isSkipBehaviorEnabled()"
+                        [showPreviouslyEncounteredVisible]="shouldShowPreviouslyEncounteredVisible()"
+                        [isWordRecycled]="isWordsRecycled()"
+                        [adaptive]="isAdaptive()"
+                        [trackingContext]="getTrackingContext()"
+                        [wordPronunciationEnabled]="isWordPronunciationEnabled()"
+                        (eventRecycleWord)="onRecycleWord($event)"
+                        (eventComplete)="onComplete()"
+                        (eventAttempt)="onAttempt(getCurrentQuizWord(), $event)"
+                        (eventAnswer)="onAnswer(getCurrentQuizWord(), $event)"
+                        (eventMarkAsKnown)="onMarkAsKnown(getCurrentQuizWord(), $event)"
+                        (eventModeChange)="onModeChange($event)"
+                        (eventError)="onError($event)"
+                        (eventExitQuiz)="exitQuiz()"
+                    ></ec-exam-question>
+
+                    <ec-vocab-builder-complete
+                        *ngIf="showVocabBuilderCompletionScreen() && !isLoading()"
+                        [practice]="isPractice()"
+                        [levelTest]="isLevelTest()"
+                        [pronunciationQuiz]="isPronunciationQuiz()"
+                        [wordPronunciationQuiz]="isWordPronunciationQuiz"
+                        [phonemePronunciationQuiz]="isPhonemePronunciationQuiz"
+                        [isLevelUpdateEnabled]="isLevelUpdateEnabled()"
+                        [classId]="getClassId()"
+                        [showBandScore]="shouldShowBandScore()"
+                        [fetchScoreDetail]="shouldFetchScoreDetail()"
+                        [userDifficultyLevel]="getUserDifficultyLevel()"
+                        (eventStartQuiz)="startQuiz($event)"
+                        (eventViewWords)="onClickViewWords()"
+                        (eventStartNewPractice)="onClickStartNewPractice()"
+                        (eventFinishedWordList)="onFinishedWordList($event)"
+                        (eventClearAccountWordListsReference)="clearAccountWordListsReference()"
+                    ></ec-vocab-builder-complete>
+                </ng-template>
+            </div>
+        </div>
+    </div>
+</div>

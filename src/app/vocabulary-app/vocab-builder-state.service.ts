@@ -1,14 +1,7 @@
 import { Injectable } from "@angular/core";
 import { BehaviorSubject, forkJoin, Observable, of, Subject, Subscription, throwError } from "rxjs";
-
 import { VocabBuilderProgressService } from "./vocab-builder-progress.service";
-
-
 import { VocabBuilderEventHandler } from "./event-handler/vocab-builder-event-handler";
-
-
-
-import { LocalForageGeneric } from "../../core/local-forage-generic";
 import {
     assign,
     cloneDeep,
@@ -440,14 +433,12 @@ export class VocabBuilderStateService {
         return this.studyLevelService.putLevel(options)
             .pipe(
                 catchError((error) => {
-                    this.studyLevelService.deleteLevelCache();
                     this.setErrorState(true);
                     this.logger.error(error);
                     return throwError(error);
                 }),
                 rxJsMap((result: number) => {
                     this.setLevelUpdated(true);
-                    this.studyLevelService.deleteLevelCache();
                     return result;
                 })
             );
@@ -660,8 +651,8 @@ export class VocabBuilderStateService {
             recycleMissedWords: false
         };
 
-        const localStorage = new LocalForageGeneric<LocalUserVocabularySettings>(LOCAL_VOCABULARY_SETTINGS_KEY);
-        const localStorageSettings = await localStorage.getItem(`${this.vocabBuilderProgressService.getAccountId()}_${LOCAL_VOCABULARY_SETTINGS_KEY}`) || {};
+
+        const localStorageSettings = {};
 
         this.localUserSettings = reduce(LOCAL_USER_VOCABULARY_SETTINGS_FEATURE_MAPPING, (acc, featureKey, settingKey) => {
             const localStorageSetting = get(localStorageSettings, settingKey);
@@ -680,13 +671,7 @@ export class VocabBuilderStateService {
     }
 
     async setLocalUserSettings(settingKey: string, value: any): Promise<void> {
-        let localStorage = new LocalForageGeneric<object>(LOCAL_VOCABULARY_SETTINGS_KEY);
         this.localUserSettings[settingKey] = value;
-        localStorage.setItem(`${this.vocabBuilderProgressService.getAccountId()}_${LOCAL_VOCABULARY_SETTINGS_KEY}`, assign(this.localUserSettings))
-            .then(() => {
-                this.logger.log("Recycle behavior local setting is set to", this.localUserSettings);
-                this.setCurrentSetting(this.localUserSettings);
-            });
     }
 
     getNextWordListTypeId(wordListTypeId: number): number {

@@ -1,4 +1,4 @@
-import { XQuizWord } from "../../types/vocabulary-quiz";
+import { XQuizWord } from "./vocabulary-quiz";
 
 export class WordQuizProgress extends XQuizWord {
     correct: boolean;

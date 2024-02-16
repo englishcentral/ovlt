@@ -56,16 +56,13 @@ export class VocabBuilderStartComponent extends SubscriptionAbstract implements 
 
     private modalReference: NgbModalRef;
 
-    constructor(private elementRef: ElementRef,
-                private vocabBuilderStateService: VocabBuilderStateService,
+    constructor(private vocabBuilderStateService: VocabBuilderStateService,
                 private vocabBuilderProgressService: VocabBuilderProgressService,
                 private vocabularyAppSharedService: VocabularyAppSharedService,
                 private featureService: FeatureService,
-                private globalSettingService: GlobalSettingService,
                 private modalService: NgbModal,
                 private location: Location) {
         super();
-        this.globalSettingService.initializeFromElement(this.elementRef);
     }
 
     initializeAddWordList(): void {

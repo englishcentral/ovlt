@@ -34,7 +34,7 @@ import {
     MODE_REVERSE_MATCH_MULTIPLE_CHOICE,
     MODE_STRICT_TYPING,
     MODE_TYPING
-} from "../../../../model/types/vocab-builder-reference";
+} from "../../../types/vocab-builder-reference";
 import { FeatureService } from "../../../../core/feature.service";
 import {
     MicrophoneHandlerService
@@ -50,13 +50,12 @@ import {
     ExamQuestionModeSettings,
     LetterInput,
     ModeHandlerAbstract
-} from "../../../../activity-app/shared-activity/exam-question/mode-handler/mode-handler-abstract";
+} from "./mode-handler/mode-handler-abstract";
 import {
     ModeHandlerAdapter
 } from "../../../../activity-app/shared-activity/exam-question/mode-handler/mode-handler-adapter";
 import { TypingSharedService } from "../../../../class-test-app/shared/typing-shared.service";
 import { VocabBuilderModelService } from "../../../../model/content/vocab-builder-model.service";
-import { extractErrorString } from "../../../../core/instrumentation/instrumentation-utility";
 import { RecognizerSettingService } from "../../../../model/recognizer/recognizer-setting.service";
 import { VideoFactoryService } from "../../../../common-app/video-app/video-factory.service";
 import {
@@ -90,6 +89,8 @@ import { MicrophoneWidgetStateService } from "../../microphone-widget/microphone
 import { XWordDetail } from "../../../../model/types/content/x-word";
 import { Logger } from "../../common/logger";
 import { SubscriptionAbstract } from "../../subscription.abstract";
+import { CountdownTimer, CountdownTimerTick, TIMER_MODE_TOTAL_REMAINING_TIME } from "../../common/countdown-timer";
+import { Browser } from "../../common/browser";
 
 const THRESHOLD_WARNING = 0.5;
 const THRESHOLD_DANGER = 0.25;
@@ -1588,7 +1589,7 @@ export class ExamQuestionComponent extends SubscriptionAbstract implements OnCha
             dialogId: get(this.currentDialogLine, "dialogID"),
             dialogLineId: get(this.currentDialogLine, "dialogLineID"),
             videoUrl: this.videoUrl,
-            errorMessage: extractErrorString(error)
+            errorMessage: error
         });
     }
 

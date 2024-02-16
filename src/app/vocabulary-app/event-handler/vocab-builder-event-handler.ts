@@ -6,4 +6,6 @@ export interface VocabBuilderEventHandler {
     appendQuizData(activityId: number, quizData: string): void;
 
     setAccountId(accountId: number): void;
+
+    destroy(): void;
 }

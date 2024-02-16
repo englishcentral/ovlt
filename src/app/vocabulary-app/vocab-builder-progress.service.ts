@@ -5,7 +5,7 @@ import { tap } from "rxjs/operators";
 import { Logger } from "../common/logger";
 import { Emitter } from "../common/emitter";
 import { StopWatch } from "../common/stopwatch";
-import { WordQuizProgress } from "./word-quiz.progress";
+import { WordQuizProgress } from "../../types/word-quiz.progress";
 import { VltQuizScore } from "../../types/vocab-level-test";
 import { LevelTestDetail, XQuizWord } from "../../types/vocabulary-quiz";
 import { assign, filter, isString, map, size } from "lodash-es";
@@ -15,6 +15,7 @@ import { StudyLevelOption } from "../../types/studylevel-option";
 import { Activity } from "../../types/activity";
 import { XWordDetail } from "../../types/x-word";
 import { ExamType } from "../../types/exam-type";
+import { ExamQuestionCheckedEvent } from "./exam-question/mode-handler/mode-handler-abstract";
 
 @Injectable({providedIn: "root"})
 export class VocabBuilderProgressService {
@@ -44,7 +45,6 @@ export class VocabBuilderProgressService {
     private incorrect: boolean = false;
     private messageCode?: number;
     private currentStepId?: number;
-    private attemptEvents: ReportCardEvent[] = [];
     private finishedListId?: number;
     private vltQuizScore: VltQuizScore = new VltQuizScore();
     private levelTestDetail: LevelTestDetail;
@@ -53,10 +53,7 @@ export class VocabBuilderProgressService {
     private difficultyLevels: StudyLevelOption[] = [];
     private difficultyType: string = ExamType.CEFR;
 
-    constructor(private eventFactoryService: EventFactoryService,
-                private classReportModelService: ClassReportModelService,
-                private activitySummaryModelService: ActivitySummaryModelService,
-                private studyLevelService: StudyLevelModelService,
+    constructor(private studyLevelService: StudyLevelModelService,
                 private identityService: IdentityService) {
     }
 
@@ -135,55 +132,26 @@ export class VocabBuilderProgressService {
         this.answerStopWatch.start();
     }
 
-    sendActivityQuizEvents(eventName: string, courseID?: number): void {
-        const activityQuizEvent = this.eventFactoryService
-            .getFactory(undefined, this.getAccountId())
-            .createEvent(assign({}, {
-                activityID: this.activity.activityID,
-                activityTypeID: this.activity.activityTypeID,
-                type: eventName,
-                courseID: courseID
-            }));
-        this.publish(eventName, activityQuizEvent);
-    }
-
-    addAttempt(quizWord: XQuizWord,
-               examQuestionCheckedEvent: ExamQuestionCheckedEvent): void {
-        this.attemptEvents.push(this.generateEvent(
-            quizWord,
-            examQuestionCheckedEvent
-        ));
-    }
-
-    flushAttempts(acceptedEvent: ReportCardEvent): void {
-        let filteredEvents = (this.attemptEvents || []).filter(event => event.eventTime != acceptedEvent.eventTime);
-        this.publish(VocabBuilderProgressService.EVENT_ON_WORD_ANSWER, filteredEvents);
-
-        this.attemptEvents = [];
-    }
-
     private generateEvent(quizWord: XQuizWord,
                           examQuestionCheckedEvent: ExamQuestionCheckedEvent,
-                          accepted: boolean = false): ReportCardEvent {
-        return this.eventFactoryService
-            .getFactory(undefined, this.getAccountId())
-            .createEvent(assign({}, {
-                activityID: this.activity.activityID,
-                activityTypeID: this.activity.activityTypeID,
-                quizStepId: this.getStepId(),
-                correct: examQuestionCheckedEvent.correct,
-                word: this.createWordReference(quizWord.word),
-                itemResponseTime: this.answerStopWatch.getTime(),
-                arrivalID: this.getArrivalId(),
-                modeId: examQuestionCheckedEvent.mode,
-                previouslyEncountered: quizWord.previouslyEncountered
-            }, this.generateEventTypeMetaData(examQuestionCheckedEvent, quizWord, accepted)));
+                          accepted: boolean = false) {
+        return assign({}, {
+            activityID: this.activity.activityID,
+            activityTypeID: this.activity.activityTypeID,
+            quizStepId: this.getStepId(),
+            correct: examQuestionCheckedEvent.correct,
+            word: this.createWordReference(quizWord.word),
+            itemResponseTime: this.answerStopWatch.getTime(),
+            arrivalID: this.getArrivalId(),
+            modeId: examQuestionCheckedEvent.mode,
+            previouslyEncountered: quizWord.previouslyEncountered
+        }, this.generateEventTypeMetaData(examQuestionCheckedEvent, quizWord, accepted));
     }
 
     // TODO: change quizWord to type XQuizWord
     answerQuestion(quizWord: XQuizWord,
                    examQuestionCheckedEvent: ExamQuestionCheckedEvent,
-                   isSkipEventEnabled: boolean = true): ReportCardEvent {
+                   isSkipEventEnabled: boolean = true) {
         //removing step id checking for pron quiz, add it again if it will cause a bug
         if (!quizWord) {
             return;
@@ -212,9 +180,6 @@ export class VocabBuilderProgressService {
 
         this.publish(VocabBuilderProgressService.EVENT_ON_WORD_ANSWER, event);
 
-        this.classReportModelService.deleteAllReportCache();
-        this.activitySummaryModelService.deleteCache();
-
         return event;
     }
 
@@ -223,7 +188,7 @@ export class VocabBuilderProgressService {
                                       accepted: boolean): object {
         if (examQuestionCheckedEvent.selectedWord || examQuestionCheckedEvent.timeout) {
             return {
-                type: EventTypes.CHOSEN_DEFINITION,
+                type: "CHOSEN_DEFINITION",
                 selectedWord: this.createWordReference(quizWord.word),
                 distractors: map(quizWord.distractors || [], word => this.createWordReference(word)),
                 timeout: examQuestionCheckedEvent.timeout,
@@ -238,7 +203,7 @@ export class VocabBuilderProgressService {
 
         if (examQuestionCheckedEvent.spokenAnswer) {
             return {
-                type: EventTypes.SPOKEN_QUIZ_WORD,
+                type: "SPOKEN_QUIZ_WORD",
                 accepted: accepted,
                 spokenWord: examQuestionCheckedEvent.spokenAnswer,
                 audioUrl: examQuestionCheckedEvent.audioUrl,
@@ -255,7 +220,7 @@ export class VocabBuilderProgressService {
 
         if (examQuestionCheckedEvent.accountPronunciationWordId) {
             return {
-                type: EventTypes.SPOKEN_PRONUNCIATION_WORD,
+                type: "SPOKEN_PRONUNCIATION_WORD",
                 wordInstanceId: examQuestionCheckedEvent.wordInstanceId,
                 wordId: examQuestionCheckedEvent.wordId,
                 label: examQuestionCheckedEvent.label,
@@ -272,7 +237,7 @@ export class VocabBuilderProgressService {
 
         if (examQuestionCheckedEvent.label) {
             return {
-                type: EventTypes.PRONUNCIATION_WORD,
+                type: "PRONUNCIATION_WORD",
                 wordInstanceId: examQuestionCheckedEvent.wordInstanceId,
                 wordId: examQuestionCheckedEvent.wordId,
                 label: examQuestionCheckedEvent.label,
@@ -287,7 +252,7 @@ export class VocabBuilderProgressService {
         }
 
         return {
-            type: EventTypes.TYPED_QUIZ_WORD,
+            type: "TYPED_QUIZ_WORD",
             typedAnswer: examQuestionCheckedEvent.typedAnswer,
             skipped: examQuestionCheckedEvent.skipped,
             courseID: examQuestionCheckedEvent.courseId,
@@ -300,14 +265,11 @@ export class VocabBuilderProgressService {
             return;
         }
 
-        let factory = this.eventFactoryService.getFactory(TYPE_WORD, this.getAccountId());
-        let event = factory.createEvent({
-            type: EventTypes.KNOWN_WORD,
+        this.publish(VocabBuilderProgressService.EVENT_ON_WORD_KNOWN, {
+            type: "KNOWN_WORD",
             markAs: known,
             word: this.createWordReference(quizWord.word)
         });
-
-        this.publish(VocabBuilderProgressService.EVENT_ON_WORD_KNOWN, event);
     }
 
     setStepId(stepId?: number) {
@@ -399,7 +361,7 @@ export class VocabBuilderProgressService {
         return this.levelTestDetail;
     }
 
-    private createWordReference(word: XWordDetail): EventWord {
+    private createWordReference(word: XWordDetail) {
         return {
             wordHeadID: word.wordAdapter?.wordHeadId || 0,
             wordRootID: word.wordAdapter?.wordRootId,
@@ -446,7 +408,7 @@ export class VocabBuilderProgressService {
             .find(testScore => testScore.type == this.getDifficultyType())?.score;
 
         if (microlevel && showMicroLevel) {
-            return `${mainDifficulty}.${(microlevel).toFixed(1)}`;
+            return `${mainDifficulty}.${(microlevel).toFixed(1).replace("0.", "")}`;
         }
         return mainDifficulty;
     }

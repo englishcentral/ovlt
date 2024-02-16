@@ -1,7 +1,6 @@
 import { Injectable } from "@angular/core";
-import { ConnectionFactoryService } from "../../core/connection-factory.service";
 import { Observable, of } from "rxjs";
-import { StudyLevelOption } from "../types/studylevel-option";
+import { StudyLevelOption } from "../../types/studylevel-option";
 
 export const SORT_ASC = 1;
 
@@ -10,8 +9,7 @@ export class StudyLevelModelService {
     constructor() {
     }
 
-
-    getOptions(additionalOptions?: object, refresh: boolean = false, expiration: number = ConnectionFactoryService.CACHE_LIFETIME.identity): Observable<StudyLevelOption[]> {
+    getOptions(additionalOptions?: object, refresh: boolean = false, expiration: number = 86400000): Observable<StudyLevelOption[]> {
         return of([
             {
                 "level": 1,
@@ -309,13 +307,11 @@ export class StudyLevelModelService {
     }
 
     getRawLevel(additionalOptions?: object): Observable<number> {
-        return this.connection
-            .service("bridge")
-            .setPath("/identity/studylevel")
-            .get(additionalOptions);
+        return of(1);
     }
 
-    getLevel(additionalOptions?: object, refresh: boolean = false, expiration: number = ConnectionFactoryService.CACHE_LIFETIME.identity): Observable<number> {
+    getLevel(additionalOptions?: object, refresh: boolean = false, expiration: number = 86400000): Observable<number> {
+        return of(1);
     }
 
     postLevel(additionalOptions?: object): Observable<number> {
