@@ -15,8 +15,8 @@ import {
     TemplateRef,
     ViewChild
 } from "@angular/core";
-import { XDialogLine } from "../../../../types/dialog-line";
-import { XQuizWord } from "../../../../types/vocabulary-quiz";
+import { XDialogLine } from "../../../types/dialog-line";
+import { XQuizWord } from "../../../types/vocabulary-quiz";
 import { of, Subject, timer } from "rxjs";
 import {
     createStreamName,
@@ -24,18 +24,14 @@ import {
     RecognizerModelService
 } from "../../../../model/recognizer/recognizer-model.service";
 import { catchError, finalize, first as rxJsFirst, takeUntil } from "rxjs/operators";
-import { IdentityService } from "../../../../core/identity.service";
-import { ConnectionFactoryService } from "../../../../core/connection-factory.service";
 import { buildSessionTimeKey } from "../../../../common-app/progress-app/event-factory.service";
-import { RECOGNIZER_KALDI, RecognizerResult, WordResult } from "../../../../types/speech/recognizer-result";
-import { StorageCache } from "../../../../core/storage-cache";
+import { RECOGNIZER_KALDI, RecognizerResult, WordResult } from "../../../types/speech/recognizer-result";
 import {
     MODE_MULTIPLE_CHOICE,
     MODE_REVERSE_MATCH_MULTIPLE_CHOICE,
     MODE_STRICT_TYPING,
     MODE_TYPING
 } from "../../../types/vocab-builder-reference";
-import { FeatureService } from "../../../../core/feature.service";
 import {
     MicrophoneHandlerService
 } from "../../../../activity-app/shared-activity/microphone/microphone-handler.service";
@@ -82,15 +78,17 @@ import {
     uniqBy
 } from "lodash-es";
 import { AudioInstance } from "../../../../shared/audio/audio-instance";
-import { HTTP_REQUEST_HANDLER, WEBSOCKET_REQUEST_HANDLER } from "../../../../types/speech/transport";
+import { HTTP_REQUEST_HANDLER, WEBSOCKET_REQUEST_HANDLER } from "../../../types/speech/transport";
 import { createAudioInstance } from "../../../../shared/audio/html-audio-instance";
 import { LearnStateService } from "../../player-app/overlay/learn/learn-state.service";
 import { MicrophoneWidgetStateService } from "../../microphone-widget/microphone-widget-state.service";
-import { XWordDetail } from "../../../../types/x-word";
+import { XWordDetail } from "../../../types/x-word";
 import { Logger } from "../../common/logger";
 import { SubscriptionAbstract } from "../../subscription.abstract";
 import { CountdownTimer, CountdownTimerTick, TIMER_MODE_TOTAL_REMAINING_TIME } from "../../common/countdown-timer";
 import { Browser } from "../../common/browser";
+import { FeatureService } from "../../common/feature.service";
+import { IdentityService } from "../../common/identity.service";
 
 const THRESHOLD_WARNING = 0.5;
 const THRESHOLD_DANGER = 0.25;
@@ -206,7 +204,6 @@ export class ExamQuestionComponent extends SubscriptionAbstract implements OnCha
     private choices: XWordDetail[] = [];
     private example: XDialogLine;
 
-    private isFirstKnownWordCache = new StorageCache<boolean>("isFirstKnownWord");
     private isFirstKnownWord: boolean = true;
 
     private pre: string = "";
@@ -286,9 +283,6 @@ export class ExamQuestionComponent extends SubscriptionAbstract implements OnCha
 
     private initialize(): void {
         this.reset();
-        this.isFirstKnownWordCache
-            .getCache(this.getCacheKey(), () => of(true))
-            .subscribe(isFirstKnownWord => this.isFirstKnownWord = isFirstKnownWord);
         this.modeHandler = ModeHandlerAdapter.getAdapter(this.mode, this.modeSettings);
 
         let orthography: string = this.quizWord?.word?.label || this.orthography;
@@ -507,7 +501,6 @@ export class ExamQuestionComponent extends SubscriptionAbstract implements OnCha
         if (this.knownProcessing) {
             return;
         }
-        this.isFirstKnownWordCache.setValue(this.getCacheKey(), false);
         this.markAsKnown(!this.known);
     }
 
@@ -691,7 +684,7 @@ export class ExamQuestionComponent extends SubscriptionAbstract implements OnCha
     }
 
     getVideoThumbnailUrl(): string {
-        return require("global-assets/adaptive-quiz/poster.gif");
+        return "assets/adaptive-quiz/poster.gif";
     }
 
     getWordInstance(): XWordDetail | undefined {
@@ -1395,7 +1388,7 @@ export class ExamQuestionComponent extends SubscriptionAbstract implements OnCha
             recognizerType: this.getRecognizerType(),
             recognizerMode: MODE_WORD,
             fileTransferMode: fileTransferMode,
-            serviceVersion: ConnectionFactoryService.SERVICE_VERSION.v2
+            serviceVersion: "v2"
         }, this.trackingContext).pipe(
             rxJsFirst(),
             catchError(error => {
