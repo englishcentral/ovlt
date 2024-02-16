@@ -7,7 +7,7 @@ import {
     DEFAULT_QUIZ_WORD_ACTIVITY,
     DEFAULT_VOCAB_BUILDER_ACTIVITY
 } from "../../../types/activity";
-import { VocabBuilderModelService } from "../../../model/vocab-builder-model.service";
+import { VocabBuilderModelService } from "../../model/vocab-builder-model.service";
 import { DEFAULT_WORD_LIST_TYPE_ID, MY_WORDS_WORD_LIST_COLLECTION } from "../../../types/word-list-reference";
 import { includes, values } from "lodash-es";
 import { QuizType } from "./quiz-type";

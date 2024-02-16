@@ -1,6 +1,5 @@
 import { LevelTestSetting } from "./level-test-setting";
 
-
 export class VltQuizScore {
     score: number;
     computedBand: number;

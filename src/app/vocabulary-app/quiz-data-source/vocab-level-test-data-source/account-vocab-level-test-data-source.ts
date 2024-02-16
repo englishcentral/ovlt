@@ -1,10 +1,10 @@
-import { VocabBuilderModelService } from "../../../../model/vocab-builder-model.service";
+import { VocabBuilderModelService } from "../../../model/vocab-builder-model.service";
 import { Observable, of } from "rxjs";
 import { VocabBuilderSetting } from "../../../../types/vocab-builder-settings";
 import { LevelTestDetail, XWordQuiz } from "../../../../types/vocabulary-quiz";
 import { isEmpty } from "lodash-es";
 import { VocabLevelTestDataSourceAbstract } from "./vocab-level-test-data-source-abstract";
-import { VltQuizScore } from "../../../../model/reportcard/vocab-level-test";
+import { VltQuizScore } from "../../../../types/vocab-level-test";
 import { QuizDataSourceAdapterSettings } from "../quiz-data-source-adapter-settings";
 
 export class AccountVocabLevelTestDataSource extends VocabLevelTestDataSourceAbstract {

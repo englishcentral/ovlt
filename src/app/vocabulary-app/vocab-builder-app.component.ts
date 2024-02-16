@@ -13,16 +13,9 @@ import {
 import { NgbModal, NgbModalOptions, NgbModalRef } from "@ng-bootstrap/ng-bootstrap";
 import { forkJoin, map as rxJsMap, Observable, of, Subject } from "rxjs";
 import "global-styles/adaptive-quiz.css";
-import { Location, LocationStrategy, PathLocationStrategy } from "@angular/common";
-import { catchError, debounceTime, finalize, mergeMap, retryWhen, take, takeUntil, tap } from "rxjs/operators";
+import { catchError, debounceTime, mergeMap, takeUntil, tap } from "rxjs/operators";
 import { DEFAULT_VOCAB_BUILDER_ACTIVITY } from "../../types/activity";
-import {
-    DEFAULT_WORD_LIST_TYPE_ID,
-    LAST_LEVEL_LIST,
-    MY_WORDS_LISTS,
-    MyWordsListTypeIds,
-    WordList
-} from "../../types/word-list-reference";
+import { DEFAULT_WORD_LIST_TYPE_ID, LAST_LEVEL_LIST, MY_WORDS_LISTS, WordList } from "../../types/word-list-reference";
 import {
     MyWordsWordListSettings,
     VOCAB_BUILDER_STYLE_ID_MY_WORDS,
@@ -47,16 +40,12 @@ import {
     includes,
     isEmpty,
     isEqual,
-    isNull,
     isUndefined,
     map,
     max,
-    merge,
-    toNumber
+    merge
 } from "lodash-es";
-import { DEFAULT_MODAL_OPTIONS } from "../../helpers/modal-options-default";
-import { ModalLaunchService } from "../common/modal-launch.service";
-import { MODE_ALL, MODE_TYPING, scalarToModes, VocabBuilderReference } from "../../types/vocab-builder-reference";
+import { MODE_TYPING, VocabBuilderReference } from "../../types/vocab-builder-reference";
 import { WordListLearned } from "../../types/word-list-learned";
 import { MyWordStateV1 } from "../../types/my-word-state-v1";
 import { WordV1 } from "../../types/word-v1";
@@ -67,20 +56,20 @@ import { VocabBuilderStateService } from "./vocab-builder-state.service";
 import { VocabBuilderProgressService } from "./vocab-builder-progress.service";
 import { AdaptiveQuizModelService } from "../model/adaptive-quiz-model.service";
 import { VocabBuilderModelService } from "../model/vocab-builder-model.service";
-import { VocabularyQuizModelService } from "../model/vocabulary-quiz-model.service";
 import { ReferenceModelService } from "../model/reference-model.service";
 import { WordProgressModelService } from "../model/word-progress.model.service";
 import { IdentityService } from "../common/identity.service";
 import { FeatureService } from "../common/feature.service";
+import { Browser } from "../common/browser";
+import { SharedWordHeadProgress } from "../../types/word-head-progress";
 
 @Component({
     selector: "ec-vocab-builder-app",
     templateUrl: "vocab-builder-app.component.html",
-    styleUrls: ["vocab-builder-app.component.scss"],
-    providers: [Location, { provide: LocationStrategy, useClass: PathLocationStrategy }]
+    styleUrls: ["vocab-builder-app.component.scss"]
 })
 export class VocabBuilderAppComponent extends SubscriptionAbstract implements OnInit, OnDestroy {
-    @ViewChild("vocabQuizExit", { static: false }) vocabQuizExit: TemplateRef<any>;
+    @ViewChild("vocabQuizExit", {static: false}) vocabQuizExit: TemplateRef<any>;
 
     // wordDetails need to be passed from Pronunciation to get real wordInstanceId
     @Input() wordDetails: Map<number, WordV1>;
@@ -97,6 +86,9 @@ export class VocabBuilderAppComponent extends SubscriptionAbstract implements On
     @Input() autoStartQuiz: boolean = false;
     @Input() activityId: number;
     @Input() activityTypeId: number;
+    @Input() levelTestSettingId: number;
+    @Input() wordListTypeId: number;
+    @Input() vocabBuilderModeIds: number[];
     @Input() courseId: number;
     //to be able to provide full screen vb we need to know parent component header height
     @Input() parentHeaderHeight: number = VocabBuilderAppComponent.PARENT_HEADER_HEIGHT;
@@ -107,14 +99,12 @@ export class VocabBuilderAppComponent extends SubscriptionAbstract implements On
     @Output() eventViewWords = new EventEmitter<void>();
     @Output() eventStartNewPractice = new EventEmitter<void>();
 
-    private vocabBuilderModeIds: number[];
-    private wordListTypeId: number;
     private numberOfQuizItems: number;
     private vocabBuilderStyleId: number;
     private classId: number;
     private classTestExamId: number;
-    private wordHeadIds: number[];
     private sharedMeaningIds: number[];
+    private wordHeadIds: number[];
     private startingRank: number;
     private startingBand: number;
     private listRank: number;
@@ -125,7 +115,6 @@ export class VocabBuilderAppComponent extends SubscriptionAbstract implements On
 
     // curatedLevelTestId, levelTestSettingId are for VPT
     private curatedLevelTestId: number;
-    private levelTestSettingId: number;
 
     private logger = new Logger();
 
@@ -143,7 +132,7 @@ export class VocabBuilderAppComponent extends SubscriptionAbstract implements On
     static readonly PARENT_HEADER_HEIGHT = 50;
 
     // controls the VB paywall. Before this gets initialized, no VB module is rendered on the page.
-    private vocabPayWallInitialized = false;
+    private vocabPayWallInitialized = true;
 
     private resizeSubject = new Subject<number>();
     private resizeObservable = this.resizeSubject
@@ -163,13 +152,11 @@ export class VocabBuilderAppComponent extends SubscriptionAbstract implements On
                 private vocabBuilderProgressService: VocabBuilderProgressService,
                 private adaptiveQuizModelService: AdaptiveQuizModelService,
                 private vocabBuilderModelService: VocabBuilderModelService,
-                private vocabularyQuizModelService: VocabularyQuizModelService,
                 private referenceModelService: ReferenceModelService,
                 private wordProgressModelService: WordProgressModelService,
                 private identityService: IdentityService,
                 private featureService: FeatureService,
                 private modalService: NgbModal,
-                private modalLaunchService: ModalLaunchService,
                 private zone: NgZone) {
         super();
     }
@@ -189,11 +176,6 @@ export class VocabBuilderAppComponent extends SubscriptionAbstract implements On
         this.initializeProgressPublishers();
 
         this.setQuizDataSource();
-
-        if (this.getQuizDataSource().shouldInitializeFromRouter()) {
-            this.getRouteParams();
-            this.initializeRouterParamMapSubscription();
-        }
 
         // If quiz is started from View Words by selecting words then VB needs to take selected wordHeadIds
         // TODO: remove this only sharedMeaningIds should remain
@@ -291,36 +273,16 @@ export class VocabBuilderAppComponent extends SubscriptionAbstract implements On
             this.generateQuiz(this.vocabBuilderStateService.getCurrentSetting(), true);
         });
 
-        this.vocabBuilderStateService.subscribe(VocabBuilderStateService.EVENT_ON_APP_CLOSE, () => {
-            this.navigateOnError();
-        });
-
-        this.vocabBuilderStateService.subscribe(VocabBuilderStateService.EVENT_ON_APP_GO_TO_VIEW_WORDS_CLICK, (wordListTypeId) => {
-            this.navigateToViewWords(wordListTypeId);
-        });
-
-        this.vocabBuilderStateService.subscribe(VocabBuilderStateService.EVENT_ON_APP_GO_TO_VIDEOS, () => {
-            this.navigateToVideos();
-        });
-
-        this.vocabBuilderStateService.subscribe(VocabBuilderStateService.EVENT_ON_GO_TO_MY_ENGLISH, () => {
-            this.navigateToMyEnglish();
-        });
-
         this.vocabBuilderStateService.subscribe(VocabBuilderStateService.EVENT_ON_APP_GO_TO_VOCAB_BUILDER, () => {
             this.activityTypeId = DEFAULT_VOCAB_BUILDER_ACTIVITY.activityTypeID;
             this.setQuizDataSource(this.activityTypeId);
             this.resetWordList();
         });
 
-        this.vocabBuilderStateService.subscribe(VocabBuilderStateService.EVENT_ON_APP_GO_TO_PREVIOUS_ACTIVITY, () => {
-            this.navigateBack();
-        });
-
         this.vocabBuilderStateService.subscribe(VocabBuilderStateService.EVENT_ON_ERROR, (error) => {
             this.logger.error("Error Detected", error);
             this.sendAnalyticsEvent("v2/VocabBuilderEngineErrors", {
-                errorMessage: extractErrorString(error)
+                errorMessage: error.toString()
             });
 
             const completedMessage = "this quiz activity has already been completed";
@@ -343,7 +305,7 @@ export class VocabBuilderAppComponent extends SubscriptionAbstract implements On
         this.logger.log("Initializing Settings...");
         return this.vocabBuilderStateService
             .getQuizDataSource()
-            .fetchSettings(accountId, { activityId: this.activityId, useAccountWordLists: true, useCache: true })
+            .fetchSettings(accountId, {activityId: this.activityId, useAccountWordLists: true, useCache: true})
             .pipe(
                 takeUntil(this.getDestroyInterceptor()),
                 tap((settings: VocabBuilderSettings) => {
@@ -377,36 +339,9 @@ export class VocabBuilderAppComponent extends SubscriptionAbstract implements On
     private initializeProgressPublishers(): void {
         map(VocabBuilderProgressService.PROGRESS_DATA_EVENTS, (eventName: string) => {
             this.vocabBuilderProgressService.subscribe(eventName, (event) => {
-                this.progressQueue.sendEvent(event);
+                this.logger.log("sending evet", event);
             });
         });
-    }
-
-    private initializeRouterParamMapSubscription(): void {
-        this.route.queryParamMap
-            .pipe(
-                takeUntil(this.getDestroyInterceptor()),
-                mergeMap((params: ParamMap) => {
-                    if (params) {
-                        const activityTypeIdParam = toNumber(params.get("activityTypeId"));
-                        if (activityTypeIdParam) {
-                            this.activityTypeId = activityTypeIdParam;
-                        }
-                    }
-                    return of(true);
-                })
-            ).subscribe();
-
-        this.route.paramMap
-            .pipe(
-                takeUntil(this.getDestroyInterceptor()),
-                tap((params: ParamMap) => {
-                    if (params) {
-                        this.wordListTypeId = toNumber(params.get("wordListTypeId"));
-                        this.vocabularyAppSharedService.setWordListTypeId(this.wordListTypeId);
-                    }
-                })
-            ).subscribe();
     }
 
     private initializeVocabBuilder(): void {
@@ -415,22 +350,6 @@ export class VocabBuilderAppComponent extends SubscriptionAbstract implements On
             .pipe(
                 takeUntil(this.getDestroyInterceptor())
             ).subscribe();
-
-        this.initializeVocabPayWall()
-            .pipe(
-                takeUntil(this.getDestroyInterceptor()),
-                mergeMap(() => this.fetchReferenceData())
-            )
-            .subscribe();
-    }
-
-    private initializeVocabPayWall(): Observable<number> {
-        return this.payWallService.initializeVocabPayWall()
-            .pipe(
-                take(1),
-                takeUntil(this.getDestroyInterceptor()),
-                finalize(() => this.vocabPayWallInitialized = true)
-            );
     }
 
     private fetchMyWordListCounts(): Observable<MyWordState> {
@@ -594,7 +513,7 @@ export class VocabBuilderAppComponent extends SubscriptionAbstract implements On
             .pipe(
                 takeUntil(this.getDestroyInterceptor()),
                 catchError(() => {
-                    return of({ wordLists: [] });
+                    return of({wordLists: []});
                 }),
                 rxJsMap(wordListReference => wordListReference.wordLists),
                 mergeMap((accountWordLists: WordList[]) => {
@@ -634,15 +553,6 @@ export class VocabBuilderAppComponent extends SubscriptionAbstract implements On
     private generateQuiz(currentSettings?: VocabBuilderSetting, autoStart: boolean = false): Observable<XWordQuiz | {
         quizWords: XQuizWord[]
     } | undefined> {
-        if (this.shouldTriggerPaywall()) {
-            if (this.shouldOpenPaywallModal()) {
-                this.openPaywallModal();
-            }
-            this.vocabBuilderStateService.setLoading(false);
-            this.vocabBuilderStateService.resetState();
-            return of(undefined);
-        }
-
         const accountId = this.identityService.getAccountId();
         this.vocabBuilderModelService.clearAccountClassRank(accountId);
 
@@ -666,7 +576,6 @@ export class VocabBuilderAppComponent extends SubscriptionAbstract implements On
                 })
                 .pipe(
                     takeUntil(this.getDestroyInterceptor()),
-                    retryWhen(servicesRetryStrategy()),
                     tap((wordProgressList: SharedWordHeadProgress[]) => {
                         this.vocabBuilderStateService.getCurrentSetting().styleSetting.sharedMeaningIds = map(wordProgressList, (wordProgress) => {
                             return wordProgress.sharedMeaningId;
@@ -772,11 +681,6 @@ export class VocabBuilderAppComponent extends SubscriptionAbstract implements On
     }
 
     async startQuiz(newQuiz: boolean = false): Promise<void> {
-        if (this.shouldTriggerPaywall()) {
-            this.openPaywallModal();
-            return Promise.resolve();
-        }
-
         this.vocabBuilderStateService.setQuizLoading(true);
         this.vocabBuilderStateService.setLoading(true);
 
@@ -799,37 +703,8 @@ export class VocabBuilderAppComponent extends SubscriptionAbstract implements On
             });
     }
 
-    private openPaywallModal(): NgbModalRef {
-        const modalRef = this.modalLaunchService.open(
-            PaywallModalComponent,
-            DEFAULT_MODAL_OPTIONS
-        );
-        modalRef.componentInstance.accountId = this.identityService.getAccountId();
-        modalRef.componentInstance.context = PaywallAppContext.VOCABULARY;
-        modalRef.componentInstance.eventClose
-            .pipe(takeUntil(this.getDestroyInterceptor()))
-            .subscribe(() => {
-                modalRef.close();
-                this.navigateBack();
-            });
-
-        return modalRef;
-    }
 
     exitQuiz(): void {
-        const quizType = "VocabBuilder";
-        const isVocabBuilder = isEqual(this.getQuizDataSource().getQuizType(), quizType);
-
-        if (!this.classId && this.levelTestSettingId) {
-            this.navigateToMyEnglish();
-            return;
-        }
-
-        if (this.classId && !isVocabBuilder) {
-            this.router.navigate([ROUTE_MY_CLASS, this.classId, 0, ROUTE_CLASS_TESTS]);
-            return;
-        }
-
         this.backToPreviousActivity.emit();
         this.vocabBuilderStateService.reset();
     }
@@ -862,34 +737,6 @@ export class VocabBuilderAppComponent extends SubscriptionAbstract implements On
 
     getParentHeaderHeight(): number {
         return this.parentHeaderHeight;
-    }
-
-    getRouteParams(): void {
-        this.classId = toNumber(this.route.snapshot.queryParamMap.get("classId") || 0);
-        this.wordListTypeId = toNumber(this.route.snapshot.queryParamMap.get("wordListTypeId")) || DEFAULT_WORD_LIST_TYPE_ID;
-        this.classTestExamId = toNumber(this.route.snapshot.queryParamMap.get("classTestExamId") || 0);
-
-        const vocabBuilderModeIds = this.route.snapshot.queryParamMap.get("mode")?.split(",").map(parseInt);
-        this.vocabBuilderModeIds = vocabBuilderModeIds?.length > 1
-            ? scalarToModes(MODE_ALL, [], vocabBuilderModeIds)
-            : scalarToModes(vocabBuilderModeIds?.[0]);
-
-        this.vocabBuilderStyleId = toNumber(this.route.snapshot.queryParamMap.get("style") || 0);
-        this.numberOfQuizItems = toNumber(this.route.snapshot.queryParamMap.get("itemCount") || 0);
-        this.startingRank = toNumber(this.route.snapshot.queryParamMap.get("rank") || 0);
-        this.startingBand = toNumber(this.route.snapshot.queryParamMap.get("band") || 0);
-        this.activityTypeId = toNumber(this.route.snapshot.queryParamMap.get("activityTypeId") || 0);
-        this.courseId = toNumber(this.route.snapshot.queryParamMap.get("courseId"));
-        this.isWordsPreSelected = JSON.parse(this.route.snapshot.queryParamMap.get("wordsSelected"));
-        this.backButtonEnabled = JSON.parse(this.route.snapshot.queryParamMap.get("backButtonEnabled"));
-        this.shouldAutoStart = JSON.parse(this.route.snapshot.queryParamMap.get("autoStartQuiz"));
-
-        const paramReviewItemRatio = this.route.snapshot.queryParamMap.get("reviewItemRatio");
-        this.reviewItemRatio = isNull(paramReviewItemRatio) ? undefined : toNumber(paramReviewItemRatio);
-
-        this.listRank = toNumber(this.route.snapshot.queryParamMap.get("listRank") || 0);
-        this.curatedLevelTestId = JSON.parse(this.route.snapshot.queryParamMap.get("curatedLevelTestId"));
-        this.levelTestSettingId = JSON.parse(this.route.snapshot.queryParamMap.get("levelTestSettingId"));
     }
 
     getClassId(): number | undefined {
@@ -953,21 +800,21 @@ export class VocabBuilderAppComponent extends SubscriptionAbstract implements On
     }
 
     getInnerHeightObject(): object {
-        return { "height": `${this.innerScreenHeight}px` };
+        return {"height": `${this.innerScreenHeight}px`};
     }
 
     getMobileStyleObject(): object | undefined {
         if (!this.isMobile()) {
             return;
         }
-        return { "height": `${this.innerScreenHeight}px`, "top": `${this.getTotalHeaderHeight()}px` };
+        return {"height": `${this.innerScreenHeight}px`, "top": `${this.getTotalHeaderHeight()}px`};
     }
 
     getFullScreenTopStyleObject(): object | undefined {
         if (!this.isMobile()) {
             return;
         }
-        return { "top": `${this.getTotalHeaderHeight()}px` };
+        return {"top": `${this.getTotalHeaderHeight()}px`};
     }
 
     getTotalHeaderHeight(): number {
@@ -1016,12 +863,6 @@ export class VocabBuilderAppComponent extends SubscriptionAbstract implements On
         return this.courseId;
     }
 
-    getNavigationExtras(): NavigationExtras {
-        return {
-            queryParamsHandling: undefined
-        };
-    }
-
     setStyle(): void {
         if (!this.vocabBuilderStateService.getCurrentSetting()) {
             return;
@@ -1040,7 +881,7 @@ export class VocabBuilderAppComponent extends SubscriptionAbstract implements On
         }
         const styleId = this.vocabBuilderStateService.getVocabBuilderStyleIdByName(this.upperCaseFirstLetter(currentStyleName));
 
-        this.updateCurrentSetting({ vocabBuilderStyleId: styleId });
+        this.updateCurrentSetting({vocabBuilderStyleId: styleId});
     }
 
     setSelectedWordHeadIds(): void {
@@ -1060,7 +901,7 @@ export class VocabBuilderAppComponent extends SubscriptionAbstract implements On
             return isEqual(mode.vocabBuilderStyleId, VOCAB_BUILDER_STYLE_ID_MY_WORDS);
         });
 
-        this.updateCurrentSetting({ vocabBuilderStyleId: VOCAB_BUILDER_STYLE_ID_MY_WORDS });
+        this.updateCurrentSetting({vocabBuilderStyleId: VOCAB_BUILDER_STYLE_ID_MY_WORDS});
 
         this.vocabBuilderStateService.setCurrentStyle({
             settingType: this.lowerCaseFirstLetter(myWordsStyle.name)
@@ -1082,14 +923,14 @@ export class VocabBuilderAppComponent extends SubscriptionAbstract implements On
             isWordsPreSelected: this.isWordsPreSelected,
             isWordPronunciationQuiz: this.isWordPronunciationQuiz,
             isPhonemePronunciationQuiz: this.isPhonemePronunciationQuiz
-        }, this.vocabBuilderModelService, this.vocabularyQuizModelService);
+        }, this.vocabBuilderModelService);
 
         this.vocabBuilderStateService.setQuizDataSource(quizDataSource);
         this.vocabBuilderProgressService.setActivity(quizDataSource.getActivity(this.activityId, this.wordListTypeId));
     }
 
     setComponentHeight(): void {
-        this.setTotalHeaderHeight(this.getParentHeaderHeight() + BrowserScreen.EC_HEADER_HEIGHT);
+        this.setTotalHeaderHeight(this.getParentHeaderHeight());
         this.updateScreenInnerHeight();
     }
 
@@ -1253,11 +1094,7 @@ export class VocabBuilderAppComponent extends SubscriptionAbstract implements On
     }
 
     isPaywallEnabled(): boolean {
-        if (this.featureService.getFeature("myWordsSkipVocabPaywall", false)
-            && this.vocabBuilderStateService.isMyWordList(this.vocabBuilderStateService.getCurrentSetting()?.wordListTypeId)) {
-            return false;
-        }
-        return this.getQuizDataSource().isPaywallEnabled();
+        return false;
     }
 
     hasCurrentSetting(): boolean {
@@ -1308,14 +1145,6 @@ export class VocabBuilderAppComponent extends SubscriptionAbstract implements On
 
     showVocabBuilderCompletionScreen(): boolean {
         return this.showCompletionScreen();
-    }
-
-    shouldTriggerPaywall(): boolean {
-        return this.isPaywallEnabled() && this.payWallService.isVocabPaywallLimitExceeded();
-    }
-
-    shouldOpenPaywallModal(): boolean {
-        return this.getQuizDataSource().shouldAutoOpenPaywall();
     }
 
     shouldShowPreviouslyEncounteredVisible(): boolean {
@@ -1386,14 +1215,14 @@ export class VocabBuilderAppComponent extends SubscriptionAbstract implements On
             quizType: quizType
         }, extraParams);
 
-        Instrumentation.sendEvent(Instrumentation.EVENT_PERFORMANCE, params, time);
+        this.logger.log(params, time);
     }
 
     private sendAnalyticsEvent(
         eventName: string,
         eventDetails: object = {}): void {
         this.zone.runOutsideAngular(() => {
-            Instrumentation.sendEvent(eventName, eventDetails);
+            this.logger.log(eventName, eventDetails);
         });
     }
 
@@ -1443,7 +1272,6 @@ export class VocabBuilderAppComponent extends SubscriptionAbstract implements On
         if (this.hasCurrentSetting()) {
             this.vocabularyAppSharedService.setNumberOfWordItems(this.vocabBuilderStateService.getCurrentSetting().numberOfQuizItems);
         }
-        this.router.navigate([ROUTE_VOCABULARY, ROUTE_VOCAB_QUIZ, wordListTypeId], { queryParamsHandling: "preserve" });
     }
 
     onAttempt(quizWord: XQuizWord, event: ExamQuestionCheckedEvent): void {
@@ -1453,9 +1281,7 @@ export class VocabBuilderAppComponent extends SubscriptionAbstract implements On
     onAnswer(quizWord: XQuizWord, event: ExamQuestionCheckedEvent): void {
         this.logger.log("ExamQuestionCheckedEvent", event);
         const isSkipEventEnabled = this.getQuizDataSource().isSkipEventEnabled();
-        this.payWallService.incrementAccessedWordCount();
         const acceptedEvent = this.vocabBuilderProgressService.answerQuestion(quizWord, event, isSkipEventEnabled);
-        this.dailyGoalProgressService.updateAccountPointsToday(acceptedEvent);
         this.vocabBuilderProgressService.flushAttempts(acceptedEvent);
     }
 
@@ -1491,11 +1317,11 @@ export class VocabBuilderAppComponent extends SubscriptionAbstract implements On
         this.vocabularyAppSharedService.publish(VocabularyAppSharedService.EVENT_ON_HIDE_VOCABULARY_TABS, hide);
         this.eventHideTabs.emit(hide);
         if (hide) {
-            this.setTotalHeaderHeight(BrowserScreen.EC_HEADER_HEIGHT);
+            this.setTotalHeaderHeight(100);
             this.updateScreenInnerHeight();
             return;
         }
-        const headerHeights = BrowserScreen.EC_HEADER_HEIGHT + this.getParentHeaderHeight();
+        const headerHeights = 100 + this.getParentHeaderHeight();
         this.setTotalHeaderHeight(headerHeights);
         this.updateScreenInnerHeight();
     }
@@ -1522,48 +1348,6 @@ export class VocabBuilderAppComponent extends SubscriptionAbstract implements On
         this.referenceModelService.clearAccountWordListsReference(this.identityService.getAccountId());
     }
 
-    navigateToViewWords(wordListTypeIdParam?: number): void {
-        const wordListTypeId = wordListTypeIdParam ? wordListTypeIdParam : MyWordsListTypeIds.Missed;
-        this.router.navigate(
-            [ROUTE_VOCABULARY, ROUTE_VIEW_WORDS, wordListTypeId],
-            this.getNavigationExtras()
-        );
-    }
-
-    navigateToVideos(): void {
-        this.router.navigate([ROUTE_BROWSE, ROUTE_VIDEOS]);
-    }
-
-    navigateToMyEnglish(): void {
-        if (this.featureService.getFeatures().isPwaMyEnglishHeaderLinkEnabled) {
-            this.router.navigate([ROUTE_MYENGLISH]);
-            return;
-        }
-        this.navigateToVideos();
-    }
-
-    navigateOnError(): void {
-        const navigationPlace = this.getQuizDataSource().getNavigateOnError();
-        if (navigationPlace) {
-            this.router.navigate([navigationPlace]);
-            return;
-        }
-        this.navigateBack();
-    }
-
-    navigateBack(): void {
-        if (this.classId) {
-            this.router.navigate([ROUTE_MY_CLASS, this.classId, 0, ROUTE_CLASS_TESTS]);
-            return;
-        }
-        // When user comes from myenglish for account VLT
-        if (!this.classId && this.levelTestSettingId) {
-            this.router.navigate([ROUTE_MYENGLISH]);
-            return;
-        }
-        return this.backToPreviousActivity.emit();
-    }
-
     resetWordList(): void {
         this.vocabBuilderStateService.resetState();
         this.reset();
@@ -1573,21 +1357,10 @@ export class VocabBuilderAppComponent extends SubscriptionAbstract implements On
     }
 
     reset(resetQueryParams: boolean = true): void {
-        if (this.isWordsPreSelected || resetQueryParams) {
-            this.resetQueryParams();
-        }
         this.classTestExamId = 0;
         this.isWordsPreSelected = false;
         this.shouldAutoStart = false;
         this.vocabularyAppSharedService.reset();
-    }
-
-    resetQueryParams(): void {
-        const url = this.router.url;
-        const baseUrl: string = url?.substring(0, url.indexOf("?"));
-        if (baseUrl) {
-            this.router.navigateByUrl(baseUrl);
-        }
     }
 
     launchModal(content, modalOptions?: NgbModalOptions): void {

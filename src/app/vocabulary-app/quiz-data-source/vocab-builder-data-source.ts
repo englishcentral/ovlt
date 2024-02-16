@@ -1,5 +1,5 @@
 import { QuizDataSourceAbstract, VbSettings } from "./quiz-data-source-abstract";
-import { VocabBuilderModelService } from "../../../model/vocab-builder-model.service";
+import { VocabBuilderModelService } from "../../model/vocab-builder-model.service";
 import { Observable, of } from "rxjs";
 import { VocabBuilderSetting, VocabBuilderSettings } from "../../../types/vocab-builder-settings";
 import { XWordQuiz } from "../../../types/vocabulary-quiz";

@@ -1,4 +1,4 @@
-import { VocabBuilderModelService } from "../../../../model/vocab-builder-model.service";
+import { VocabBuilderModelService } from "../../../model/vocab-builder-model.service";
 import { Observable } from "rxjs";
 import { AdaptiveQuizWord } from "../../../../types/vocabulary-quiz";
 import { VocabBuilderSetting } from "../../../../types/vocab-builder-settings";

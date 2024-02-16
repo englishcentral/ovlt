@@ -49,6 +49,7 @@ export class VocabBuilderProgressService {
     private vltQuizScore: VltQuizScore = new VltQuizScore();
     private levelTestDetail: LevelTestDetail;
     private recycleSessionStarted: boolean = false;
+    private attemptEvents = [];
 
     private difficultyLevels: StudyLevelOption[] = [];
     private difficultyType: string = ExamType.CEFR;
@@ -130,6 +131,31 @@ export class VocabBuilderProgressService {
     startTimer(): void {
         this.answerStopWatch.reset();
         this.answerStopWatch.start();
+    }
+
+    sendActivityQuizEvents(eventName: string, courseID?: number): void {
+        const activityQuizEvent = assign({}, {
+                activityID: this.activity.activityID,
+                activityTypeID: this.activity.activityTypeID,
+                type: eventName,
+                courseID: courseID
+            });
+        this.publish(eventName, activityQuizEvent);
+    }
+
+    addAttempt(quizWord: XQuizWord,
+               examQuestionCheckedEvent: ExamQuestionCheckedEvent): void {
+        this.attemptEvents.push(this.generateEvent(
+            quizWord,
+            examQuestionCheckedEvent
+        ));
+    }
+
+    flushAttempts(acceptedEvent): void {
+        let filteredEvents = (this.attemptEvents || []).filter(event => event.eventTime != acceptedEvent.eventTime);
+        this.publish(VocabBuilderProgressService.EVENT_ON_WORD_ANSWER, filteredEvents);
+
+        this.attemptEvents = [];
     }
 
     private generateEvent(quizWord: XQuizWord,
@@ -428,4 +454,5 @@ export class VocabBuilderProgressService {
     destroy(): void {
         this.emitter.destroy();
     }
+
 }
