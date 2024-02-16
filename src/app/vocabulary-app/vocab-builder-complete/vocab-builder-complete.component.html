@@ -51,7 +51,7 @@
                     @if (getDifficultyType()) {
                         <span class="d-block fw-bold text-uppercase">{{ getDifficultyTypeName(getDifficultyType()) }} {{ getDifficultyLevelName(level, false) }}</span>
                     }
-                    <span (click)="launchUserLevelSelector()" class="d-flex justify-content-center align-items-center">
+                    <span class="d-flex justify-content-center align-items-center">
                         <span class="me-2 ec-level" i18n>Level</span>
                         <ec-difficulty-indicator [difficultyLevel]="level"></ec-difficulty-indicator>
                     </span>

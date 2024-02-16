@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, OnDestroy, Output, TemplateRef, ViewChild } from "@angular/core";
+import { Component, EventEmitter, Input, OnDestroy, Output, TemplateRef, ViewChild } from "@angular/core";
 import { Location } from "@angular/common";
 import { NgbModal, NgbModalOptions, NgbModalRef } from "@ng-bootstrap/ng-bootstrap";
 
@@ -11,19 +11,20 @@ import { VocabBuilderProgressService } from "../vocab-builder-progress.service";
 import { VocabBuilderStateService } from "../vocab-builder-state.service";
 import { SubscriptionAbstract } from "../../subscription.abstract";
 import {
-  DEFAULT_QUIZ_ITEMS,
-  MAX_QUIZ_ITEMS,
-  MIN_QUIZ_ITEMS, MIN_RANK,
-  MyWordsListTypeIds,
-  WordList
+    DEFAULT_QUIZ_ITEMS,
+    MAX_QUIZ_ITEMS,
+    MIN_QUIZ_ITEMS,
+    MIN_RANK,
+    MyWordsListTypeIds,
+    WordList
 } from "../../../types/word-list-reference";
 import { WordListLearned } from "../../../types/word-list-learned";
 import {
-  MODE_ALL,
-  QUIZ_TYPE_SEQUENTIAL,
-  scalarToModes,
-  VocabBuilderMode,
-  VocabBuilderStyle
+    MODE_ALL,
+    QUIZ_TYPE_SEQUENTIAL,
+    scalarToModes,
+    VocabBuilderMode,
+    VocabBuilderStyle
 } from "../../../types/vocab-builder-reference";
 import { MESSAGE_CODE_INCOMPLETE } from "../../../types/vocabulary-quiz";
 import { Browser } from "../../common/browser";

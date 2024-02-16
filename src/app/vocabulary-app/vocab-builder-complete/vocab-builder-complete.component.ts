@@ -8,20 +8,22 @@ import {
     OnInit,
     Output
 } from "@angular/core";
-import "global-styles/adaptive-quiz.css";
 import { VocabBuilderProgressService } from "../vocab-builder-progress.service";
 import { VocabBuilderStateService } from "../vocab-builder-state.service";
 import { IdentityService } from "../../common/identity.service";
 import { FeatureService } from "../../common/feature.service";
 import { Logger } from "../../common/logger";
-import { DEFAULT_MODAL_OPTIONS, ModalService } from "../../common/modal.service";
 import { SubscriptionAbstract } from "../../subscription.abstract";
 import { ADAPTIVE_OVLT2_SETTINGS, VltQuizScore } from "../../../types/vocab-level-test";
 import { finalize, mergeMap, takeUntil } from "rxjs/operators";
 import { of } from "rxjs";
 import { Difficulty } from "../../../types/difficulty";
 import { includes, isEqual } from "lodash-es";
-import { LAST_LEVEL_TEST_DIFFICULTY } from "../../../types/vocab-level-test-reference";
+import {
+    isLevelTestPassed,
+    isLevelTestScoreUnderDowngradeThreshold,
+    LAST_LEVEL_TEST_DIFFICULTY
+} from "../../../types/vocab-level-test-reference";
 import { MESSAGE_CODE_COMPLETE } from "../../../types/vocabulary-quiz";
 import { ERROR_KEY_LIST_RANK_EXCEEDED } from "../../../types/vocab-builder-reference";
 import { MyWordsListTypeIds } from "../../../types/word-list-reference";
@@ -58,7 +60,6 @@ export class VocabBuilderCompleteComponent extends SubscriptionAbstract implemen
 
     constructor(private vocabBuilderStateService: VocabBuilderStateService,
                 private vocabBuilderProgressService: VocabBuilderProgressService,
-                private modalService: ModalService,
                 private identityService: IdentityService,
                 private featureService: FeatureService,
                 private changeDetectorRef: ChangeDetectorRef) {
@@ -312,20 +313,6 @@ export class VocabBuilderCompleteComponent extends SubscriptionAbstract implemen
 
     isLevelUpdated(): boolean {
         return this.vocabBuilderStateService.isLevelUpdated();
-    }
-
-    launchUserLevelSelector(): void {
-        const levelSelectorModalRef = this.modalService.open(
-            UserLevelSelectorAppModalComponent, {
-                ...DEFAULT_MODAL_OPTIONS,
-                centered: false,
-                backdrop: "static"
-            });
-        levelSelectorModalRef.componentInstance.level = this.getUserLevel();
-        levelSelectorModalRef.componentInstance.siteLanguage = this.identityService.getSiteLanguage();
-        levelSelectorModalRef.componentInstance.eventComplete
-            .pipe(takeUntil(this.getDestroyInterceptor()))
-            .subscribe(() => this.modalService.close());
     }
 
     isFirstLevel(): boolean {
