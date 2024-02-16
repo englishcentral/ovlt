@@ -29,7 +29,7 @@
         <div class="loading-level-test-score" *ngIf="isScoreCalculationLoading()">
             <span i18n>Calculating your score...</span>
             <div class="loading ms-2 d-inline">
-                <ec-loading-ring [themeClass]="'dark'" [size]="'small'"></ec-loading-ring>
+                <i class="fas fa-2x fa-spin fa-spinner"></i>
             </div>
         </div>
 
@@ -108,7 +108,7 @@
                                 <ng-template [ngIf]="isLevelUpdateProcessing()">
                                     <span i18n>Updating your level...</span>
                                     <div class="loading ms-2 d-inline">
-                                        <ec-loading-ring [themeClass]="'dark'" [size]="'small'"></ec-loading-ring>
+                                        <i class="fas fa-2x fa-spin fa-spinner"></i>
                                     </div>
                                 </ng-template>
                             </div>

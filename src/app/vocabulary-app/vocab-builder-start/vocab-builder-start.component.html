@@ -141,7 +141,7 @@
                         <ng-template [ngIf]="isWordListsLoading() || isVbLoading()">
                             <div class="loading-wrapper text-center py-4">
                                 <div class="loading-spinner">
-                                    <ec-loading-ring [themeClass]="'primary'" [size]="'medium'"></ec-loading-ring>
+                                    <i class="fas fa-2x fa-spin fa-spinner"></i>
                                 </div>
                             </div>
                         </ng-template>
@@ -162,7 +162,7 @@
                                             [class.text-tertiary]="!isLoadMoreEnabled()"
                                             (click)="onClickLoadMore()">
                                         <ng-template [ngIf]="isMoreLoading()">
-                                            <ec-loading-ring [themeClass]="'info'" [size]="'small'"></ec-loading-ring>
+                                            <i class="fas fa-2x fa-spin fa-spinner"></i>
                                             <span class="ps-2">Loading...</span>
                                         </ng-template>
                                         <ng-template [ngIf]="!isMoreLoading()">
@@ -192,9 +192,7 @@
                                 <div class="word-list-title">
                                     <span class="word-list-item-name d-block" i18n>{{ wordList.name }}</span>
                                     <!-- My words lists counts are fetched in async way after page is initialized-->
-                                    <ec-loading-ring [themeClass]="'dark'" [size]="'small'"
-                                                     *ngIf="isMyWordsListsCountsLoading() && !isVbLoading() && isMyWordsList(wordList.wordListTypeId)">
-                                    </ec-loading-ring>
+                                    <i *ngIf="isMyWordsListsCountsLoading() && !isVbLoading() && isMyWordsList(wordList.wordListTypeId)" class="fas fa-2x fa-spin fa-spinner"></i>
                                     <span class="word-list-rank" i18n>
                                         (List Size: {{ wordList.maxWordRank }})
                                     </span>
@@ -350,8 +348,7 @@
         <ng-template #wordListProgress let-wordListTypeId="wordListTypeId">
             <div class="word-list-progress ms-auto me-2"
                  *ngIf="!isMyWordsList(wordListTypeId) && getCurrentVocabListName()">
-                <ec-loading-ring [themeClass]="'dark'" [size]="'small'"
-                                 *ngIf="isWordListsProgressLoading() && !isVbLoading()"></ec-loading-ring>
+                <i *ngIf="isWordListsProgressLoading() && !isVbLoading()" class="fas fa-2x fa-spin fa-spinner"></i>
                 <span class="word-list-progress-percentage-text fw-bold"
                       *ngIf="!isWordListsProgressLoading() && !isMyWordsList(wordListTypeId)" i18n>
                     {{ getWordListProgressInPercentage(wordListTypeId) }}% Complete
@@ -496,7 +493,7 @@
 <ng-template [ngIf]="isQuizLoading() || (isAutoStart() && isVbLoading())">
     <div class="loading-wrapper h-100 d-flex flex-column justify-content-center">
         <div class="loading-spinner">
-            <ec-loading-ring [themeClass]="'primary'" [size]="'medium'"></ec-loading-ring>
+            <i class="fas fa-2x fa-spin fa-spinner"></i>
         </div>
     </div>
 </ng-template>

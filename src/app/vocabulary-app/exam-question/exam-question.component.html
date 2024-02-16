@@ -23,7 +23,7 @@
     <ng-template [ngIf]="isLoading()">
         <div class="loading-wrapper h-100 d-flex flex-column justify-content-center">
             <div class="loading-spinner">
-                <ec-loading-ring [themeClass]="'primary'" [size]="'medium'"></ec-loading-ring>
+                <i class="fas fa-2x fa-spin fa-spinner"></i>
             </div>
         </div>
     </ng-template>
@@ -428,10 +428,7 @@
                                     <i class="fas fa-plus icon-top"></i>
                                     <i class="far fa-head-side-brain icon-main"></i>
                                 </ng-template>
-
-                                <ec-loading-ring *ngIf="isKnownProcessing()"
-                                                 [themeClass]="'info'"
-                                                 [size]="'small'"></ec-loading-ring>
+                                <i *ngIf="isKnownProcessing()" class="fas fa-2x fa-spin fa-spinner"></i>
                             </button>
                             <span *ngIf="!isKnown()" class="mt-1 mark-known-text text-center"
                                   i18n>Remove from study</span>
