@@ -12,7 +12,7 @@ import {
 } from "@angular/core";
 import { NgbModal, NgbModalOptions, NgbModalRef } from "@ng-bootstrap/ng-bootstrap";
 import { forkJoin, map as rxJsMap, Observable, of, Subject } from "rxjs";
-import "global-styles/adaptive-quiz.css";
+import "global-styles/adaptive-quiz.scss";
 import { catchError, debounceTime, mergeMap, takeUntil, tap } from "rxjs/operators";
 import { DEFAULT_VOCAB_BUILDER_ACTIVITY } from "../../types/activity";
 import { DEFAULT_WORD_LIST_TYPE_ID, LAST_LEVEL_LIST, MY_WORDS_LISTS, WordList } from "../../types/word-list-reference";
@@ -104,7 +104,6 @@ export class VocabBuilderAppComponent extends SubscriptionAbstract implements On
     private classId: number;
     private classTestExamId: number;
     private sharedMeaningIds: number[];
-    private wordHeadIds: number[];
     private startingRank: number;
     private startingBand: number;
     private listRank: number;
@@ -176,10 +175,6 @@ export class VocabBuilderAppComponent extends SubscriptionAbstract implements On
         this.initializeProgressPublishers();
 
         this.setQuizDataSource();
-
-        // If quiz is started from View Words by selecting words then VB needs to take selected wordHeadIds
-        // TODO: remove this only sharedMeaningIds should remain
-        this.setSelectedWordHeadIds();
         // Same but with sharedMeaningIds
         this.setSelectedSharedMeaningIds();
 
@@ -882,10 +877,6 @@ export class VocabBuilderAppComponent extends SubscriptionAbstract implements On
         const styleId = this.vocabBuilderStateService.getVocabBuilderStyleIdByName(this.upperCaseFirstLetter(currentStyleName));
 
         this.updateCurrentSetting({vocabBuilderStyleId: styleId});
-    }
-
-    setSelectedWordHeadIds(): void {
-        this.wordHeadIds = this.vocabularyAppSharedService.getSelectedWordHeadIds();
     }
 
     setSelectedSharedMeaningIds(): void {
