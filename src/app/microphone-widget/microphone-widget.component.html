@@ -1,0 +1,174 @@
+<div class="microphone-widget-wrapper d-flex justify-content-center align-items-center">
+    <div class="audio-control-button-wrapper">
+        <div class="audio-control-button"
+             *ngIf="isAudioControlButtonsEnabled()"
+             [ngbTooltip]="getAudioErrorTooltip(audioErrorTooltip)"
+             triggers="click"
+             [placement]="getTooltipPlacement()">
+            <i class="far fa-ear" *ngIf="!getCurrentAudio().isPlaying" (click)="getCurrentAudio().play()"></i>
+            <i class="fas fa-stop text-danger" *ngIf="getCurrentAudio().isPlaying" (click)="getCurrentAudio().stop()"></i>
+        </div>
+    </div>
+
+    <ng-template #audioErrorTooltip>
+        <span class="tooltip-error-text" *ngIf="isAudioError()">The selected recording is not available to play.</span>
+    </ng-template>
+
+    <div class="record-control-wrapper">
+        <ng-template [ngIf]="!hasError()">
+            <div class="record-control-button mic-preparing"
+                 *ngIf="isMicPreparing()"
+                 id="mic-is-preparing">
+                <i class="fal fa-spinner fa-spin"></i>
+            </div>
+
+            <div class="record-control-button mic-ready"
+                 [class.mic-pulse-animation-enabled]="isMicPulseAnimationEnabled"
+                 *ngIf="isMicReady()"
+                 id="mic-is-ready"
+                 (click)="onClickStartRecording()"
+                 [ngbTooltip]="getMicReadyTooltip(startRecordingTooltipTemplate)"
+                 #recordingRejectionTooltip="ngbTooltip"
+                 [placement]="getTooltipPlacement()"
+                 triggers="manual"
+                 tooltipClass="speak-microphone-tooltip"
+                 [class.highlighted]="recordingRejectionTooltip"
+                 [ecTooltipRef]="recordingRejectionTooltip"
+                 [ecTooltipToggle]="isMicReady()"
+                 [autoClose]="isAutoCloseTooltipEnabled()">
+                <i class="fas fa-microphone record-microphone"></i>
+            </div>
+
+            <div class="record-control-button mic-stop"
+                 *ngIf="isMicRecording()"
+                 id="mic-is-recording"
+                 (click)="stopRecording()"
+                 [ngbTooltip]="getMicRecordingTooltip(stopRecordingTooltipTemplate)"
+                 #micStopTooltip="ngbTooltip"
+                 [placement]="getTooltipPlacement()"
+                 triggers="manual"
+                 tooltipClass="speak-microphone-tooltip"
+                 i18n-ngbTooltip
+                 [ecTooltipRef]="micStopTooltip"
+                 [ecTooltipToggle]="true"
+                 [autoClose]="isAutoCloseTooltipEnabled()">
+                <i class="text-danger fas fa-stop record-stop"></i>
+            </div>
+
+            <div class="record-control-button mic-processing"
+                 *ngIf="isMicProcessing()"
+                 id="mic-is-processing">
+                <i class="text-info fal fa-spinner fa-spin"></i>
+            </div>
+        </ng-template>
+
+        <ng-template [ngIf]="hasError()">
+            <div class="record-control-button mic-error"
+                 [class.mic-pulse-animation-enabled]="isMicPulseAnimationEnabled"
+                 *ngIf="hasError()"
+                 (click)="onClickStartRecording()"
+                 [ngbTooltip]="getRecordingRejectionTooltip(recordingRejectionTooltipTemplate)"
+                 #recordingRejectionTooltip="ngbTooltip"
+                 [placement]="getTooltipPlacement()"
+                 triggers="manual"
+                 tooltipClass="speak-microphone-tooltip"
+                 [class.highlighted]="recordingRejectionTooltip"
+                 [ecTooltipRef]="recordingRejectionTooltip"
+                 [ecTooltipToggle]="true"
+                 [autoClose]="isAutoCloseTooltipEnabled()">
+                <i class="fas fa-microphone record-microphone"></i>
+            </div>
+        </ng-template>
+    </div>
+</div>
+
+<ng-template #stopRecordingTooltipTemplate>
+    <span class="tooltip-text" *ngIf="!isMobile()" i18n>Click here to stop</span>
+    <span class="tooltip-text" *ngIf="isMobile()" i18n>Tap here to stop</span>
+</ng-template>
+
+<ng-template #startRecordingTooltipTemplate>
+    <span *ngIf="!isMobile()" class="tooltip-text" i18n>Click here and speak</span>
+    <span *ngIf="isMobile()" class="tooltip-text" i18n>Tap here and speak</span>
+</ng-template>
+
+<ng-template #recordingRejectionTooltipTemplate>
+    <ng-template [ngIf]="!isHttps()">
+        <span class="tooltip-error-text" i18n>Recording is only supported under HTTPS.</span>
+    </ng-template>
+
+    <ng-template [ngIf]="getState().isAudioConversionFailed()">
+        <span class="me-1 tooltip-error-text" i18n>No Audio detected from microphone</span>
+        <span class="mic-settings">
+            <span class="settings-icon-wrap"><span class="settings-icon"></span></span>
+            <span (click)="openMicrophoneSettings()" class="mic-settings-btn" i18n>Configure Microphone</span>
+        </span>
+    </ng-template>
+
+    <ng-template [ngIf]="getState().isRecordingRejected()">
+        <span *ngIf="isRejectionTooLoud()" class="tooltip-error-text" i18n>Please try recording again.</span>
+        <span *ngIf="isRejectionTooQuiet()" class="tooltip-error-text" i18n>Too quiet, please try recording again.</span>
+        <span *ngIf="isRejectionPoorSnr()" class="tooltip-error-text" i18n>Sorry, Please try again in a quiet surrounding.</span>
+        <span *ngIf="isRejectionJunk() || isRejectionPausing()" class="tooltip-error-text" i18n>Please speak all words clearly.</span>
+        <span *ngIf="isRejectionNoVoice()" class="tooltip-error-text" i18n>Sorry, we didn’t hear you clearly.</span>
+        <span *ngIf="isRejectionNarrowBand()" class="tooltip-error-text" i18n>Too quiet, please try recording again.</span>
+        <span *ngIf="isRejectionWrongLanguage()" class="tooltip-error-text" i18n>I think I heard you speaking a different language... Could you try again?</span>
+        <span *ngIf="isRejectionShortSentence()" class="tooltip-error-text" i18n>Keep on going! Please speak a minimum of 3 words.</span>
+        <ng-template [ngIf]="isRejectionMismatchRecording()">
+            <ng-template [ngIf]="isCmsMode()">
+                <span>Mismatch detected please report to speech team</span>
+            </ng-template>
+            <ng-template [ngIf]="!isCmsMode()">
+                <span i18n>Sorry, something went wrong.</span>
+                <span i18n>Please try recording again.</span>
+            </ng-template>
+        </ng-template>
+    </ng-template>
+
+    <ng-template [ngIf]="getState().isRecordingError()">
+        <span class="tooltip-error-text" i18n>Please try recording again.</span>
+    </ng-template>
+
+    <ng-template [ngIf]="getState().isRecognizerDown()">
+        <span class="me-1 tooltip-error-text" i18n>Recording temporarily unavailable.</span>
+        <span class="tooltip-error-text" i18n>Please try again later.</span>
+    </ng-template>
+
+    <ng-template [ngIf]="getState().isSecureOriginError()">
+        <span class="tooltip-error-text" i18n>Speak recording requires an HTTPS page.</span>
+    </ng-template>
+
+    <ng-template [ngIf]="getState().isMicrophonePermissionDenied() && !isTwaEnabled()">
+        <span class="me-1 tooltip-error-text" i18n>Please give permission to your microphone.</span>
+        <span class="tooltip-error-text" i18n>Then try recording again</span>
+    </ng-template>
+
+    <ng-template [ngIf]="getState().isMicrophonePermissionDenied() && isTwaEnabled()">
+        <span class="me-1 tooltip-error-text" i18n>Please give permission to use the microphone in EnglishCentral app and in Google Chrome then try recording again.</span>
+    </ng-template>
+
+    <ng-template [ngIf]="getState().isPlatformNotSupported()">
+        <span class="me-1 tooltip-error-text" i18n>Your current browser doesn't support speech.</span>
+        <span class="tooltip-error-text" i18n>Please try another browser</span>
+    </ng-template>
+
+    <ng-template [ngIf]="getState().isDeviceNotReadable()">
+        <span class="me-1 tooltip-error-text" i18n>Your microphone is currently in use by another program.</span>
+        <span class="tooltip-error-text" i18n>Please try again</span>
+    </ng-template>
+
+    <ng-template [ngIf]="getState().isDeviceNotFound()">
+        <span class="me-1 tooltip-error-text" i18n>No microphone device detected.</span>
+        <span class="tooltip-error-text" i18n>Please try again</span>
+    </ng-template>
+
+    <ng-template [ngIf]="getState().isOverconstrained()">
+        <span class="me-1 tooltip-error-text" i18n>Microphone conflict detected.</span>
+        <span class="tooltip-error-text" i18n>Please try again</span>
+    </ng-template>
+
+    <ng-template [ngIf]="getState().isGenericError()">
+        <span class="me-1 tooltip-error-text" i18n>An error has occurred.</span>
+        <span class="tooltip-error-text" i18n>Please try again</span>
+    </ng-template>
+</ng-template>

@@ -19,27 +19,21 @@ import { XDialogLine } from "../../../types/dialog-line";
 import { XQuizWord } from "../../../types/vocabulary-quiz";
 import { of, Subject, timer } from "rxjs";
 import {
-    createStreamName,
+    createStreamName, HTTP_REQUEST_HANDLER,
     MODE_WORD,
-    RecognizerModelService
-} from "../../../../model/recognizer/recognizer-model.service";
+    RecognizerModelService,
+    WEBSOCKET_REQUEST_HANDLER
+} from "../../model/recognizer-model.service";
 import { catchError, finalize, first as rxJsFirst, takeUntil } from "rxjs/operators";
-import { buildSessionTimeKey } from "../../../../common-app/progress-app/event-factory.service";
-import { RECOGNIZER_KALDI, RecognizerResult, WordResult } from "../../../types/speech/recognizer-result";
+import { RECOGNIZER_KALDI, RecognizerResult, WordResult } from "../../../types/recognizer-result";
 import {
     MODE_MULTIPLE_CHOICE,
     MODE_REVERSE_MATCH_MULTIPLE_CHOICE,
     MODE_STRICT_TYPING,
     MODE_TYPING
 } from "../../../types/vocab-builder-reference";
-import {
-    MicrophoneHandlerService
-} from "../../../../activity-app/shared-activity/microphone/microphone-handler.service";
-import { ActivityConstants } from "../../../../activity-app/shared-activity/activity-constants";
-import {
-    ERROR_NOT_SUPPORTED,
-    ERROR_REJECTED
-} from "../../../../activity-app/shared-activity/microphone/microphone-constants";
+import { MicrophoneHandlerService } from "../../microphone-widget/microphone-handler.service";
+import { ERROR_NOT_SUPPORTED, ERROR_REJECTED } from "../../microphone-widget/microphone-constants";
 import { NgbModal, NgbModalOptions, NgbModalRef } from "@ng-bootstrap/ng-bootstrap";
 import {
     ExamQuestionCheckedEvent,
@@ -47,13 +41,6 @@ import {
     LetterInput,
     ModeHandlerAbstract
 } from "./mode-handler/mode-handler-abstract";
-import {
-    ModeHandlerAdapter
-} from "../../../../activity-app/shared-activity/exam-question/mode-handler/mode-handler-adapter";
-import { TypingSharedService } from "../../../../class-test-app/shared/typing-shared.service";
-import { VocabBuilderModelService } from "../../../../model/vocab-builder-model.service";
-import { RecognizerSettingService } from "../../../../model/recognizer/recognizer-setting.service";
-import { VideoFactoryService } from "../../../../common-app/video-app/video-factory.service";
 import {
     assign,
     compact,
@@ -77,10 +64,6 @@ import {
     toLower,
     uniqBy
 } from "lodash-es";
-import { AudioInstance } from "../../../../shared/audio/audio-instance";
-import { HTTP_REQUEST_HANDLER, WEBSOCKET_REQUEST_HANDLER } from "../../../types/speech/transport";
-import { createAudioInstance } from "../../../../shared/audio/html-audio-instance";
-import { LearnStateService } from "../../player-app/overlay/learn/learn-state.service";
 import { MicrophoneWidgetStateService } from "../../microphone-widget/microphone-widget-state.service";
 import { XWordDetail } from "../../../types/x-word";
 import { Logger } from "../../common/logger";
@@ -89,6 +72,12 @@ import { CountdownTimer, CountdownTimerTick, TIMER_MODE_TOTAL_REMAINING_TIME } f
 import { Browser } from "../../common/browser";
 import { FeatureService } from "../../common/feature.service";
 import { IdentityService } from "../../common/identity.service";
+import { VideoFactoryService } from "../../video-app/video-factory.service";
+import { VocabBuilderModelService } from "../../model/vocab-builder-model.service";
+import { RecognizerSettingService } from "../../microphone-widget/recognizer-setting.service";
+import { TypingSharedService } from "../../common/typing-shared.service";
+import { createAudioInstance } from "../../common/html-audio-instance";
+import { ModeHandlerAdapter } from "./mode-handler/mode-handler-adapter";
 
 const THRESHOLD_WARNING = 0.5;
 const THRESHOLD_DANGER = 0.25;
@@ -205,6 +194,7 @@ export class ExamQuestionComponent extends SubscriptionAbstract implements OnCha
     private example: XDialogLine;
 
     private isFirstKnownWord: boolean = true;
+    private virtualKeyboardVisibility: boolean = false;
 
     private pre: string = "";
     private post: string = "";
@@ -216,7 +206,7 @@ export class ExamQuestionComponent extends SubscriptionAbstract implements OnCha
     private modeHandler: ModeHandlerAbstract;
     private rejectionCounter: number = 0;
 
-    private audio: AudioInstance;
+    private audio;
     private modalRef: NgbModalRef;
 
     constructor(private microphoneWidgetStateService: MicrophoneWidgetStateService,
@@ -230,7 +220,6 @@ export class ExamQuestionComponent extends SubscriptionAbstract implements OnCha
                 private zone: NgZone,
                 private vocabBuilderModelService: VocabBuilderModelService,
                 private typingSharedService: TypingSharedService,
-                private learnStateService: LearnStateService,
                 private changeDetectorRef: ChangeDetectorRef) {
         super();
     }
@@ -247,7 +236,7 @@ export class ExamQuestionComponent extends SubscriptionAbstract implements OnCha
 
     ngOnInit(): void {
         this.subscribeKeyboardEvents();
-        this.learnStateService.setVirtualKeyboardVisibility(true);
+        this.setVirtualKeyboardVisibility(true);
 
         this.microphoneWidgetStateService.getChange$().pipe(
             takeUntil(this.getDestroyInterceptor())
@@ -316,6 +305,14 @@ export class ExamQuestionComponent extends SubscriptionAbstract implements OnCha
             const correctAnswer = this.orthography || get(this.quizWord, "word.label");
             this.answerSet = correctAnswer.split("");
         }
+    }
+
+    setVirtualKeyboardVisibility(visible: boolean): void {
+        this.virtualKeyboardVisibility = visible;
+    }
+
+    isVirtualKeyboardVisible(): boolean {
+        return this.virtualKeyboardVisibility;
     }
 
     private startTimer(): void {
@@ -531,7 +528,7 @@ export class ExamQuestionComponent extends SubscriptionAbstract implements OnCha
     }
 
     private reset(): void {
-        this.learnStateService.setVirtualKeyboardVisibility(true);
+        this.setVirtualKeyboardVisibility(true);
         this.pristine = true;
         this.known = false;
         this.pre = "";
@@ -964,7 +961,7 @@ export class ExamQuestionComponent extends SubscriptionAbstract implements OnCha
             && this.isMobile()
             && !this.isChecked()
             && !this.showVirtualKeyboard()
-            && this.learnStateService.isVirtualKeyboardVisible();
+            && this.isVirtualKeyboardVisible();
     }
 
     isFullKeyboardEnabled(): boolean {
@@ -1252,11 +1249,11 @@ export class ExamQuestionComponent extends SubscriptionAbstract implements OnCha
     }
 
     hideVirtualKeyboard(): void {
-        this.learnStateService.setVirtualKeyboardVisibility(false);
+        this.setVirtualKeyboardVisibility(false);
     }
 
     onClick(): void {
-        this.learnStateService.setVirtualKeyboardVisibility(true);
+        this.setVirtualKeyboardVisibility(true);
     }
 
     onSkip(): void {
@@ -1355,7 +1352,7 @@ export class ExamQuestionComponent extends SubscriptionAbstract implements OnCha
         }
 
         let accountId = this.identityService.getAccountId();
-        let sessionTypeId = ActivityConstants.SESSION_TYPE_CLIPLIST_WORD;
+        let sessionTypeId = "SESSION_TYPE_CLIPLIST_WORD";
         let currentAudioInput = microphoneHandler?.getCurrentMicrophoneSelection();
         let fileTransferMode = this.getFileTransferMode();
 
@@ -1370,9 +1367,9 @@ export class ExamQuestionComponent extends SubscriptionAbstract implements OnCha
             microphone: currentAudioInput?.name ?? "",
             previousAudioLevelCount: 0,
             previousAverageVoiceLevel: 0,
-            sessionTypeID: ActivityConstants.SESSION_TYPE_CLIPLIST_WORD,
+            sessionTypeID: "SESSION_TYPE_CLIPLIST_WORD",
             streamName: createStreamName(accountId, sessionTypeId),
-            sessionLineTimeKey: buildSessionTimeKey()
+            sessionLineTimeKey: new Date().getTime()
         };
 
         this.microphoneWidgetStateService.setMicProcessing();

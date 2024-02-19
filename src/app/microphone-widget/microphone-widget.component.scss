@@ -1,0 +1,92 @@
+@import "global-styles/themes/breakpoints";
+@import "global-styles/themes/mixins";
+@import "speak-microphone";
+
+.microphone-widget-wrapper {
+    position: relative;
+    margin: auto;
+}
+
+.microphone-widget-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+    border-radius: 50%;
+}
+
+.audio-control-button-wrapper {
+    padding-right: 2em;
+    min-width: 4.8em;
+}
+
+.audio-control-button {
+    @extend .microphone-widget-button;
+    width: 2.8em;
+    height: 2.8em;
+    cursor: pointer;
+    @include ec-box-shadow();
+}
+
+.record-control-wrapper {
+    margin-right: 4.8em;
+}
+
+.record-control-button {
+    @extend .microphone-widget-button;
+    width: 3.5em;
+    height: 3.5em;
+    color: #333;
+    opacity: 0.9;
+    cursor: pointer;
+}
+
+.mic-ready, .mic-error {
+    i {
+        font-size: 1.5em;
+    }
+    border: 1px solid #d3d3d300;
+}
+
+.mic-pulse-animation-enabled {
+    box-shadow: 0 0 10px 0 #d31826;
+    animation: pulse-effect 1s infinite;
+    @keyframes pulse-effect {
+        0% {
+            box-shadow: 0 0 10px 0 #d31826;
+        }
+        50% {
+            box-shadow: 0 0 0 0 #d31826;
+        }
+        100% {
+            box-shadow: 0 0 10px 0 #d31826;
+        }
+    }
+}
+
+.mic-processing, .mic-preparing {
+    @include ec-box-shadow();
+}
+
+.mic-stop {
+    @include ec-box-shadow();
+    cursor: pointer;
+}
+
+.mic-settings span {
+    vertical-align: middle;
+}
+
+.mic-settings-btn {
+    cursor: pointer;
+}
+
+.mic-settings-btn:hover {
+    color: #23A1DA;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+.tooltip-text {
+    color: #000;
+}

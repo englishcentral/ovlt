@@ -1,0 +1,22 @@
+export const ERROR_PERMISSION_DENIED: string = "errorPermissionDenied";
+export const ERROR_NOT_SUPPORTED: string = "errorNotSupported";
+export const ERROR_NOT_READABLE: string = "errorNotReadable";
+export const ERROR_NO_DEVICE_FOUND: string = "errorNotFound";
+export const ERROR_OVERCONSTRAINED: string = "errorOverconstrained";
+export const ERRORTEXT_MICROPHONE_SWF_MISSING: string = "microphone swf not detected - no function startRecording";
+export const ERRORTEXT_NO_MICROPHONES_FOUND: string = "No microphones found";
+export const ERROR_REJECTED: string = "errorRecordingRejected";
+export const ERROR_RECORDING: string = "errorRecording";
+export const ERROR_SECUREORIGIN: string = "errorSecureOrigin";
+export const ERROR_RECOGNIZERDOWN: string = "errorRecognizerDown";
+export const ERROR_THIRDPARTYAPPLICATION: string = "errorThirdPartyApplication";
+export const ERROR_AUDIOCONVERTIONFAILED: string = "errorAudioConversionFailed";
+export const ERROR_NO_TRANSCRIPTION_TEXT: string = "errorNoTranscriptionText";
+export const ERRORTEXT_SECUREORIGIN: string = "Only secure origins are allowed";
+export const ERRORTEXT_FAILEDCONVERTINGAUDIO: string = "failed converting audio uploaded file";
+export const ERROR_GET_USER_MEDIA_DISABLED: string = "getUserMedia Disabled";
+export const ERROR_RECORDING_TIMEOUT: string = "errorRecordingTimeout";
+export const ERROR_GENERIC = "genericError";
+export const REJECTION_EMPTY_FILE: string = "REJECTION_EMPTY_FILE";
+
+export const DEFAULT_MICROPHONE_RECORDING_TIME_SECONDS = 60;

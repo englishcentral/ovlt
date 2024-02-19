@@ -1,0 +1,16 @@
+<div class="video-container h-100"
+     [class.d-none]="hasError() || !isReady()"
+>
+    <video controls playsinline
+           disableRemotePlayback="true"
+           #videoElement
+           *ngIf="getVideoId()"
+           [id]="getVideoId()"
+           [ngClass]="getVideoClass()"
+           [ngStyle]="getVideoStyle()"
+           class="video-js vjs-default-skin vjs-big-play-centered w-100 h-100"
+    ></video>
+</div>
+<div [class.d-none]="!hasError()"
+     [ngStyle]="getPosterStyle()">
+</div>
