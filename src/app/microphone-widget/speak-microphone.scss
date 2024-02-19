@@ -11,7 +11,7 @@
 }
 
 ::ng-deep .speak-error .settings-icon {
-    background: url("~global-assets/player-app/gear_icon.png") no-repeat;
+    background: url("assets/microphone-widget/gear_icon.png") no-repeat;
     background-size: contain;
     position: relative;
     height: 100%;
@@ -26,12 +26,12 @@
 }
 
 ::ng-deep .play-pause-button {
-    background-image: url("~global-assets/player-app/play-pause-sprite.png");
+    background-image: url("assets/microphone-widget/play-pause-sprite.png");
     background-size: 300%;
 }
 
 ::ng-deep .record-button {
-    background-image: url("~global-assets/player-app/record-stop-sprite.png");
+    background-image: url("assets/microphone-widget/record-stop-sprite.png");
     background-size: 200%;
 }
 
@@ -58,7 +58,7 @@
 }
 
 ::ng-deep .ear-icon-base {
-    background-image: url("~global-assets/speaking-test/ear-icon-base.png");
+    background-image: url("assets/microphone-widget/ear-icon-base.png");
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center center;

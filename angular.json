@@ -17,6 +17,11 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "./src"
+              ]
+            },
             "outputPath": "dist/ovlt",
             "index": "src/index.html",
             "main": "src/main.ts",
