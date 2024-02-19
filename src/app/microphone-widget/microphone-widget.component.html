@@ -33,8 +33,6 @@
                  triggers="manual"
                  tooltipClass="speak-microphone-tooltip"
                  [class.highlighted]="recordingRejectionTooltip"
-                 [ecTooltipRef]="recordingRejectionTooltip"
-                 [ecTooltipToggle]="isMicReady()"
                  [autoClose]="isAutoCloseTooltipEnabled()">
                 <i class="fas fa-microphone record-microphone"></i>
             </div>
@@ -49,8 +47,6 @@
                  triggers="manual"
                  tooltipClass="speak-microphone-tooltip"
                  i18n-ngbTooltip
-                 [ecTooltipRef]="micStopTooltip"
-                 [ecTooltipToggle]="true"
                  [autoClose]="isAutoCloseTooltipEnabled()">
                 <i class="text-danger fas fa-stop record-stop"></i>
             </div>
@@ -73,8 +69,6 @@
                  triggers="manual"
                  tooltipClass="speak-microphone-tooltip"
                  [class.highlighted]="recordingRejectionTooltip"
-                 [ecTooltipRef]="recordingRejectionTooltip"
-                 [ecTooltipToggle]="true"
                  [autoClose]="isAutoCloseTooltipEnabled()">
                 <i class="fas fa-microphone record-microphone"></i>
             </div>

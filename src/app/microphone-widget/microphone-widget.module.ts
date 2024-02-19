@@ -3,10 +3,9 @@ import { MicrophoneWidgetComponent } from "./microphone-widget.component";
 import { MicrophoneWidgetStateService } from "./microphone-widget-state.service";
 import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
 import { CommonModule } from "@angular/common";
-import { RecognizerModelService } from "../model/recognizer-model.service";
-import { RecognizerSettingService } from "./recognizer-setting.service";
 import { BrowserMediaDeviceService } from "../common/browser-media-device.service";
 import { MicrophoneHandlerService } from "./microphone-handler.service";
+import { MicrophoneModule } from "./microphone-module";
 
 @NgModule({
     imports: [
@@ -17,8 +16,7 @@ import { MicrophoneHandlerService } from "./microphone-handler.service";
         MicrophoneWidgetStateService,
         BrowserMediaDeviceService,
         MicrophoneHandlerService,
-        RecognizerModelService,
-        RecognizerSettingService,
+        MicrophoneModule
     ],
     declarations: [
         MicrophoneWidgetComponent

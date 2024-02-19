@@ -1,19 +1,7 @@
 import { Injectable, NgZone } from "@angular/core";
-import {
-    getStreamRecycleRequired,
-    getSupportedMediaRecorderFormat,
-    getUserMedia
-} from "../../../core/browser-navigator";
 import { MicrophoneHandler, MicrophoneRecordingOptions } from "./microphone-handler";
-import { AnalyticsService } from "../../../core/analytics";
 import { EncoderHandlerAbstract } from "./encoder/encoder-handler-abstract";
-import { GlobalSettingService } from "../../../core/global-setting.service";
-import { BrowserMediaDeviceService } from "../../../core/browser-media-device.service";
-import { Logger } from "../../../core/logger/logger";
-import { Emitter } from "../../../core/emitters/emitter";
 import { Observable, of, Subscription, timer } from "rxjs";
-import { MicrophoneAudioOutputStream } from "./microphone-audio-output-stream";
-import { Instrumentation } from "../../../core/instrumentation/instrumentation";
 import { mergeMap, takeUntil } from "rxjs/operators";
 import {
     ENCODER_FLAC,
@@ -22,11 +10,14 @@ import {
     ENCODER_NONE,
     ENCODER_WAV,
     SOLUTION_AUTO
-} from "../../../model/types/speech/encoder";
-import { FeatureService } from "../../../core/feature.service";
+} from "../../types/encoder";
 import { assign, get } from "lodash-es";
-import { ActivitySettingService } from "../activity-setting.service";
-import { BrowserMediaDevice } from "../../../core/browser-media-device";
+import { Emitter } from "../common/emitter";
+import { Logger } from "../common/logger";
+import { BrowserMediaDeviceService } from "../common/browser-media-device.service";
+import { getStreamRecycleRequired, getSupportedMediaRecorderFormat, getUserMedia } from "../common/browser-navigator";
+import { MicrophoneAudioOutputStream } from "./microphone-audio-output-stream";
+import { BrowserMediaDevice } from "../common/browser-media-device";
 
 
 @Injectable({providedIn: "root"})
@@ -42,11 +33,7 @@ export class NativeMicrophoneHandlerService implements MicrophoneHandler {
     private handler?: EncoderHandlerAbstract;
     private currentConstraints?: MediaStreamConstraints;
 
-    constructor(private analyticsService: AnalyticsService,
-                private globalSettingService: GlobalSettingService,
-                private featureService: FeatureService,
-                private browserMediaDeviceService: BrowserMediaDeviceService,
-                private activitySettingService: ActivitySettingService,
+    constructor(private browserMediaDeviceService: BrowserMediaDeviceService,
                 private ngZone: NgZone) {
     }
 
@@ -82,7 +69,7 @@ export class NativeMicrophoneHandlerService implements MicrophoneHandler {
     }
 
     isDebugEncoder(): boolean {
-        return this.featureService.isDebugMode();
+        return false;
     }
 
     getConstraints(): MediaStreamConstraints {
@@ -91,12 +78,6 @@ export class NativeMicrophoneHandlerService implements MicrophoneHandler {
 
     startRecording(micRecordingOptions: MicrophoneRecordingOptions): Promise<any> {
         this.recording = true;
-
-        Instrumentation.sendEvent("microphone", {
-            action: "start",
-            recognizerType: micRecordingOptions.recognizerType
-        });
-
         this.startTimeOut();
 
         return this.ngZone.runOutsideAngular(() => {
@@ -211,7 +192,7 @@ export class NativeMicrophoneHandlerService implements MicrophoneHandler {
                 return solution;
             case ENCODER_MP4:
                 const {WorkerEncoder} = await import("./encoder/worker-encoder");
-                this.handler = new WorkerEncoder(this.analyticsService);
+                this.handler = new WorkerEncoder();
                 return solution;
             case ENCODER_FLAC:
                 const {FlacEncoder} = await import("./encoder/flac-encoder");
@@ -227,7 +208,7 @@ export class NativeMicrophoneHandlerService implements MicrophoneHandler {
     }
 
     protected detectHandler(): string | undefined {
-        let nativeEncoderFeature = this.featureService.getFeature("speechEncoderHttp");
+        let nativeEncoderFeature = SOLUTION_AUTO;
         if (nativeEncoderFeature && nativeEncoderFeature !== SOLUTION_AUTO) {
             this.logger.log(`http - feature knob encoder - ${nativeEncoderFeature}`);
             return nativeEncoderFeature;
@@ -261,7 +242,7 @@ export class NativeMicrophoneHandlerService implements MicrophoneHandler {
     }
 
     isAutoAdjust(): boolean {
-        return this.activitySettingService.getLocalUserSetting("autoAdjustMicrophoneGain") ?? true;
+        return true;
     }
 
     setMaxSeconds(maxSeconds: number): void {
@@ -299,7 +280,7 @@ export class NativeMicrophoneHandlerService implements MicrophoneHandler {
     }
 
     processAutoAdjustGain(gain: number): void {
-        const autoAdjust = this.activitySettingService.getLocalUserSetting("autoAdjustMicrophoneGain") ?? true;
+        const autoAdjust = true;
         if (autoAdjust && gain > 0) {
             this.setGain(gain);
         }

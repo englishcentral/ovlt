@@ -1,4 +1,5 @@
-import { Logger } from "./logger/logger";
+import { Logger } from "./logger";
+
 
 export class BrowserMediaDevice {
     gain?: number;

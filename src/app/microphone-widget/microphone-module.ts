@@ -1,15 +1,11 @@
 import { NgModule } from "@angular/core";
-import { RecognizerSettingService } from "../../../model/recognizer/recognizer-setting.service";
-import { RecognizerModelService } from "../../../model/recognizer/recognizer-model.service";
-import {
-    FileRequestHandlerAdapterService
-} from "../../../shared/file-request-handler/file-request-handler-adapter.service";
+import { RecognizerModelService } from "../model/recognizer-model.service";
+import { RecognizerSettingService } from "./recognizer-setting.service";
 
 @NgModule({
     providers: [
         RecognizerModelService,
-        RecognizerSettingService,
-        FileRequestHandlerAdapterService
+        RecognizerSettingService
     ]
 })
 export class MicrophoneModule {

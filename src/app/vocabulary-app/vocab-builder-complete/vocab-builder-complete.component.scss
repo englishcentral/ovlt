@@ -24,17 +24,17 @@
   height: 1.75em;
 
   &.practice-icon {
-    background: url("~global-assets/vocab-builder/vocab-builder-icon-bw.png") no-repeat center center;
+    background: url("/assets/adaptive-quiz/vocab-builder-icon-bw.png") no-repeat center center;
     background-size: contain;
   }
 
   &.ovlt-icon {
-    background: url("~global-assets/vocab-builder/ovlt-bw.png") no-repeat center center;
+    background: url("/assets/adaptive-quiz/ovlt-bw.png") no-repeat center center;
     background-size: contain;
   }
 
   &.test-icon {
-    background: url("~global-assets/vocab-builder/test-icon.png") no-repeat center center;
+    background: url("/assets/adaptive-quiz/test-icon.png") no-repeat center center;
     background-size: contain;
   }
 }

@@ -1,7 +1,6 @@
-import { MediaRecorder } from "../model/types/media-recorder";
 import { Browser } from "./browser";
-import { ERROR_GET_USER_MEDIA_DISABLED } from "../activity-app/shared-activity/microphone/microphone-constants";
 import { get, toLower } from "lodash-es";
+import { ERROR_GET_USER_MEDIA_DISABLED } from "../microphone-widget/microphone-constants";
 
 declare var navigator: any;
 
@@ -34,12 +33,14 @@ export const getSupportedMediaRecorderFormat = (isStreaming: boolean): MediaReco
         {container: "webm", codec: "opus", streaming: true}
     ];
 
+    // @ts-ignore
     if (!mediaRecorder.isTypeSupported) {
         return RECOGNIZER_SUPPORTED_FORMATS[0];
     }
 
     const match = RECOGNIZER_SUPPORTED_FORMATS.find(format => {
         const mimeType = generateAudioMimeType(format.container, format?.codec);
+        // @ts-ignore
         return (!isStreaming || format.streaming) && mediaRecorder.isTypeSupported(mimeType);
     });
 

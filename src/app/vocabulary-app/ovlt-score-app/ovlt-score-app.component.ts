@@ -10,7 +10,6 @@ import {
 } from "../../../types/vocab-level-test";
 import { Difficulty } from "../../../types/difficulty";
 import { forkJoin } from "rxjs";
-import { FeatureService } from "../../common/feature.service";
 import { SubscriptionAbstract } from "../../subscription.abstract";
 import { Logger } from "../../common/logger";
 import { IdentityService } from "../../common/identity.service";
@@ -34,7 +33,6 @@ export class OvltScoreAppComponent extends SubscriptionAbstract implements OnIni
     constructor(private vocabBuilderModelService: VocabBuilderModelService,
                 private vocabBuilderProgressService: VocabBuilderProgressService,
                 private identityService: IdentityService,
-                private featureService: FeatureService,
                 private changeDetectorRef: ChangeDetectorRef) {
         super();
     }
@@ -97,7 +95,7 @@ export class OvltScoreAppComponent extends SubscriptionAbstract implements OnIni
     }
 
     isDebugMode(): boolean {
-        return this.featureService.isDebugMode();
+        return false;
     }
 
     getMicroLevel(): number {

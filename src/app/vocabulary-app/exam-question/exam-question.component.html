@@ -65,9 +65,7 @@
         <div class="question-label" *ngIf="showWordPronunciation()">
             <div class="word-orthography"
                  [ngClass]="{'word-playing text-info': isAudioPlaying()}"
-                 ecAudioPlayback
-                 [playbackUrl]="getQuizWord().audioURL"
-                 [playbackTriggers]=getPlayBackTriggers()>
+            >
                 <span class="audio-play fas fa-volume-up me-2"></span>
                 <span>{{ getQuizWord().label }}</span>
             </div>
@@ -163,7 +161,7 @@
                    [class.uncertain]="isUncertain(i)"
                    [class.text-uppercase]="isUppercase(i) && !getPre()"
                    [class.blinking-cursor]="shouldShowBlinkingCursor(i)"
-                   [ecFocusWhen]="isSelected(i)"/>
+            />
             </span>
             </div>
 
@@ -281,12 +279,6 @@
                     </div>
 
                     <div class="mic-container">
-                        <ec-speech-meter
-                                class="w-100"
-                                [amplification]="2.0"
-                                [waveList]="getWaveList()"
-                        ></ec-speech-meter>
-
                         <ec-microphone-widget
                                 [micReadyTooltipTemplate]="getRejectionTooltipTemplate(recordingRejectionTooltipTemplate)"
                                 [maxRecordingTimeSeconds]="getRecordingTimeSetting()"

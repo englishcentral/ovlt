@@ -2,6 +2,7 @@ import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { OvltScoreAppComponent } from "./ovlt-score-app.component";
 import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
+import { DifficultyIndicatorModule } from "../../difficulty-indicator/difficulty-indicator.module";
 
 @NgModule({
     declarations: [
@@ -12,7 +13,8 @@ import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
     ],
     imports: [
         CommonModule,
-        NgbModule
+        NgbModule,
+        DifficultyIndicatorModule
     ]
 })
 export class OvltScoreAppModule {

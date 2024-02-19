@@ -2,7 +2,7 @@ import { ANIMATION_FRAME_INTERVAL, EncoderHandlerAbstract } from "./encoder-hand
 import { MicrophoneRecordingOptions } from "../microphone-handler";
 import { interval, Observable, Subject } from "rxjs";
 import { takeUntil } from "rxjs/operators";
-import { RecordingMediaBlob } from "../../../../model/types/speech/encoder";
+import { RecordingMediaBlob } from "../../../types/encoder";
 
 const SAMPLE_RATE = 16000;
 
@@ -157,27 +157,24 @@ export class FlacEncoder extends EncoderHandlerAbstract {
             return this.currentPromise;
         }
 
-        this.currentPromise = new Promise((resolve, reject) => {
-            require.ensure([], async () => {
-                try {
-                    require("file-loader?name=[name].[ext]!./stream-encoder/flac/flac-stream-encoder.wasm");
-                    const {FlacStreamEncoder} = require("./stream-encoder/flac/flac-stream-encoder.js");
+        this.currentPromise = new Promise(async(resolve, reject) => {
+            try {
+                const FlacStreamEncoder = await import("./stream-encoder/flac/flac-stream-encoder.js");
 
-                    this.encoder = new FlacStreamEncoder({
-                        blockSize: FlacEncoder.BUFFER_SIZE,
-                        sampleRate: this.sampleRate,
-                        onEncode: (encodedChunk) => {
-                            this.encodedBuffer$.next(encodedChunk);
-                        }
-                    });
+                this.encoder = new FlacStreamEncoder({
+                    blockSize: FlacEncoder.BUFFER_SIZE,
+                    sampleRate: this.sampleRate,
+                    onEncode: (encodedChunk) => {
+                        this.encodedBuffer$.next(encodedChunk);
+                    }
+                });
 
-                    await this.encoder.ready;
-                    resolve(this.encoder);
-                } catch (e) {
-                    this.cleanup();
-                    return reject(e);
-                }
-            });
+                await this.encoder.ready;
+                resolve(this.encoder);
+            } catch (e) {
+                this.cleanup();
+                return reject(e);
+            }
         });
 
         return this.currentPromise;

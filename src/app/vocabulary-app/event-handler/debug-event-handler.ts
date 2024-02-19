@@ -1,10 +1,9 @@
 import { Subscription } from "rxjs";
-import { EventHandler } from "./event-handler";
 import { NgZone } from "@angular/core";
-import { Emitter } from "../../core/emitters/emitter";
-import { Logger } from "../../core/logger/logger";
+import { Emitter } from "../../common/emitter";
+import { Logger } from "../../common/logger";
 
-export class DebugEventHandler implements EventHandler {
+export class DebugEventHandler {
     protected handlerType: string = "default";
     protected emitter = new Emitter();
     protected logger = new Logger();

@@ -1,10 +1,9 @@
-import { AudioService } from "./audio.service";
 import { Subscription, timer } from "rxjs";
-import { Emitter } from "../../core/emitters/emitter";
 import { isUndefined } from "lodash-es";
 import { AudioInstance } from "./audio-instance";
-import { Logger } from "../../core/logger/logger";
-import { getMediaErrorType, MEDIA_PERMISSION_DENIED } from "../../core/browser-navigator";
+import { Emitter } from "./emitter";
+import { getMediaErrorType, MEDIA_PERMISSION_DENIED } from "./browser-navigator";
+import { Logger } from "./logger";
 
 const AUDIO_TIMEOUT = 3000;
 
@@ -76,7 +75,7 @@ export class HtmlAudioInstance implements AudioInstance {
 
         if (this.isSameThread) {
             this.audio?.play();
-            this.emitter.publish(AudioService.ON_PLAY, this);
+            this.emitter.publish("ON_PLAY", this);
             this.isPlaying = true;
             return;
         }
@@ -95,7 +94,7 @@ export class HtmlAudioInstance implements AudioInstance {
                     return playPromise
                         .then(() => {
                             this.isPlaying = true;
-                            this.emitter.publish(AudioService.ON_PLAY, this);
+                            this.emitter.publish("ON_PLAY", this);
                             this.isLoading = false;
                         })
                         .catch((error) => {
@@ -106,7 +105,7 @@ export class HtmlAudioInstance implements AudioInstance {
 
                 // IE stuff here
                 this.isPlaying = true;
-                this.emitter.publish(AudioService.ON_PLAY, this);
+                this.emitter.publish("ON_PLAY", this);
                 this.isLoading = false;
                 return Promise.resolve();
             } catch (error) {
@@ -142,7 +141,7 @@ export class HtmlAudioInstance implements AudioInstance {
         this.audio.currentTime = 0;
         this.audio.pause();
         this.isPlaying = false;
-        this.emitter.publish(AudioService.ON_STOP, this);
+        this.emitter.publish("ON_STOP", this);
     }
 
     currentTime(time?: number): number {
@@ -173,23 +172,23 @@ export class HtmlAudioInstance implements AudioInstance {
     }
 
     onPlay(callback: () => void): Subscription {
-        return this.emitter.subscribe(AudioService.ON_PLAY, callback);
+        return this.emitter.subscribe("ON_PLAY", callback);
     }
 
     onDurationChange(callback: () => void): Subscription {
-        return this.emitter.subscribe(AudioService.ON_DURATION_CHANGE, callback);
+        return this.emitter.subscribe("ON_DURATION_CHANGE", callback);
     }
 
     onStop(callback: () => void): Subscription {
-        return this.emitter.subscribe(AudioService.ON_STOP, callback);
+        return this.emitter.subscribe("ON_STOP", callback);
     }
 
     onEnd(callback: () => void): Subscription {
-        return this.emitter.subscribe(AudioService.ON_END, callback);
+        return this.emitter.subscribe("ON_END", callback);
     }
 
     onTimeUpdate(callback: () => void): Subscription {
-        return this.emitter.subscribe(AudioService.ON_TIME_UPDATE, callback);
+        return this.emitter.subscribe("ON_TIME_UPDATE", callback);
     }
 
     setGain(gain: number) {
@@ -221,11 +220,11 @@ export class HtmlAudioInstance implements AudioInstance {
         }
         this.audio.onended = () => {
             this.isPlaying = false;
-            this.emitter.publish(AudioService.ON_END, this);
+            this.emitter.publish("ON_END", this);
         };
 
         this.audio.ontimeupdate = () => {
-            this.emitter.publish(AudioService.ON_TIME_UPDATE, this);
+            this.emitter.publish("ON_TIME_UPDATE", this);
         };
 
         this.audio.onerror = (error) => {
@@ -234,7 +233,7 @@ export class HtmlAudioInstance implements AudioInstance {
         };
 
         this.audio.ondurationchange = (a) => {
-            this.emitter.publish(AudioService.ON_DURATION_CHANGE, this);
+            this.emitter.publish("ON_DURATION_CHANGE", this);
         };
     }
 

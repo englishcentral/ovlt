@@ -1,11 +1,11 @@
 import { NgModule } from "@angular/core";
-import { CoreModule } from "../../core/core.module";
 import { VideoComponent } from "./video.component";
 import { VideoFactoryService } from "./video-factory.service";
+import { CommonModule } from "@angular/common";
 
 @NgModule({
     imports: [
-        CoreModule
+        CommonModule
     ],
     providers: [
         VideoFactoryService

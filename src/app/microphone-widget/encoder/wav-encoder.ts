@@ -1,11 +1,9 @@
 import { ANIMATION_FRAME_INTERVAL, EncoderHandlerAbstract } from "./encoder-handler-abstract";
-import { Instrumentation } from "../../../../core/instrumentation/instrumentation";
-import { Browser } from "../../../../core/browser";
 import { finalize, takeUntil } from "rxjs/operators";
 import { interval } from "rxjs";
 import { MicrophoneRecordingOptions } from "../microphone-handler";
-import { ENCODER_WAV, RecordingMediaBlob } from "../../../../model/types/speech/encoder";
-import { extractErrorString } from "../../../../core/instrumentation/instrumentation-utility";
+import { ENCODER_WAV, RecordingMediaBlob } from "../../../types/encoder";
+import { Browser } from "../../common/browser";
 
 const WAV_HEADER_LENGTH = 44;
 
@@ -116,13 +114,6 @@ export class WavEncoder extends EncoderHandlerAbstract {
                     takeUntil(this.stopRecording$)
                 )
                 .subscribe((e) => {
-                    Instrumentation.sendEvent("microphone", {
-                        response: "clientError",
-                        responseStatus: 0,
-                        encoder: ENCODER_WAV,
-                        errorMessage: extractErrorString(e),
-                        ...(micRecordingOptions?.trackingContext ?? {})
-                    });
                     this.cleanup();
                     reject(e);
                 });
@@ -250,7 +241,7 @@ export class WavEncoder extends EncoderHandlerAbstract {
     private generateWorker(): Worker {
         if (!this.encoderWorker) {
             this.logger.log("WAV encoder - web worker");
-            let {default: workerFileName} = require(`file-loader!./worker/wav-encoder-worker.js`);
+            let workerFileName = "worker/wav-encoder-worker.js";
 
             try {
                 this.encoderWorker = new Worker(workerFileName);

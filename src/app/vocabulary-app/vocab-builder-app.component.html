@@ -1,4 +1,4 @@
-<div i18n class="back-button-wrapper quiz-back ms-1" *ngIf="isBackButtonVisible()" (click)="navigateBack()">
+<div i18n class="back-button-wrapper quiz-back ms-1" *ngIf="isBackButtonVisible()">
     <i class="fas fa-arrow-left"></i>
     <div class="back-button-label">
         Back
@@ -35,7 +35,6 @@
                         [levelTest]="isLevelTest()"
                         [quizWord]="getCurrentQuizWord()"
                         [wordInstanceId]="getWordInstanceId()"
-                        [accountPronunciationWordId]="getAccountPronunciationWordId()"
                         [activityTypeId]="getActivityTypeId()"
                         [courseId]="getCourseId()"
                         [hintLength]="1"

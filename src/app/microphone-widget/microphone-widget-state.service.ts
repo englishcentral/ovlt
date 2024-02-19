@@ -1,13 +1,13 @@
 import { Observable, Subject, Subscription } from "rxjs";
 import { Injectable } from "@angular/core";
-import { Emitter } from "../../../core/emitters/emitter";
+import { Emitter } from "../common/emitter";
 import {
     getMediaErrorType,
     MEDIA_NOT_FOUND,
     MEDIA_NOT_READABLE,
     MEDIA_OVERCONSTRAINED,
     MEDIA_PERMISSION_DENIED
-} from "../../../core/browser-navigator";
+} from "../common/browser-navigator";
 import {
     ERROR_AUDIOCONVERTIONFAILED,
     ERROR_GENERIC,
@@ -24,11 +24,10 @@ import {
     ERRORTEXT_MICROPHONE_SWF_MISSING,
     ERRORTEXT_NO_MICROPHONES_FOUND,
     ERRORTEXT_SECUREORIGIN
-} from "../../../activity-app/shared-activity/microphone/microphone-constants";
-import { FeatureService } from "../../../core/feature.service";
-import { Logger } from "../../../core/logger/logger";
+} from "./microphone-constants";
 import { includes, isEmpty, isString } from "lodash-es";
-import { RecognizerStatus } from "../../../model/types/speech/recognizer-result";
+import { RecognizerStatus } from "../../types/recognizer-result";
+import { Logger } from "../common/logger";
 
 const STATUS_MIC_PREPARING: string = "micPreparing";
 const STATUS_MIC_READY: string = "micReady";
@@ -47,7 +46,7 @@ export class MicrophoneWidgetStateService {
     private change$ = new Subject<void>();
     private startRecording$ = new Subject<void>();
 
-    constructor(private featureService: FeatureService) {
+    constructor() {
     }
 
     getChange$(): Observable<void> {
@@ -88,9 +87,6 @@ export class MicrophoneWidgetStateService {
     }
 
     setMicPreparing(): void {
-        if (!this.featureService.getFeature("isSpeakRecordingPreparingStateEnabled")) {
-            return this.setStatus(STATUS_MIC_RECORDING);
-        }
         this.setStatus(STATUS_MIC_PREPARING);
     }
 

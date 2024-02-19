@@ -1,14 +1,11 @@
 import { Injectable } from "@angular/core";
 import { MicrophoneHandler } from "./microphone-handler";
-import { getUserMediaEnabled } from "../../../core/browser-navigator";
 import { NativeMicrophoneHandlerService } from "./native-microphone-handler.service";
-
-import { Browser } from "../../../core/browser";
-import { GlobalSettingService } from "../../../core/global-setting.service";
-import { Logger } from "../../../core/logger/logger";
-import { FeatureService } from "../../../core/feature.service";
-import { SOLUTION_AUTO, SOLUTION_NATIVE } from "../../../model/types/speech/encoder";
-import { RecognizerSettingService } from "../../../model/recognizer/recognizer-setting.service";
+import { RecognizerSettingService } from "./recognizer-setting.service";
+import { Logger } from "../common/logger";
+import { Browser } from "../common/browser";
+import { getUserMediaEnabled } from "../common/browser-navigator";
+import { SOLUTION_AUTO, SOLUTION_NATIVE } from "../../types/encoder";
 
 @Injectable({providedIn: "root"})
 export class MicrophoneHandlerService {
@@ -20,9 +17,7 @@ export class MicrophoneHandlerService {
     private elementNameSpace: string = "";
 
     constructor(private nativeMicrophoneHandlerService: NativeMicrophoneHandlerService,
-                private recognizerSettingService: RecognizerSettingService,
-                private featureService: FeatureService,
-                private globalSettingService: GlobalSettingService) {
+                private recognizerSettingService: RecognizerSettingService) {
     }
 
     getMicrophoneElementId(): string {
@@ -81,22 +76,6 @@ export class MicrophoneHandlerService {
     }
 
     private checkHandlerOverrides(): Promise<MicrophoneHandler | undefined> {
-        if (Browser.isChrome()) {
-            return this.implementStrategy(this.globalSettingService.get("microphone.chromeSolution"));
-        }
-
-        if (Browser.isFireFox()) {
-            return this.implementStrategy(this.globalSettingService.get("microphone.firefoxSolution"));
-        }
-
-        if (Browser.isEdge()) {
-            return this.implementStrategy(this.globalSettingService.get("microphone.edgeSolution"));
-        }
-
-        if (Browser.isSafari()) {
-            return this.implementStrategy(this.globalSettingService.get("microphone.safariSolution"));
-        }
-
         return Promise.resolve(undefined);
     }
 

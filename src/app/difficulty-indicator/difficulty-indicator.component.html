@@ -1,0 +1,50 @@
+<span
+        *ngIf="getDifficultyLevel()"
+        class="ec-difficulty-indicator-component d-inline-flex align-items-center"
+        [class.light-display]="isLightDisplay()"
+>
+    <span *ngIf="isIconVisible()"
+          class="difficulty-indicator difficulty-icon d-inline-flex align-items-center justify-content-center"
+          [class.bg-beginner]="isDifficultyBeginner() && !isLightDisplay() && !isShowDisabled()"
+          [class.bg-intermediate]="isDifficultyIntermediate() && !isLightDisplay() && !isShowDisabled()"
+          [class.bg-advanced]="isDifficultyAdvanced() && !isLightDisplay() && !isShowDisabled()"
+          [class.transparent]="!isNumberVisible()"
+          [class.text-dark]="isLightDisplay()"
+          [class.border-dark]="isLightDisplay()"
+          [class.grayed]="isShowDisabled()"
+          [class.me-2]="isLabelVisible()"
+          [style.width]="getSize()"
+          [style.height]="getSize()"
+          [style.line-height]="getSize() && !isInternetExplorer()"
+    >
+        <ng-template [ngIf]="!getDifficultyLevelDisplay()">{{getDifficultyLevel()}}</ng-template>
+        <ng-template [ngIf]="getDifficultyLevelDisplay()">{{getDifficultyLevelDisplay()}}</ng-template>
+    </span>
+    <span *ngIf="isLabelVisible()"
+          class="difficulty-label-text"
+          [class.text-beginner]="isBeginnerDifficultyTextVisible()"
+          [class.text-intermediate]="isIntermediateDifficultyTextVisible()"
+          [class.text-advanced]="isAdvancedDifficultyTextVisible()"
+          [class.text-tertiary]="isShowDisabled() && !isLightDisplay()"
+          [class.text-dark]="isLightDisplay()"
+    >
+        <span *ngIf="getDifficultyLabel()">{{getDifficultyLabel()}}</span>
+        <span *ngIf="!getDifficultyLabel()">
+            <span *ngIf="!showSpecificLabelDisplay()">
+                <span *ngIf="isDifficultyBeginner()" i18n>Beginner</span>
+                <span *ngIf="isDifficultyIntermediate()" i18n>Intermediate</span>
+                <span *ngIf="isDifficultyAdvanced()" i18n>Advanced</span>
+            </span>
+            <span *ngIf="showSpecificLabelDisplay()">
+                <span *ngIf="getDifficultyLevel() == '1'" i18n>Beginner</span>
+                <span *ngIf="getDifficultyLevel() == '2'" i18n>High Beginner</span>
+                <span *ngIf="getDifficultyLevel() == '3'" i18n>Intermediate</span>
+                <span *ngIf="getDifficultyLevel() == '4'" i18n>High Intermediate</span>
+                <span *ngIf="getDifficultyLevel() == '5'" i18n>Low Advanced</span>
+                <span *ngIf="getDifficultyLevel() == '6'" i18n>Advanced</span>
+                <span *ngIf="getDifficultyLevel() == '7'" i18n>High Advanced</span>
+            </span>
+
+        </span>
+    </span>
+</span>

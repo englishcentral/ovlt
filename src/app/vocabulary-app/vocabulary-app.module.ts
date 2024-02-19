@@ -9,18 +9,21 @@ import { AdaptiveQuizModelService } from "../model/adaptive-quiz-model.service";
 import { VocabBuilderModelService } from "../model/vocab-builder-model.service";
 import { VocabBuilderEventHandlerService } from "./event-handler/vocab-builder-event-handler.service";
 import { VocabBuilderProgressService } from "./vocab-builder-progress.service";
-import { VocabularyQuizModelService } from "../model/vocabulary-quiz-model.service";
 import { VocabBuilderStateService } from "./vocab-builder-state.service";
 import { WordProgressModelService } from "../model/word-progress.model.service";
 import { OvltScoreAppModule } from "./ovlt-score-app/ovlt-score-app.module";
 import { ExamQuestionModule } from "./exam-question/exam-question.module";
 import { CommonModule } from "@angular/common";
+import { FormsModule } from "@angular/forms";
+import { DifficultyIndicatorModule } from "../difficulty-indicator/difficulty-indicator.module";
 
 @NgModule({
     imports: [
         CommonModule,
         ExamQuestionModule,
-        OvltScoreAppModule
+        OvltScoreAppModule,
+        DifficultyIndicatorModule,
+        FormsModule
     ],
     declarations: [
         VocabBuilderAppComponent,
@@ -30,7 +33,6 @@ import { CommonModule } from "@angular/common";
     providers: [
         WordProgressModelService,
         VocabBuilderStateService,
-        VocabularyQuizModelService,
         VocabBuilderProgressService,
         VocabBuilderEventHandlerService,
         VocabBuilderModelService,

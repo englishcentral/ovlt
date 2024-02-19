@@ -1,13 +1,10 @@
 import { Injectable } from "@angular/core";
 import { Observable, Subscription } from "rxjs";
-import "video.js/dist/video-js.min.css";
-import { Emitter } from "../../core/emitters/emitter";
-import { Logger } from "../../core/logger/logger";
-import { GlobalCache } from "../../core/global-cache";
 import { has } from "lodash-es";
-import { BrowserMediaDeviceService } from "../../core/browser-media-device.service";
-import { FeatureService } from "../../core/feature.service";
 import { first, takeUntil } from "rxjs/operators";
+import { Emitter } from "../common/emitter";
+import { Logger } from "../common/logger";
+import { BrowserMediaDeviceService } from "../common/browser-media-device.service";
 
 declare var videoJs;
 
@@ -22,20 +19,7 @@ export class VideoFactoryService {
     private emitter = new Emitter(true);
     private logger = new Logger();
 
-    constructor(private browserMediaDeviceService: BrowserMediaDeviceService,
-                private featureService: FeatureService) {
-    }
-
-    private initLibrary(): Promise<boolean> {
-        return new Promise((resolve, reject) => {
-            if (typeof (<any>window).videoJs !== "undefined") {
-                return resolve(true);
-            }
-            require.ensure([], () => {
-                (<any>window).videoJs = require("video.js").default;
-                return resolve(true);
-            });
-        });
+    constructor(private browserMediaDeviceService: BrowserMediaDeviceService) {
     }
 
     async create(videoId: string, videoOptions?: any, readyFn?: () => void): Promise<any> {
@@ -46,7 +30,6 @@ export class VideoFactoryService {
         let namespace = this.generateNamespace(videoId);
         let videoElement = this.getVideoElement(videoId);
 
-        await this.initLibrary();
         let player = videoJs(
             videoElement,
             videoOptions,
@@ -83,8 +66,6 @@ export class VideoFactoryService {
 
         this.logger.log("Publishing video creation", videoId);
         this.publish(VideoFactoryService.EVENT_CREATE, videoId);
-
-        GlobalCache.setCache(namespace, player);
 
         return player;
     }
@@ -124,13 +105,11 @@ export class VideoFactoryService {
             return;
         }
 
-        let instanceId = this.generateNamespace(videoId);
-        let previousInstance = GlobalCache.getCache<any>(instanceId);
+        let previousInstance = videoJs(this.getVideoElement(videoId));
 
         try {
             if (previousInstance) {
                 previousInstance?.dispose();
-                GlobalCache.removeCache(instanceId);
                 this.publish(VideoFactoryService.EVENT_DESTROY, videoId);
             }
             this.logger.log("video instance successfully destroyed");
@@ -140,7 +119,7 @@ export class VideoFactoryService {
     }
 
     private isSpeakerSettingsEnabled(): boolean {
-        return this.featureService.getFeature("isPlayerSpeakerSettingsEnabled");
+        return false;
     }
 
     subscribe(eventName: string, successFn: (data?) => void, errorFn?: (e?) => void): Subscription {

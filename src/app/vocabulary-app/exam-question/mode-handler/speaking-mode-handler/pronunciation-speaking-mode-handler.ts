@@ -1,6 +1,6 @@
 import { ExamQuestionCheckAnswer, ExamQuestionCheckedEvent, ExamQuestionModeSettings } from "../mode-handler-abstract";
 import { SpeakingModeHandlerAbstract } from "./speaking-mode-handler-abstract";
-import { CLASSIFIER_STATUSWORD_GOOD, WordResult } from "../../../../../types/speech/recognizer-result";
+import { CLASSIFIER_STATUSWORD_GOOD, WordResult } from "../../../../../types/recognizer-result";
 import { split } from "lodash-es";
 
 export class PronunciationSpeakingModeHandler extends SpeakingModeHandlerAbstract {

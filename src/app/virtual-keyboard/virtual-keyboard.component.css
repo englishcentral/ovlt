@@ -1,0 +1,95 @@
+.keyboard {
+    width: 100vw;
+    background-color: #d2d5dc;
+    box-shadow: inset 0 0 8px #bbb, 0 1px 0 #aaa, 0 4px 0 #bbb, 0 10px 30px #ddd;
+}
+
+.pwa-enabled {
+    position: fixed;
+    min-height: 30vh;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+}
+
+@media (min-width: 768px ) {
+    .pwa-enabled {
+        height: 22vh;
+    }
+}
+
+:host ::ng-deep ec-virtual-letter-input ::ng-deep .available-letter {
+    font: normal 20pt arial;
+    text-decoration: none;
+    text-align: center;
+    width: 7.9vw !important;
+    height: 7vh;
+    background: #fff;
+    border-radius: 4px;
+    box-shadow: 0 1px 1px #95969A;
+    text-shadow: 0 1px 0 #f5f5f5;
+    cursor: pointer;
+    border: none;
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari*/
+    -khtml-user-select: none; /* Konqueror */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Non-prefixed version, currently supported by Chrome and Opera */
+}
+
+:host ::ng-deep ec-virtual-letter-input ::ng-deep .key {
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari*/
+    -khtml-user-select: none; /* Konqueror */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Non-prefixed version, currently supported by Chrome and Opera */
+}
+
+:host ::ng-deep ec-virtual-letter-input ::ng-deep .letter-set {
+    display: flex;
+    overflow: hidden;
+}
+
+:host ::ng-deep ec-virtual-letter-input ::ng-deep .bottomchars {
+    width: 11.95vw !important;
+}
+
+:host ::ng-deep .popover {
+    color: black !important;
+    font-size: 1.5em;
+    background-color: white !important;
+    border: 1px solid #777 !important;
+}
+
+:host ::ng-deep .popover .popover-body {
+    font-size: 1em !important;
+    color: black !important;
+}
+
+:host ::ng-deep ec-virtual-letter-input .bs-popover-top .arrow::after {
+    border-top-color: white !important;
+}
+
+:host ::ng-deep ec-virtual-letter-input .bs-popover-top .arrow {
+    margin-left: -0.35em !important;
+}
+
+@media (min-width: 320px ) and (max-width: 374px) {
+    :host ::ng-deep ec-virtual-letter-input ::ng-deep .available-letter {
+        width: 7.5vw !important;
+    }
+}
+
+@media (min-width: 768px) {
+    :host ::ng-deep ec-virtual-letter-input ::ng-deep .available-letter {
+        width: 8.6vw !important;
+        font: normal 25pt arial;
+    }
+}
+

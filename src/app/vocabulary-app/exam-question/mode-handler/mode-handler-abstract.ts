@@ -1,4 +1,4 @@
-import { WordResult } from "../../../../types/speech/recognizer-result";
+import { WordResult } from "../../../../types/recognizer-result";
 import { assign, head, isEmpty, map, reduce, split, tail, toLower } from "lodash-es";
 import { XWordDetail } from "../../../../types/x-word";
 

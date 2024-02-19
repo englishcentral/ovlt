@@ -28,7 +28,6 @@ import {
 } from "../../../types/vocab-builder-reference";
 import { MESSAGE_CODE_INCOMPLETE } from "../../../types/vocabulary-quiz";
 import { Browser } from "../../common/browser";
-import { FeatureService } from "../../common/feature.service";
 
 @Component({
     selector: "ec-vocab-builder-start",
@@ -60,7 +59,6 @@ export class VocabBuilderStartComponent extends SubscriptionAbstract implements 
     constructor(private vocabBuilderStateService: VocabBuilderStateService,
                 private vocabBuilderProgressService: VocabBuilderProgressService,
                 private vocabularyAppSharedService: VocabularyAppSharedService,
-                private featureService: FeatureService,
                 private modalService: NgbModal,
                 private location: Location) {
         super();
@@ -368,7 +366,7 @@ export class VocabBuilderStartComponent extends SubscriptionAbstract implements 
             vocabBuilderModeIds: scalarToModes(
                 mode,
                 this.vocabBuilderStateService.getModeNumbers(),
-                this.featureService.getFeature("isStrictMixedMode", "").split(",").map(parseInt)
+                [4, 2, 1, 6]
             )
         });
     }

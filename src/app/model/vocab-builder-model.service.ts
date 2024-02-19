@@ -1,32 +1,18 @@
 import { Injectable } from "@angular/core";
-import { ConnectionFactoryService } from "../../core/connection-factory.service";
-import { Logger } from "../../core/logger/logger";
 import { Observable, of } from "rxjs";
-import { VocabBuilderClassSetting, VocabBuilderSetting, VocabBuilderSettings } from "../types/vocab-builder-settings";
-import {
-    AccountLevelTests,
-    AdaptiveQuizWord,
-    ClassTestData,
-    LevelTestDetail,
-    VocabBuilderQuiz,
-    XWordQuiz
-} from "../types/vocabulary-quiz";
-import { StorageCache } from "../../core/storage-cache";
-import { VbSettings } from "../../activity-app/vocab-builder-app/quiz-data-source/quiz-data-source-abstract";
-import { Word } from "../types/word";
-import { ClassLevelTestSettings } from "../types/level-test-setting";
+import { VocabBuilderSetting, VocabBuilderSettings } from "../../types/vocab-builder-settings";
+import { AdaptiveQuizWord, LevelTestDetail, XWordQuiz } from "../../types/vocabulary-quiz";
 import { forEach, isNull } from "lodash-es";
-import { catchError } from "rxjs/operators";
-import { LevelTestHistory, VltQuizScore } from "../reportcard/vocab-level-test";
+import { LevelTestHistory, VltQuizScore } from "../../types/vocab-level-test";
+import { Logger } from "../common/logger";
+import { VbSettings } from "../vocabulary-app/quiz-data-source/quiz-data-source-abstract";
+import { Word } from "../../types/word";
 
 @Injectable({providedIn: "root"})
 export class VocabBuilderModelService {
     private logger = new Logger();
-    private accountClassRankCache?: StorageCache<number> = new StorageCache<number>("accountClassRank");
-    private vocabLevelTestScoreCache?: StorageCache<VltQuizScore> = new StorageCache<VltQuizScore>("vocabLevelTestScoreCache");
-    private vocabLevelTestDetailCache?: StorageCache<LevelTestDetail> = new StorageCache<LevelTestDetail>("vocabLevelTestDetailCache");
 
-    constructor(private connection: ConnectionFactoryService) {
+    constructor() {
     }
 
     getAccountVocabBuilderSetting(accountId: number, combinedParams: VbSettings = {useAccountWordLists: false}): Observable<VocabBuilderSettings> {
@@ -35,10 +21,7 @@ export class VocabBuilderModelService {
             return of(undefined);
         }
 
-        return this.connection
-            .service("bridge")
-            .setPath(`/identity/account/${accountId}/vocabbuilder`)
-            .get({useAccountWordLists: combinedParams.useAccountWordLists});
+        return of(undefined);
     }
 
     getDistractors(wordRootId: number): Observable<Word[]> {
@@ -47,58 +30,17 @@ export class VocabBuilderModelService {
             return of(undefined);
         }
 
-        return this.connection
-            .service("bridge")
-            .setPath(`/content/quiz/root/distractor`)
-            .get({wordRootId: wordRootId});
+        return of(undefined);
     }
 
-    getVocabBuilderSettingByClassIdV2(classId: number): Observable<VocabBuilderClassSetting[]> {
-        if (!classId) {
-            this.logger.log("classId is required param");
-            return of(undefined);
-        }
-
-        return this.connection
-            .service("bridge")
-            .setPath(`/identity/class/${classId}/vocabbuilder/setting`)
-            .get(undefined, undefined, ConnectionFactoryService.SERVICE_VERSION.v2);
-    }
-
-    getAccountVocabBuilderSettingByClassId(classId: number, accountId: number, params?: object): Observable<VocabBuilderClassSetting> {
-        if (!classId || !accountId) {
-            this.logger.log("classId, accountId are required params");
-            return of(undefined);
-        }
-        return this.connection
-            .service("bridge")
-            .setPath(`/identity/class/${classId}/vocabbuilder/setting/account/${accountId}`)
-            .get(params, undefined, ConnectionFactoryService.SERVICE_VERSION.v1);
-    }
 
     getAccountClassRank(classId: number, accountId: number, wordListTypeId: number): Observable<number> {
         if (!classId || !accountId || !wordListTypeId) {
             this.logger.log("classId, accountId, wordListTypeId are required params");
             return of(undefined);
         }
-        return this.connection
-            .service("bridge")
-            .setPath(`/identity/class/${classId}/account/${accountId}/wordlist/${wordListTypeId}/rank`)
-            .get();
-    }
 
-    getCachedAccountClassRank(accountId: number, classId: number, wordListTypeId: number): Observable<number> {
-        if (!classId || !accountId || !wordListTypeId) {
-            return of(undefined);
-        }
-
-        return this.accountClassRankCache.getCache({
-            classId: classId,
-            wordListTypeId: wordListTypeId,
-            accountId: accountId
-        }, () => {
-            return this.getAccountClassRank(classId, accountId, wordListTypeId);
-        }, ConnectionFactoryService.CACHE_LIFETIME.classdata);
+        return of(undefined);
     }
 
     clearAccountClassRank(accountId: number): void {
@@ -106,43 +48,8 @@ export class VocabBuilderModelService {
             this.logger.log("accountId is required param");
             return;
         }
-        this.accountClassRankCache.destroy();
     }
 
-    updateVocabBuilderSettingByClassId(classId: number, postBody: object = {}): Observable<VocabBuilderClassSetting> {
-        if (!classId) {
-            this.logger.log("classId is required param");
-            return of(undefined);
-        }
-
-        return this.connection
-            .service("bridge")
-            .setPath(`/identity/class/${classId}/vocabbuilder/setting`)
-            .put(undefined, postBody, ConnectionFactoryService.SERVICE_VERSION.v1);
-    }
-
-    deleteVocabBuilderSettingFromClass(classId: number, vocabBuilderClassSettingId: number): Observable<void> {
-        if (!classId || !vocabBuilderClassSettingId) {
-            this.logger.log("classId, vocabBuilderClassSettingId are required params");
-            return of(undefined);
-        }
-        return this.connection
-            .service("bridge")
-            .setPath(`/identity/class/${classId}/vocabbuilder/setting/${vocabBuilderClassSettingId}`)
-            .delete();
-    }
-
-    getAccountWordListById(accountId: number,
-                           wordListTypeId: number): Observable<VocabBuilderSetting> {
-        if (!accountId || !wordListTypeId) {
-            return of(undefined);
-        }
-
-        return this.connection
-            .service("bridge")
-            .setPath(`/identity/account/${accountId}/vocabbuilder/wordlist/${wordListTypeId}`)
-            .get();
-    }
 
     generateQuiz(accountId: number, postBody: object = {}, query: object = {}): Observable<XWordQuiz> {
         if (!accountId) {
@@ -150,10 +57,7 @@ export class VocabBuilderModelService {
             return of(undefined);
         }
 
-        return this.connection
-            .service("bridge", false, false)
-            .setPath(`/content/quiz/account/${accountId}`)
-            .post(query, postBody, ConnectionFactoryService.SERVICE_VERSION.v1);
+        return of(undefined);
     }
 
     generateMyQuiz(accountId: number, postBody: object = {}, query: object = {}): Observable<XWordQuiz> {
@@ -162,13 +66,10 @@ export class VocabBuilderModelService {
             return of(undefined);
         }
 
-        return this.connection
-            .service("bridge")
-            .setPath(`/content/quiz/my/account/${accountId}`)
-            .post(query, postBody, ConnectionFactoryService.SERVICE_VERSION.v1);
+        return of(undefined);
     }
 
-    generateLevelQuiz(params: VocabBuilderSetting): Observable<XWordQuiz> {
+    generateLevelQuiz(params: VocabBuilderSetting): Observable<any> {
         if (!params.accountId || (!params.curatedLevelTestId && !params.levelTestSettingId)) {
             this.logger.log("accountId and curatedLevelTestId or levelTestSettingId are required params");
             return of(undefined);
@@ -7385,45 +7286,7 @@ export class VocabBuilderModelService {
     }
 
     getNextLevelTestAdaptiveWord(accountId: number, levelTestSettingId: number): Observable<AdaptiveQuizWord> {
-        return this.connection
-            .service("bridge")
-            .setPath(`/content/quiz/leveltest/adaptive/next`)
-            .get({
-                accountId: accountId,
-                levelTestSettingId: levelTestSettingId,
-                useNewContentWords: true,
-                noStoppingRule: true // @FIXME remove this after calibration
-            });
-    }
-
-    getLevelTestSetting(classId: number): Observable<ClassLevelTestSettings> {
-        if (!classId) {
-            this.logger.log("classId is required param");
-            return of(undefined);
-        }
-
-        return this.connection
-            .service("bridge")
-            .setPath(`/identity/class/${classId}/leveltest/setting`)
-            .get();
-    }
-
-    generatePronQuiz(accountId: number, postBody: object = {}, query: object = {}): Observable<VocabBuilderQuiz> {
-        if (!accountId) {
-            return of(undefined);
-        }
-
-        return this.connection
-            .service("bridge")
-            .setPath(`/content/quiz/pronunciation/account/${accountId}`)
-            .post(query, postBody, ConnectionFactoryService.SERVICE_VERSION.v1);
-    }
-
-    generatePronQuizFromContent(postBody: object = {}, query: object = {}): Observable<XWordQuiz> {
-        return this.connection
-            .service("content")
-            .setPath("/quiz/word/v1")
-            .post(query, postBody, ConnectionFactoryService.SERVICE_VERSION.v1);
+        return of(undefined);
     }
 
     getClassTestExam(accountId: number, classTestExamId: number): Observable<any> {
@@ -7432,35 +7295,7 @@ export class VocabBuilderModelService {
             return of(undefined);
         }
 
-        return this.connection
-            .service("bridge")
-            .setPath(`/content/quiz/exam/${classTestExamId}/account/${accountId}`)
-            .get({useNewContentWords: true});
-    }
-
-    getClassTestData(accountId: number, classTestExamId: number): Observable<ClassTestData> {
-        if (!accountId) {
-            return of(undefined);
-        }
-
-        return this.connection
-            .service("bridge")
-            .setPath(`/identity/class/account/${accountId}/tests`)
-            .get({
-                "classTestExamId": classTestExamId
-            });
-    }
-
-    getAccountVocabLevelTestProgress(accountId: number, level: number): Observable<boolean> {
-        if (!accountId || !level) {
-            this.logger.log("accountId and level are required params");
-            return of(undefined);
-        }
-
-        return this.connection
-            .service("reportcard")
-            .setPath(`/report/quiz/leveltest/completed/level/${level}/account/${accountId}`)
-            .get();
+        return of(undefined);
     }
 
     getLevelTestDetail(accountId: number, curatedLevelTestId: number, levelTestSettingId: number): Observable<LevelTestDetail> {
@@ -7469,13 +7304,7 @@ export class VocabBuilderModelService {
             return of(undefined);
         }
 
-        return this.connection
-            .service("reportcard")
-            .setPath(`/report/quiz/leveltest/account/${accountId}/detail`)
-            .get({
-                curatedLevelTestId: curatedLevelTestId,
-                levelTestSettingId: levelTestSettingId
-            });
+        return of(undefined);
     }
 
     getCachedLevelTestDetail(accountId: number, curatedLevelTestId: number, levelTestSettingId: number): Observable<LevelTestDetail> {
@@ -7497,9 +7326,7 @@ export class VocabBuilderModelService {
             }
         });
 
-        return this.vocabLevelTestDetailCache.getCache(filteredParams, () => {
-            return this.getLevelTestDetail(accountId, curatedLevelTestId, levelTestSettingId);
-        }, ConnectionFactoryService.CACHE_LIFETIME.reportcard);
+        return of(undefined);
     }
 
     getLevelTestScore(accountId: number, levelTestSettingId: number, curatedLevelTestId?: number): Observable<VltQuizScore> {
@@ -7508,13 +7335,7 @@ export class VocabBuilderModelService {
             return of(undefined);
         }
 
-        return this.connection
-            .service("reportcard")
-            .setPath(`/report/quiz/leveltest/account/${accountId}/score`)
-            .get({
-                curatedLevelTestId: curatedLevelTestId,
-                levelTestSettingId: levelTestSettingId
-            });
+        return of(undefined);
     }
 
     getLevelTestHistory(accountId: number, levelTestSettingId: number, curatedLevelTestId?: number): Observable<LevelTestHistory> {
@@ -7523,14 +7344,7 @@ export class VocabBuilderModelService {
             return of(undefined);
         }
 
-        return this.connection
-            .service("reportcard")
-            .setPath("/report/quiz/leveltest/history")
-            .get({
-                accountId: accountId,
-                curatedLevelTestId: curatedLevelTestId,
-                levelTestSettingId: levelTestSettingId
-            }, undefined, ConnectionFactoryService.SERVICE_VERSION.v1);
+        return of(undefined);
     }
 
     getCachedLevelTestScore(accountId: number, levelTestSettingId: number, curatedLevelTestId?: number): Observable<VltQuizScore> {
@@ -7545,29 +7359,7 @@ export class VocabBuilderModelService {
             curatedLevelTestId: curatedLevelTestId
         };
 
-        return this.vocabLevelTestScoreCache.getCache(params, () => {
-            return this.getLevelTestScore(accountId, levelTestSettingId, curatedLevelTestId).pipe(catchError(() => of(undefined)));
-        }, ConnectionFactoryService.CACHE_LIFETIME.reportcard);
-    }
-
-    getInProgressLevelTests(accountId: number): Observable<AccountLevelTests> {
-        if (!accountId) {
-            this.logger.log("accountId is a required param");
-            return of(undefined);
-        }
-
-        return this.connection
-            .service("bridge")
-            .setPath(`/identity/account/${accountId}/leveltest`)
-            .get();
-    }
-
-    fetchAccessedWordCount(): Observable<number> {
-        return this.connection
-            .service("reportcard")
-            .setPath(`/report/quiz/answercount/monthly`)
-            .get()
-            .pipe(catchError(() => of(0)));
+        return of(undefined);
     }
 
     completeQuiz(accountId: number,
@@ -7578,9 +7370,6 @@ export class VocabBuilderModelService {
             return of(undefined);
         }
 
-        return this.connection
-            .service("reportcard")
-            .setPath(`/report/quiz/${quizStepId}/complete`)
-            .post(params, undefined, ConnectionFactoryService.SERVICE_VERSION.v1);
+        return of(undefined);
     }
 }

@@ -1,0 +1,38 @@
+@import "global-styles/mixins";
+
+.ec-difficulty-indicator-component {
+    .difficulty-indicator {
+        color: #fff;
+        height: 18px;
+        width: 18px;
+        font-weight: bold;
+        border-radius: 50%;
+        display: inline-block;
+        font-size: 10px;
+        line-height: 18px;
+
+        &.grayed {
+            background-color: #999;
+        }
+    }
+
+    .difficulty-label-text {
+        font-weight: bold;
+        font-size: 12px;
+    }
+
+    &.light-display {
+        .difficulty-indicator {
+            background-color: transparent;
+            border: 1px solid;
+            line-height: 16px;
+        }
+
+        .difficulty-label-text {
+            font-weight: 400;
+        }
+    }
+
+}
+
+

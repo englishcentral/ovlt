@@ -7,16 +7,24 @@ import { VocabBuilderModelService } from "../../model/vocab-builder-model.servic
 import { VideoAppModule } from "../../video-app/video-app.module";
 import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
 import { TypingSharedService } from "../../common/typing-shared.service";
+import { FormsModule } from "@angular/forms";
+import { VirtualKeyboardModule } from "../../virtual-keyboard/virtual-keyboard.module";
+import { VirtualLetterInputModule } from "../../virtual-letter-input/virtual-letter-input.module";
+import { TranscriptComponent } from "./transcript.component";
 
 @NgModule({
     imports: [
         CommonModule,
         MicrophoneWidgetModule,
         VideoAppModule,
-        NgbModule
+        VirtualKeyboardModule,
+        VirtualLetterInputModule,
+        NgbModule,
+        FormsModule
     ],
     declarations: [
-        ExamQuestionComponent
+        ExamQuestionComponent,
+        TranscriptComponent
     ],
     exports: [
         ExamQuestionComponent

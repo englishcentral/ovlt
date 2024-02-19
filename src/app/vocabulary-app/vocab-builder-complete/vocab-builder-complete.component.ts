@@ -11,7 +11,6 @@ import {
 import { VocabBuilderProgressService } from "../vocab-builder-progress.service";
 import { VocabBuilderStateService } from "../vocab-builder-state.service";
 import { IdentityService } from "../../common/identity.service";
-import { FeatureService } from "../../common/feature.service";
 import { Logger } from "../../common/logger";
 import { SubscriptionAbstract } from "../../subscription.abstract";
 import { ADAPTIVE_OVLT2_SETTINGS, VltQuizScore } from "../../../types/vocab-level-test";
@@ -61,7 +60,6 @@ export class VocabBuilderCompleteComponent extends SubscriptionAbstract implemen
     constructor(private vocabBuilderStateService: VocabBuilderStateService,
                 private vocabBuilderProgressService: VocabBuilderProgressService,
                 private identityService: IdentityService,
-                private featureService: FeatureService,
                 private changeDetectorRef: ChangeDetectorRef) {
         super();
     }
@@ -367,7 +365,7 @@ export class VocabBuilderCompleteComponent extends SubscriptionAbstract implemen
     }
 
     shouldShowVltRecommendedLevel(): boolean {
-        return this.featureService.getFeature("isVltRecommendedLevelEnabled") ?? false;
+        return true;
     }
 
     onClickStartNewPractice(): void {

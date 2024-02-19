@@ -6,11 +6,8 @@
 
         <!-- Settings drawer open button -->
         <div class="open-drawer d-flex justify-content-end">
-            <button ecClickOutside
-                    (clickOutside)="closeSettingsDrawer()"
-                    (click)="openSettingsDrawer()"
+            <button (click)="openSettingsDrawer()"
                     [class.disabled]="isFixedStyle()"
-                    [ngbTooltip]="isFixedStyle() ? disabledSettingsPopover : ''"
                     placement="left"
                     triggers="click"
                     tooltipClass="open-drawer-tooltip">
@@ -26,8 +23,6 @@
 
         <!-- Settings drawer -->
         <div class="vocab-builder-settings-drawer"
-             ecClickOutside
-             (clickOutside)="closeSettingsDrawer()"
              [class.open]="isSettingsDrawerOpen()">
 
             <!-- Settings drawer close button-->
@@ -61,20 +56,6 @@
                         </div>
                     </div>
                 </ng-container>
-
-                <!-- Starting word rank -->
-                <div class="style-drawer-starting-rank"
-                     *ngIf="isSettingsDrawerOpen() && showStartingWord() && isItemsToStudyChangeable()">
-                    <div class="setting-text-secondary-title" i18n>Set Starting Word</div>
-                    <ec-tally-counter
-                            [currentCount]="getCurrentWordRank()"
-                            [minValue]="getCurrentVocabListMinWordRank()"
-                            [maxValue]="getCurrentVocabListMaxWordRank() - 1"
-                            [disabled]="isSettingsChangeDisabled()"
-                            [automationId]="'vb-starting-rank'"
-                            (eventCountChange)="updateWordRank($event)"
-                    ></ec-tally-counter>
-                </div>
             </div>
 
             <div class="section-separator" *ngIf="isRecycleEnabled()"></div>
@@ -149,11 +130,9 @@
                         <ng-template [ngIf]="!(isWordListsLoading() || isVbLoading())">
                             <div class="selectable-word-list">
                                 <ng-container *ngFor="let wordList of getAccountSelectableWordLists()">
-                                    <ec-add-word-list
-                                            [wordList]="wordList"
-                                            [wordListAdded]="isWordListAdded(wordList.wordListTypeId)"
-                                            (eventWordListTouched)="setWordListTouched(true)"
-                                    ></ec-add-word-list>
+                                    <span (click)="setWordListTouched(true)">
+                                        {{ wordList.name }}
+                                    </span>
                                 </ng-container>
 
                                 <div class="load-more w-100 d-flex align-items-center justify-content-center"
@@ -295,24 +274,6 @@
                         <div *ngIf="getCurrentVocabListName()" class="word-list-rank text-start"><span
                                 i18n>(List Size: {{ getCurrentVocabListMaxWordRank() }})</span></div>
                     </button>
-
-                    <!-- Mobile Word List dropdown-->
-                    <ec-mobile-content-renderer
-                            [isFullScreen]="true"
-                            [isCloseBtnEnabled]="true"
-                            [setScreenInnerHeight]="true"
-                            [isOpen]="isMobileWordListRendererOpen()"
-                            *ngIf="isMobile()">
-                        <div class="vocab-header">
-                            <div class="header-inner">
-                                <i class="far fa-arrow-left" (click)="setMobileWordListRendererOpen(false)"></i>
-                                <span class="ms-2" i18n>Vocab</span>
-                            </div>
-                        </div>
-                        <div class="full-screen-mobile-word-list">
-                            <ng-container *ngTemplateOutlet="wordLists"></ng-container>
-                        </div>
-                    </ec-mobile-content-renderer>
                 </ng-template>
 
                 <!-- Desktop Word List dropdown-->
@@ -406,24 +367,6 @@
                                 <i class="fas fa-sort-down mobile-button-arrow ms-2"></i>
                             </div>
                         </button>
-
-                        <ec-mobile-content-renderer
-                                [isFullScreen]="true"
-                                [isCloseBtnEnabled]="true"
-                                [setScreenInnerHeight]="true"
-                                [isOpen]="isMobileQuestionTypeRendererOpen()"
-                                *ngIf="isMobile()">
-                            <div class="vocab-header">
-                                <div class="header-inner">
-                                    <i class="far fa-arrow-left" (click)="setMobileQuestionTypeRendererOpen(false)"></i>
-                                    <span class="ms-2" i18n>Vocab</span>
-                                </div>
-                            </div>
-                            <div class="full-screen-mobile-word-list">
-                                <ng-container
-                                        *ngTemplateOutlet="questionType; context: {insideMobileRenderer: true}"></ng-container>
-                            </div>
-                        </ec-mobile-content-renderer>
                     </ng-template>
 
                     <!-- Question Types -->
@@ -445,25 +388,6 @@
                         >{{ vocabBuilderMode.name }}
                         </div>
                     </ng-template>
-                </div>
-            </div>
-
-            <!-- Setting for number of items to study -->
-            <div class="settings-bottom mx-auto" *ngIf="isItemsToStudyChangeable()">
-                <div class="vocab-builder-settings-label fw-bold text-center" i18n>Number of items to study</div>
-                <div class="num-quiz-items">
-                    <ec-tally-counter
-                            *ngIf="!isVbLoading() || isQuizLoading()"
-                            [currentCount]="getCurrentNumberOfQuizItems()"
-                            [minValue]="getMinQuizItems()"
-                            [maxValue]="getMaxQuizItems()"
-                            [disabled]="isSettingsChangeDisabled()"
-                            [automationId]="'vb-num-quiz-items'"
-                            (eventCountChange)="updateNumberOfQuizItems($event)"
-                    ></ec-tally-counter>
-                    <div class="settings-block btn dropdown-toggle vb-settings-loading disabled"
-                         *ngIf="isVbLoading() && !isQuizLoading()">
-                    </div>
                 </div>
             </div>
         </div>

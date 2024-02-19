@@ -1,6 +1,4 @@
 import { ANIMATION_FRAME_INTERVAL, EncoderHandlerAbstract } from "./encoder-handler-abstract";
-import { Instrumentation } from "../../../../core/instrumentation/instrumentation";
-import { generateAudioMimeType, getSupportedMediaRecorderFormat } from "../../../../core/browser-navigator";
 import { first, takeUntil } from "rxjs/operators";
 import { MicrophoneRecordingOptions } from "../microphone-handler";
 import { interval } from "rxjs";
@@ -8,8 +6,8 @@ import {
     ENCODER_NATIVE_MEDIARECORDER,
     INPUT_TYPE_STREAM,
     RecordingMediaBlob
-} from "../../../../model/types/speech/encoder";
-import { extractErrorString } from "../../../../core/instrumentation/instrumentation-utility";
+} from "../../../types/encoder";
+import { generateAudioMimeType, getSupportedMediaRecorderFormat } from "../../common/browser-navigator";
 
 declare let window: any;
 const AUDIO_FRAME_SIZE = 240;
@@ -66,14 +64,6 @@ export class MediaEncoder extends EncoderHandlerAbstract {
         this.currentPromise = new Promise((resolve, reject) => {
             mediaRecorder.onerror = (error: ErrorEvent) => {
                 this.logger.log("%cmediaRecorder.onerror", "color:#939;font-weight:bold", error);
-                Instrumentation.sendEvent("microphone", {
-                    response: "clientError",
-                    responseStatus: 0,
-                    encoder: ENCODER_NATIVE_MEDIARECORDER,
-                    errorMessage: extractErrorString(error),
-                    ...(micRecordingOptions?.trackingContext ?? {})
-                });
-
                 this.microphoneAudioOutputStream.completeAudioObservables();
                 reject(error);
             };

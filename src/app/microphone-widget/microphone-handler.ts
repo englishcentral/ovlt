@@ -1,7 +1,7 @@
 import { Observable, Subject, Subscription } from "rxjs";
 import { MicrophoneAudioOutputStream } from "./microphone-audio-output-stream";
-import { INPUT_TYPE_FILE, RecordingMediaBlob } from "../../../model/types/speech/encoder";
-import { BrowserMediaDevice } from "../../../core/browser-media-device";
+import { INPUT_TYPE_FILE, RecordingMediaBlob } from "../../types/encoder";
+import { BrowserMediaDevice } from "../common/browser-media-device";
 
 export class MicrophoneRecordingOptions {
     fileTransferMode: string = INPUT_TYPE_FILE;

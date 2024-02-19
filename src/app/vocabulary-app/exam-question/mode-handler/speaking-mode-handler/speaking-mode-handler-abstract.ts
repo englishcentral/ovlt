@@ -4,7 +4,7 @@ import {
     ExamQuestionModeSettings,
     ModeHandlerAbstract
 } from "../mode-handler-abstract";
-import { Browser } from "../../../../../core/browser";
+import { Browser } from "../../../../common/browser";
 
 export abstract class SpeakingModeHandlerAbstract extends ModeHandlerAbstract {
 

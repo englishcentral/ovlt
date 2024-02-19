@@ -1,0 +1,81 @@
+<div class="letters"
+>
+    <div class="letter-set"
+         #letterset>
+        <span class="key text-tertiary change-set control-button"
+              *ngIf="isLettersSetActive() && shouldShowArrowButton()"
+              ecDebounceClick
+              (debounceClick)="convertCase()">
+            <span class="fas fa-arrow-up"></span>
+        </span>
+        <span class="key text-tertiary change-set control-button"
+              *ngIf="isNumbersSetActive() && shouldShowCharsButton()"
+              ecDebounceClick
+              (debounceClick)="changeKeyboardSet('charactersSet')">
+              <span>#+=</span>
+        </span>
+        <span class="key text-tertiary change-set control-button"
+              *ngIf="isCharactersSetActive() && shouldShowNumbersButton()"
+              (click)="changeKeyboardSet('numbersSet')">
+              <span>123</span>
+        </span>
+
+        <span class="key text-tertiary letter-button text-lowercase"
+              *ngFor="let virtualLetter of getVirtualLetterSet()"
+              [class.bottomchars]="(isNumbersSetActive() || isCharactersSetActive()) && shouldActivateBottomCharsClass()"
+              [class.text-uppercase]="isUpperCaseActive()"
+              [class.disabled]="isLetterDisabled(virtualLetter)"
+              ecDebounceClick
+              (debounceClick)="onNewVirtualInput(virtualLetter.value)">
+                {{virtualLetter.value}}
+        </span>
+        <span class="key text-tertiary control-button backspace-key"
+              *ngIf="shouldShowLittleBackSpaceButton()"
+              ecDebounceClick
+              (debounceClick)="onBackSpacePressed()">
+            <span class="fas fa-backspace"></span>
+        </span>
+    </div>
+
+    <div class="control-set d-flex w-100">
+        <span class="key text-tertiary control-button"
+              *ngIf="isLettersSetActive() && shouldShowNumbersButton()"
+              ecDebounceClick
+              (debounceClick)="changeKeyboardSet('numbersSet')">
+            <span>123</span>
+        </span>
+        <span class="key text-tertiary control-button"
+              *ngIf="(isNumbersSetActive() || isCharactersSetActive()) && shouldShowLettersButton()"
+              ecDebounceClick
+              (debounceClick)="changeKeyboardSet('lettersSet')">
+              <span>ABC</span>
+        </span>
+        <span class="key text-tertiary hide-keyboard d-flex flex-column"
+              *ngIf="shouldShowHideKeyboardButton()"
+              ecDebounceClick
+              (debounceClick)="onHideKeyboardPressed()">
+              <i class="fas fa-keyboard"></i>
+              <span class="down">▼</span>
+        </span>
+        <span class="key text-tertiary spacebar"
+              *ngIf="shouldShowSpaceBar()"
+              ecDebounceClick
+              (debounceClick)="onSpacePressed()">
+              <span i18n>space</span>
+        </span>
+        <span class="key text-light control-button return-key"
+              [class.disabled]="isCheckButtonDisabled()"
+              *ngIf="isCheckButtonVisible()"
+              ecDebounceClick
+              (debounceClick)="onClickCheckButton()">
+              <span i18n>Check</span>
+        </span>
+
+        <span class="key text-light control-button return-key"
+              *ngIf="isReturnButtonVisible()"
+              ecDebounceClick
+              (debounceClick)="onClickReturnButton()">
+              <span i18n>Return</span>
+        </span>
+    </div>
+</div>

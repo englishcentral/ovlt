@@ -1,6 +1,6 @@
 import { ExamQuestionCheckAnswer, ExamQuestionCheckedEvent, ExamQuestionModeSettings } from "../mode-handler-abstract";
 import { SpeakingModeHandlerAbstract } from "./speaking-mode-handler-abstract";
-import { STATUS_GOOD, WordResult } from "../../../../../types/speech/recognizer-result";
+import { STATUS_GOOD, WordResult } from "../../../../../types/recognizer-result";
 import { fill, join, size, split } from "lodash-es";
 
 export class VbSpeakingModeHandler extends SpeakingModeHandlerAbstract {

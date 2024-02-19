@@ -1,13 +1,13 @@
-import { Emitter } from "../../../../core/emitters/emitter";
 import { Observable, ReplaySubject, Subject, Subscription } from "rxjs";
-import { getStreamRecycleRequired } from "../../../../core/browser-navigator";
-import { Logger } from "../../../../core/logger/logger";
-import { Browser } from "../../../../core/browser";
 import { NgZone } from "@angular/core";
 import { MicrophoneAudioOutputStream } from "../microphone-audio-output-stream";
 import { MicrophoneRecordingOptions } from "../microphone-handler";
-import { RecordingMediaBlob } from "../../../../model/types/speech/encoder";
+import { RecordingMediaBlob } from "../../../types/encoder";
 import { mean } from "lodash-es";
+import { Emitter } from "../../common/emitter";
+import { Logger } from "../../common/logger";
+import { Browser } from "../../common/browser";
+import { getStreamRecycleRequired } from "../../common/browser-navigator";
 
 export const ANIMATION_FRAME_INTERVAL = 100;
 
@@ -231,7 +231,7 @@ export class EncoderHandlerAbstract {
         }
 
         return this.zone.runOutsideAngular(() => {
-            let {default: workletFileName} = require(`file-loader!./audio-worklet/port-worklet-processor.js`);
+            let workletFileName = "audio-worklet/port-worklet-processor.js";
 
             return (<any>context).audioWorklet.addModule(workletFileName).then(() => {
                 if (!context || (<any>context).state == "closed") {

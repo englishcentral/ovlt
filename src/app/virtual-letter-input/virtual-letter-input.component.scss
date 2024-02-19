@@ -1,0 +1,122 @@
+@import "global-styles/themes/breakpoints";
+
+.letters {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.letter-set {
+    white-space: nowrap;
+    overflow-x: auto;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.key {
+    cursor: pointer;
+    text-align: center;
+    font-size: 16px;
+    height: 6vh;
+    box-shadow: 0 1px 0 #888;
+    position: relative;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+    border-radius: 5px;
+    border-top: 1px solid #f5f5f5;
+    margin: 0.25rem;
+
+    @include media-breakpoint-between(md, xl) {
+        height: 4vh;
+        font-size: 17px !important;
+    }
+
+    @include media-breakpoint-up(sm) {
+        &.letter-button {
+            width: 3.5em !important;
+        }
+        &.control-button {
+            width: 5em !important;
+        }
+    }
+
+    &.disabled {
+        pointer-events: none;
+        filter: opacity(0.3);
+    }
+
+    &.letter-button {
+        width: 1.6875em;
+    }
+
+    &.control-button {
+        background-color: #acb3bd;
+        width: 3.125em;
+        padding: 0.5em;
+    }
+
+    &.bottom-chars {
+        width: 3.4em;
+    }
+
+    &.return-key {
+        background-color: #0080a1;
+        color: #fff;
+        width: 20vw;
+        white-space: nowrap;
+
+        &.disabled {
+            pointer-events: none;
+            filter: opacity(0.3);
+        }
+        @include media-breakpoint-up(md) {
+            height: 4vh;
+        }
+    }
+
+    &.spacebar {
+        width: 100%;
+    }
+
+    &.white-backspace {
+        color: #fff;
+        cursor: pointer;
+    }
+
+    &.hide-keyboard {
+        width: 2em;
+        padding: 0.5em;
+    }
+}
+
+.down {
+    line-height: 0.7;
+    font-size: 0.6em;
+}
+
+.popover {
+    background-color: #999;
+    color: #333;
+    font-weight: bold;
+    border: none;
+}
+
+.popover .popover-body {
+    color: #333;
+    font-size: 1.5em;
+}
+
+.bs-popover-top .arrow {
+    margin-left: -0.33em !important;
+}
+
+.bs-popover-top .arrow::after {
+    border-top-color: #999;
+}

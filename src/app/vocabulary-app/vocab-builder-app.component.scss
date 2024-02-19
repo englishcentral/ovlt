@@ -1,5 +1,5 @@
-@import "global-styles/themes/breakpoints";
-@import "global-styles/themes/mixins";
+@import "global-styles/breakpoints";
+@import "global-styles/mixins";
 
 #vocab-builder-app {
     position: relative;
@@ -160,5 +160,56 @@
 
     .start-heading {
         font-size: 2em;
+    }
+}
+
+::ng-deep {
+    .adaptive-quiz-start-animation {
+        background: url("assets/adaptive-quiz/meter-optimized.gif");
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center center;
+    }
+
+    .adaptive-test-start-animation {
+        background: url("assets/adaptive-quiz/adaptive-test-start-screen.png");
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center center;
+    }
+
+    .adaptive-quiz-vocab-icon {
+        background: url("assets/adaptive-quiz/vocab-icon.png");
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center center;
+    }
+
+    .adaptive-quiz-current-band-icon {
+        background: url("assets/adaptive-quiz/current-band.png");
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center center;
+    }
+
+    .adaptive-quiz-next-band-icon {
+        background: url("assets/adaptive-quiz/next-band.png");
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center center;
+    }
+
+    .adaptive-test-notepad-icon {
+        background: url("assets/adaptive-quiz/adaptive-test-notepad-icon.png");
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center center;
+    }
+
+    .progress-bottom {
+        background-image: url("assets/adaptive-quiz/progress-bar-background.png");
+        background-repeat: repeat-x;
+        background-size: 1px;
+        background-position: center;
     }
 }

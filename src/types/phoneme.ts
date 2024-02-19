@@ -84,6 +84,6 @@ export class Phoneme {
   }
 
   public static getPhonemeSrc(phoneme: string): string {
-    return require("global-assets/phonemes/" + phoneme + ".mp3");
+    return "assets/phonemes/" + phoneme + ".mp3";
   }
 }

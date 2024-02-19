@@ -3,7 +3,6 @@ import { map } from "rxjs/operators";
 import { Observable, timer } from "rxjs";
 import { compact, filter, isUndefined, join, padStart } from "lodash-es";
 import { Logger } from "../common/logger";
-import { FeatureService } from "../common/feature.service";
 import { RecognizerSettingService } from "../microphone-widget/recognizer-setting.service";
 import { RecognizerResult } from "../../types/recognizer-result";
 import { RecordingMediaBlob } from "../../types/encoder";
@@ -32,8 +31,7 @@ export class RecognizerModelOptions {
 export class RecognizerModelService {
     private logger = new Logger();
 
-    constructor(private featureService: FeatureService,
-                private recognizerSettingService: RecognizerSettingService) {
+    constructor(private recognizerSettingService: RecognizerSettingService) {
     }
 
     recognizeAudio(recognizerModelOptions: RecognizerModelOptions, trackingContext?: Record<string, string>): Observable<RecognizerResult> {

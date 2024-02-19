@@ -19,7 +19,8 @@ import { XDialogLine } from "../../../types/dialog-line";
 import { XQuizWord } from "../../../types/vocabulary-quiz";
 import { of, Subject, timer } from "rxjs";
 import {
-    createStreamName, HTTP_REQUEST_HANDLER,
+    createStreamName,
+    HTTP_REQUEST_HANDLER,
     MODE_WORD,
     RecognizerModelService,
     WEBSOCKET_REQUEST_HANDLER
@@ -70,7 +71,6 @@ import { Logger } from "../../common/logger";
 import { SubscriptionAbstract } from "../../subscription.abstract";
 import { CountdownTimer, CountdownTimerTick, TIMER_MODE_TOTAL_REMAINING_TIME } from "../../common/countdown-timer";
 import { Browser } from "../../common/browser";
-import { FeatureService } from "../../common/feature.service";
 import { IdentityService } from "../../common/identity.service";
 import { VideoFactoryService } from "../../video-app/video-factory.service";
 import { VocabBuilderModelService } from "../../model/vocab-builder-model.service";
@@ -212,7 +212,6 @@ export class ExamQuestionComponent extends SubscriptionAbstract implements OnCha
     constructor(private microphoneWidgetStateService: MicrophoneWidgetStateService,
                 private microphoneHandlerService: MicrophoneHandlerService,
                 private identityService: IdentityService,
-                private featureService: FeatureService,
                 private recognizerModelService: RecognizerModelService,
                 private recognizerSettingService: RecognizerSettingService,
                 private videoFactory: VideoFactoryService,
@@ -1003,7 +1002,7 @@ export class ExamQuestionComponent extends SubscriptionAbstract implements OnCha
     }
 
     isLanguageDefinitionsUsable(): boolean {
-        return this.featureService.getFeature("isLanguageDefinitionsUsable");
+        return true;
     }
 
     isUppercase(index: number): boolean {
@@ -1035,7 +1034,7 @@ export class ExamQuestionComponent extends SubscriptionAbstract implements OnCha
     }
 
     isPwaEnabled(): boolean {
-        return this.featureService.isPwaV2Enabled();
+        return true;
     }
 
     isTimerGood(): boolean {

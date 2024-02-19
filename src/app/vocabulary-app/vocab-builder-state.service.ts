@@ -74,7 +74,6 @@ import { AdaptiveQuizModelService } from "../model/adaptive-quiz-model.service";
 import { ReferenceModelService } from "../model/reference-model.service";
 import { StudyLevelModelService } from "../model/study-level-model.service";
 import { IdentityService } from "../common/identity.service";
-import { FeatureService } from "../common/feature.service";
 
 const LOCAL_VOCABULARY_SETTINGS_KEY = "LocalUserVocabularySettings";
 
@@ -182,8 +181,7 @@ export class VocabBuilderStateService {
                 private wordProgressModelService: WordProgressModelService,
                 private referenceModelService: ReferenceModelService,
                 private studyLevelService: StudyLevelModelService,
-                private identityService: IdentityService,
-                private featureService: FeatureService) {
+                private identityService: IdentityService) {
     }
 
     appendQuizData(vocabBuilderQuiz: XWordQuiz, autoStart: boolean = false): void {
@@ -521,16 +519,7 @@ export class VocabBuilderStateService {
     }
 
     getModeReference(): VocabBuilderMode[] {
-        if (this.featureService.isPwaV2Enabled()) {
-            return getSupportedModes(
-                get(this.vocabBuilderReference, "vocabBuilderModes", []),
-                this.featureService.getFeature("PWAVocabularyPublicModes")
-            );
-        }
-        return getSupportedModes(
-            get(this.vocabBuilderReference, "vocabBuilderModes", []),
-            this.featureService.getFeature("vocabBuilderPublicModes")
-        );
+        return [];
     }
 
     getModeNumbers(): number[] {

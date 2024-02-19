@@ -1,11 +1,8 @@
 import { ANIMATION_FRAME_INTERVAL, EncoderHandlerAbstract } from "./encoder-handler-abstract";
-import { Instrumentation } from "../../../../core/instrumentation/instrumentation";
 import { first, takeUntil } from "rxjs/operators";
 import { MicrophoneRecordingOptions } from "../microphone-handler";
 import { interval } from "rxjs";
-import { ENCODER_NONE, INPUT_TYPE_STREAM, RecordingMediaBlob } from "../../../../model/types/speech/encoder";
-import { extractErrorString } from "../../../../core/instrumentation/instrumentation-utility";
-
+import { ENCODER_NONE, INPUT_TYPE_STREAM, RecordingMediaBlob } from "../../../types/encoder";
 declare let window: any;
 
 /**
@@ -104,13 +101,6 @@ export class PassthruEncoder extends EncoderHandlerAbstract {
             }
 
             this.subscribe(PassthruEncoder.EVENT_ON_ERROR, (e) => {
-                Instrumentation.sendEvent("microphone", {
-                    response: "clientError",
-                    responseStatus: 0,
-                    encoder: ENCODER_NONE,
-                    errorMessage: extractErrorString(e)
-                });
-
                 this.microphoneAudioOutputStream.completeAudioObservables();
                 reject(e);
             });

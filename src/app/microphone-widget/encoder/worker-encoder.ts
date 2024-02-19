@@ -1,14 +1,11 @@
-import { AnalyticsService, TrackerName } from "../../../../core/analytics";
-import { StopWatch } from "../../../../core/stopwatch";
 import { ANIMATION_FRAME_INTERVAL, EncoderHandlerAbstract } from "./encoder-handler-abstract";
-import { Instrumentation } from "../../../../core/instrumentation/instrumentation";
-import { Browser } from "../../../../core/browser";
 import { MicrophoneRecordingOptions } from "../microphone-handler";
 import { interval } from "rxjs";
 import { takeUntil } from "rxjs/operators";
-import { ENCODER_MP4, RecordingMediaBlob } from "../../../../model/types/speech/encoder";
-import { extractErrorString } from "../../../../core/instrumentation/instrumentation-utility";
+import { RecordingMediaBlob } from "../../../types/encoder";
 import { assign } from "lodash-es";
+import { StopWatch } from "../../common/stopwatch";
+import { Browser } from "../../common/browser";
 
 declare let window: any;
 declare let PCM_VERSION: string;
@@ -27,13 +24,11 @@ export class WorkerEncoder extends EncoderHandlerAbstract {
     protected binaryFileName?: string;
     protected readyStopWatch: StopWatch = new StopWatch();
     protected recorderStopWatch: StopWatch = new StopWatch();
-    protected analyticsService: AnalyticsService;
     protected maxRecordingSeconds: number = 30;
     protected format = "mp4";
 
-    constructor(analyticsService: AnalyticsService) {
+    constructor() {
         super();
-        this.analyticsService = analyticsService;
     }
 
     getCodec(): string {
@@ -149,12 +144,6 @@ export class WorkerEncoder extends EncoderHandlerAbstract {
             try {
                 this.encoder = this.createWorkerFallback(pcmWorkerFile);
             } catch (e) {
-                Instrumentation.sendEvent("microphone", this.appendAdditionalStats({
-                    response: "clientError",
-                    responseStatus: 0,
-                    encoder: ENCODER_MP4,
-                    errorMessage: extractErrorString(e) || "worker instantiation failure"
-                }));
                 return Promise.reject("worker instantiation failure");
             }
         }
@@ -169,21 +158,6 @@ export class WorkerEncoder extends EncoderHandlerAbstract {
             });
 
             let fail = this.subscribe(WorkerEncoder.EVENT_ON_ERROR, (e) => {
-                Instrumentation.sendEvent("microphone", this.appendAdditionalStats({
-                    response: "clientError",
-                    responseStatus: 0,
-                    encoder: ENCODER_MP4,
-                    errorMessage: extractErrorString(e)
-                }));
-                this.analyticsService.trackEvent(
-                    TrackerName.GA,
-                    {
-                        eventCategory: "Player",
-                        eventAction: "HTML5Microphone",
-                        eventLabel: "ActivityID",
-                        eventValuesOther: {"Action": "WorkerError"}
-                    }
-                );
                 if (fail) {
                     fail.unsubscribe();
                 }
@@ -192,7 +166,7 @@ export class WorkerEncoder extends EncoderHandlerAbstract {
         });
     }
 
-    protected lazyLoadWorkerFile(): Promise<string> {
+    protected async lazyLoadWorkerFile(): Promise<string> {
         if (!this.workerFilePromise) {
             this.workerFilePromise = new Promise(resolve => {
                 if (this.workerFileName) {
@@ -201,20 +175,16 @@ export class WorkerEncoder extends EncoderHandlerAbstract {
 
                 if (Browser.isWebAssemblyEnabled()) {
                     // https://webpack.js.org/api/module-methods/#require-ensure
-                    return require.ensure([], () => {
-                        this.binaryFileName = require("file-loader?name=[name].[ext]!pcm-encoder/dist/pcm-encoder-wasm-" + PCM_VERSION + ".wasm")?.default;
-                        this.workerFileName = require("file-loader?name=[name].[ext]!pcm-encoder/dist/pcm-encoder-wasm-" + PCM_VERSION + ".js")?.default;
-                        this.logger.log("loading worker encoder webassembly");
-                        resolve(this.workerFileName);
-                    });
+                    this.binaryFileName = "pcm-encoder/dist/pcm-encoder-wasm-" + PCM_VERSION + ".wasm";
+                    this.workerFileName = "pcm-encoder/dist/pcm-encoder-wasm-" + PCM_VERSION + ".js";
+                    this.logger.log("loading worker encoder webassembly");
+                    resolve(this.workerFileName);
                 }
 
-                require.ensure([], () => {
-                    this.binaryFileName = require("file-loader?name=[name].[ext]!pcm-encoder/dist/pcm-encoder-asmjs-" + PCM_VERSION + ".js.mem")?.default;
-                    this.workerFileName = require("file-loader?name=[name].[ext]!pcm-encoder/dist/pcm-encoder-asmjs-" + PCM_VERSION + ".js")?.default;
-                    this.logger.log("loading worker encoder asmjs");
-                    resolve(this.workerFileName);
-                });
+                this.binaryFileName = "pcm-encoder/dist/pcm-encoder-asmjs-" + PCM_VERSION + ".js.mem";
+                this.workerFileName = "pcm-encoder/dist/pcm-encoder-asmjs-" + PCM_VERSION + ".js";
+                this.logger.log("loading worker encoder asmjs");
+                resolve(this.workerFileName);
             });
         }
 
@@ -239,12 +209,6 @@ export class WorkerEncoder extends EncoderHandlerAbstract {
                             init.unsubscribe();
                         }
                         resolve(data);
-                        this.analyticsService.trackTiming({
-                            timingCategory: "MicrophoneHTML5",
-                            timingVar: "ReadyTime",
-                            timingValue: this.readyStopWatch.getTime(),
-                            timingLabel: "ReadyTime"
-                        });
                     });
 
                     let fail = this.subscribe(WorkerEncoder.EVENT_ON_ERROR, (e) => {
@@ -353,15 +317,6 @@ export class WorkerEncoder extends EncoderHandlerAbstract {
                     resolve(recodingMediaBlob);
 
                 } else {
-                    this.analyticsService.trackEvent(
-                        TrackerName.GA,
-                        {
-                            eventCategory: "Player",
-                            eventAction: "HTML5Microphone",
-                            eventLabel: "Action",
-                            eventValuesOther: {"Action": "NoOutputError"}
-                        }
-                    );
                     this.recorderStopWatch.stop();
                     this.microphoneAudioOutputStream.completeAudioObservables();
                     reject("worker-encoder.service.ts :: no data received");
@@ -377,14 +332,6 @@ export class WorkerEncoder extends EncoderHandlerAbstract {
                 if (audioSubscription) {
                     audioSubscription.unsubscribe();
                 }
-
-                Instrumentation.sendEvent("microphone", {
-                    response: "clientError",
-                    responseStatus: 0,
-                    encoder: ENCODER_MP4,
-                    errorMessage: extractErrorString(e),
-                    ...(micRecordingOptions?.trackingContext ?? {})
-                });
 
                 this.recorderStopWatch.stop();
                 this.microphoneAudioOutputStream.completeAudioObservables();

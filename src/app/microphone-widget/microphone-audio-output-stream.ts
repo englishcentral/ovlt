@@ -1,6 +1,6 @@
 import { Injectable, NgZone } from "@angular/core";
 import { Observable, ReplaySubject, Subject } from "rxjs";
-import { INPUT_TYPE_FILE, INPUT_TYPE_STREAM, RecordingMediaBlob } from "../../../model/types/speech/encoder";
+import { INPUT_TYPE_FILE, INPUT_TYPE_STREAM, RecordingMediaBlob } from "../../types/encoder";
 
 @Injectable({providedIn: "root"})
 export class MicrophoneAudioOutputStream {

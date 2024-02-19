@@ -12,7 +12,6 @@ import {
 } from "@angular/core";
 import { NgbModal, NgbModalOptions, NgbModalRef } from "@ng-bootstrap/ng-bootstrap";
 import { forkJoin, map as rxJsMap, Observable, of, Subject } from "rxjs";
-import "global-styles/adaptive-quiz.scss";
 import { catchError, debounceTime, mergeMap, takeUntil, tap } from "rxjs/operators";
 import { DEFAULT_VOCAB_BUILDER_ACTIVITY } from "../../types/activity";
 import { DEFAULT_WORD_LIST_TYPE_ID, LAST_LEVEL_LIST, MY_WORDS_LISTS, WordList } from "../../types/word-list-reference";
@@ -59,7 +58,6 @@ import { VocabBuilderModelService } from "../model/vocab-builder-model.service";
 import { ReferenceModelService } from "../model/reference-model.service";
 import { WordProgressModelService } from "../model/word-progress.model.service";
 import { IdentityService } from "../common/identity.service";
-import { FeatureService } from "../common/feature.service";
 import { Browser } from "../common/browser";
 import { SharedWordHeadProgress } from "../../types/word-head-progress";
 
@@ -154,7 +152,6 @@ export class VocabBuilderAppComponent extends SubscriptionAbstract implements On
                 private referenceModelService: ReferenceModelService,
                 private wordProgressModelService: WordProgressModelService,
                 private identityService: IdentityService,
-                private featureService: FeatureService,
                 private modalService: NgbModal,
                 private zone: NgZone) {
         super();
@@ -773,7 +770,7 @@ export class VocabBuilderAppComponent extends SubscriptionAbstract implements On
 
     getLockTimerSetting(): number {
         const DEFAULT_TIMER = 30;
-        return this.featureService.getFeature("adaptiveQuizTimer") || DEFAULT_TIMER;
+        return DEFAULT_TIMER;
     }
 
     getCurrentRank(): number | undefined {
