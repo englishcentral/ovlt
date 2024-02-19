@@ -1,14 +1,12 @@
 import { Injectable } from "@angular/core";
 import { enumerateDevices } from "./browser-navigator";
-import { LocalForageGeneric } from "./local-forage-generic";
-import { Emitter } from "./emitters/emitter";
 import { Subscription } from "rxjs";
 import { assign, filter, find, has, map } from "lodash-es";
-import { Logger } from "./logger/logger";
-import { Dictionary } from "../model/types/dictionary";
 import { BrowserMediaDevice, BrowserMediaDeviceSettings } from "./browser-media-device";
+import { Emitter } from "./emitter";
+import { Logger } from "./logger";
 
-type CurrentMediaSettings = Dictionary<{ selectedId: string, gain?: number }>;
+type CurrentMediaSettings = Record<any, { selectedId: string, gain?: number }>;
 
 @Injectable({
     providedIn: "root"
@@ -28,7 +26,6 @@ export class BrowserMediaDeviceService {
 
     static readonly DEFAULT_MEDIA_CONSTRAINTS: MediaStreamConstraints = {audio: true, video: false};
 
-    private localStorage = new LocalForageGeneric<CurrentMediaSettings>("currentMediaSettings");
     private deviceList?: BrowserMediaDevice[];
 
     private emitter = new Emitter();
@@ -144,7 +141,7 @@ export class BrowserMediaDeviceService {
             selectedId: currentVideoInput?.id
         };
 
-        await this.localStorage.setItem(BrowserMediaDeviceService.NS_SETTINGS, deviceSettings);
+        this.logger.log(deviceSettings);
     }
 
     setCurrentMicrophoneGain(gain: number): void {
@@ -154,11 +151,7 @@ export class BrowserMediaDeviceService {
     }
 
     getDeviceSettings(): Promise<CurrentMediaSettings> {
-        return this.localStorage
-            .getItem(BrowserMediaDeviceService.NS_SETTINGS)
-            .catch(() => {
-                return {};
-            });
+        return Promise.resolve({});
     }
 
     setAudioInput(device?: BrowserMediaDevice, save: boolean = false, publish: boolean = false): void {

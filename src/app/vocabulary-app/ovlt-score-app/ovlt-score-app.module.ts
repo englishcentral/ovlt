@@ -2,7 +2,6 @@ import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { OvltScoreAppComponent } from "./ovlt-score-app.component";
 import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
-import { LoadingRingModule } from "../../../../shared/loading-ring/loading-ring.module";
 
 @NgModule({
     declarations: [
@@ -13,8 +12,7 @@ import { LoadingRingModule } from "../../../../shared/loading-ring/loading-ring.
     ],
     imports: [
         CommonModule,
-        NgbModule,
-        LoadingRingModule
+        NgbModule
     ]
 })
 export class OvltScoreAppModule {

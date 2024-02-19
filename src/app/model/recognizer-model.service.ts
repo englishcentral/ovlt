@@ -1,12 +1,12 @@
 import { Injectable } from "@angular/core";
-import { map, tap } from "rxjs/operators";
-import { Observable, of, timer } from "rxjs";
+import { map } from "rxjs/operators";
+import { Observable, timer } from "rxjs";
 import { compact, filter, isUndefined, join, padStart } from "lodash-es";
-import { StopWatch } from "../common/stopwatch";
 import { Logger } from "../common/logger";
 import { FeatureService } from "../common/feature.service";
 import { RecognizerSettingService } from "../microphone-widget/recognizer-setting.service";
 import { RecognizerResult } from "../../types/recognizer-result";
+import { RecordingMediaBlob } from "../../types/encoder";
 
 
 export const MODE_LINE = "line";
@@ -16,9 +16,6 @@ export const MODE_SPEECH_TO_TEXT = "speech-to-text";
 
 export const HTTP_REQUEST_HANDLER = "http";
 export const WEBSOCKET_REQUEST_HANDLER = "websocket";
-
-const ENDPOINT_KALDI = "kaldi";
-const ENDPOINT_HARMONY = "recognizer";
 
 export class RecognizerModelOptions {
     solution: string;
@@ -33,9 +30,6 @@ export class RecognizerModelOptions {
 
 @Injectable({providedIn: "root"})
 export class RecognizerModelService {
-    static ERROR_200: number = 200;
-    static ERROR_PARSING: string = "HttpErrorResponse";
-    private recognizerStopWatch?: StopWatch;
     private logger = new Logger();
 
     constructor(private featureService: FeatureService,
@@ -48,24 +42,9 @@ export class RecognizerModelService {
                 map((recognizerResponse) => {
                     if (recognizerResponse) {
                         let [[xmlString, statusCode = 0], recognizerType] = recognizerResponse;
-                        let recognizerResultTuple: [RecognizerResult, number, number] = [new RecognizerResult(xmlString), recognizerType, statusCode];
-                        return recognizerResultTuple;
+                        return new RecognizerResult(xmlString);
                     }
                     return undefined;
-                }),
-                tap((recognizerResultTuple?) => {
-                    if (!recognizerResultTuple) {
-                        return;
-                    }
-                    let [recognizerResult, recognizerType, statusCode] = recognizerResultTuple;
-
-                    let recognizerTypeParam = this.recognizerSettingService.getRecognizerType(recognizerModelOptions.recognizerType);
-                    let fileTransferHandler = this.recognizerSettingService.getFileTransferMode(recognizerTypeParam, recognizerModelOptions.fileTransferMode);
-                    this.recognizerStopWatch?.stop();
-                }),
-                map((recognizerResultTuple?) => {
-                    let [recognizerResult, recognizerType] = recognizerResultTuple;
-                    return recognizerResult;
                 })
             );
     }

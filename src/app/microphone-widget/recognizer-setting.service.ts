@@ -1,24 +1,18 @@
-import { Browser } from "../../core/browser";
-import { FeatureService } from "../../core/feature.service";
-import { VALID_RECOGNIZERS } from "../types/speech/recognizer-result";
 import { Injectable } from "@angular/core";
-import { ENCODER_FLAC, ENCODER_NATIVE_MEDIARECORDER, ENCODER_WAV } from "../types/speech/encoder";
-import { Logger } from "../../core/logger/logger";
-import { find, isUndefined } from "lodash-es";
-import { getSupportedMediaRecorderFormat } from "../../core/browser-navigator";
-import { HTTP_REQUEST_HANDLER, WEBSOCKET_REQUEST_HANDLER } from "../types/speech/transport";
+import { Logger } from "../common/logger";
+import { Browser } from "../common/browser";
+import { HTTP_REQUEST_HANDLER, WEBSOCKET_REQUEST_HANDLER } from "../model/recognizer-model.service";
+import { ENCODER_NATIVE_MEDIARECORDER } from "../../types/encoder";
 
 @Injectable({providedIn: "root"})
 export class RecognizerSettingService {
     private logger = new Logger();
 
-    constructor(private featureService: FeatureService) {
+    constructor() {
     }
 
     getFileTransferMode(recognizerType?: number, fileTransferMode?: string): string | undefined {
         const LAST_NONCHROMIUM_EDGE_VERSION = 44;
-        // BC-70393
-        // BC-75616
         if (Browser.isInternetExplorer()
             || (Browser.isEdge() && parseInt(Browser.getVersion()) <= LAST_NONCHROMIUM_EDGE_VERSION)
         ) {
@@ -26,8 +20,6 @@ export class RecognizerSettingService {
         }
 
         const ANDROID_VERSION_LOCAL_FILE_ENABLED = 10;
-        // BC-76878
-        // BC-77802
         if (Browser.isChromeOs()
             || (Browser.isAndroid() && parseInt(Browser.getAndroidVersion()) < ANDROID_VERSION_LOCAL_FILE_ENABLED)
             || Browser.isIos()
@@ -35,19 +27,15 @@ export class RecognizerSettingService {
             return WEBSOCKET_REQUEST_HANDLER;
         }
 
-        return fileTransferMode || this.featureService.getFeature("recognizerFileTransferMode");
+        return fileTransferMode;
     }
 
     getWavWorkerEncoderSetting(playerOverrideSetting?: boolean): boolean {
-        return playerOverrideSetting ?? this.featureService.getFeature("wavWorkerEncoderEnabled") ?? false;
+        return playerOverrideSetting ?? false;
     }
 
     getRecognizerType(recognizerType?: number): number | undefined {
-        if (recognizerType && VALID_RECOGNIZERS.includes(recognizerType)) {
-            return recognizerType;
-        }
-
-        return this.featureService.getFeature("recognizerType");
+        return recognizerType;
     }
 
     isDefaultModeStreaming(): boolean {
@@ -55,27 +43,6 @@ export class RecognizerSettingService {
     }
 
     getStreamingEncoderType(): string {
-        let speechEncodersFeature = this.featureService.getFeature("speechEncoders");
-        if (speechEncodersFeature) {
-            let encoders = speechEncodersFeature.split(",");
-            const firstSupportedEncoder = find(encoders, encoder => {
-                if (encoder === ENCODER_NATIVE_MEDIARECORDER) {
-                    return !isUndefined(getSupportedMediaRecorderFormat(true));
-                }
-                if (encoder === ENCODER_FLAC) {
-                    return Browser.isWorkerEnabled();
-                }
-                if (encoder === ENCODER_WAV) {
-                    return true;
-                }
-            });
-            const streamingEncoder =  firstSupportedEncoder ?? ENCODER_WAV;
-            this.logger.log(`streaming encoder - ${streamingEncoder}`);
-
-            return streamingEncoder;
-        }
-
-        this.logger.log(`streaming encoder - wav fallback`);
-        return ENCODER_WAV;
+        return ENCODER_NATIVE_MEDIARECORDER;
     }
 }

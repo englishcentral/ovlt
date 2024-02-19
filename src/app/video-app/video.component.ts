@@ -12,13 +12,9 @@ import {
     ViewChild
 } from "@angular/core";
 import { VideoFactoryService } from "./video-factory.service";
-import { Logger } from "../../core/logger/logger";
-import { GlobalSettingService } from "../../core/global-setting.service";
-import { AnalyticsService, TrackerName } from "../../core/analytics";
 import { assign } from "lodash-es";
-import { Dictionary, NumericDictionary } from "../../model/types/dictionary";
-import { PlayerStateService } from "../../activity-app/player-app/player-state.service";
-import { Asset, AssetType } from "../../model/types/content/asset";
+import { Asset, AssetType } from "../../types/asset";
+import { Logger } from "../common/logger";
 
 export interface VideoTracking {
     category: string;
@@ -34,7 +30,7 @@ export interface VideoTracking {
 export class VideoComponent implements AfterViewInit, OnChanges, OnDestroy {
     @Input() videoId: string;
     @Input() videoUrl: string;
-    @Input() videoSources: NumericDictionary<Asset>;
+    @Input() videoSources: Record<number, Asset>;
     @Input() preferredSource: number;
     @Input() poster: string;
     @Input() width: string;
@@ -63,11 +59,7 @@ export class VideoComponent implements AfterViewInit, OnChanges, OnDestroy {
     ];
 
     constructor(private videoFactory: VideoFactoryService,
-                private globalSettingService: GlobalSettingService,
-                private elementRef: ElementRef,
-                private analyticsService: AnalyticsService,
-                private changeDetectorRef: ChangeDetectorRef,
-                private playerStateService: PlayerStateService) {
+                private changeDetectorRef: ChangeDetectorRef) {
     }
 
     getVideoId(): string | undefined {
@@ -83,7 +75,7 @@ export class VideoComponent implements AfterViewInit, OnChanges, OnDestroy {
         return this.videoUrl;
     }
 
-    getVideoOptions(): Dictionary<any> {
+    getVideoOptions(): Record<any, any> {
         let baseVideoOptions = {
             poster: this.poster,
             width: this.width,
@@ -133,15 +125,6 @@ export class VideoComponent implements AfterViewInit, OnChanges, OnDestroy {
         if (currentTime) {
             label = label.replace("<duration>", currentTime);
         }
-
-        this.analyticsService.trackEvent(
-            TrackerName.GA,
-            {
-                eventCategory: tracking.category,
-                eventAction: tracking.action,
-                eventLabel: label
-            }
-        );
     }
 
     private setReady(isReady: boolean): void {
@@ -172,10 +155,10 @@ export class VideoComponent implements AfterViewInit, OnChanges, OnDestroy {
         let videoOptions = this.getVideoOptions();
         this.logger.log("Creating video for ", this.videoId);
         this.player = await this.videoFactory.create(this.videoId,
-                                                     videoOptions,
-                                                     () => {
-                                                         this.setReady(true);
-                                                     }
+            videoOptions,
+            () => {
+                this.setReady(true);
+            }
         );
         this.player.on("error", () => {
             this.eventError.emit(this.player.error);
@@ -249,14 +232,11 @@ export class VideoComponent implements AfterViewInit, OnChanges, OnDestroy {
                 let isPreviouslyPaused = this.player.paused();
 
                 this.player.on("loadeddata", () => {
-                    this.playerStateService.publish(PlayerStateService.EVENT_PLAYER_SCRUB_VISIBILITY, true);
                     this.player.currentTime(currentTime);
                     if (!isPreviouslyPaused) {
                         this.player.play();
                     }
                 });
-
-                this.playerStateService.publish(PlayerStateService.EVENT_PLAYER_SCRUB_VISIBILITY, false);
                 this.player.src(newSource);
                 return;
             }

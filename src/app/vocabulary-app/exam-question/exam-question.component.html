@@ -333,11 +333,11 @@
                             <div *ngIf="!isAnswerCorrect() && !isSkipped()">
                                 <span class="times-up-text text-danger mb-3 d-block" *ngIf="isTimerExpired()" i18n>Time's Up!</span>
                                 <span i18n>Correct Answer</span>:
-                                <span class="correct-answer-text text-success">{{ getCurrentOrthography() | titlecase }}</span>
+                                <span class="correct-answer-text text-success">{{ getCurrentOrthography() }}</span>
                             </div>
                             <div *ngIf="isSkipped()">
                                 <span i18n>Skipped</span>:
-                                <span class="correct-answer-text text-success">{{ getCurrentOrthography() | titlecase }}</span>
+                                <span class="correct-answer-text text-success">{{ getCurrentOrthography() }}</span>
                             </div>
                         </ng-template>
 
