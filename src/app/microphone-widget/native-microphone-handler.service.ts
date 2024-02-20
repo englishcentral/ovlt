@@ -194,10 +194,6 @@ export class NativeMicrophoneHandlerService implements MicrophoneHandler {
                 const {WorkerEncoder} = await import("./encoder/worker-encoder");
                 this.handler = new WorkerEncoder();
                 return solution;
-            case ENCODER_FLAC:
-                const {FlacEncoder} = await import("./encoder/flac-encoder");
-                this.handler = new FlacEncoder();
-                return solution;
             case ENCODER_WAV:
             default:
                 this.logger.log("Fallback to WAV");
