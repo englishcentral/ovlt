@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Logger } from "./common/logger";
 
 @Component({
     selector: 'app-root',
@@ -6,5 +7,7 @@ import { Component } from '@angular/core';
     styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-    title = 'ovlt';
+    constructor() {
+        Logger.setDebugMode(true);
+    }
 }

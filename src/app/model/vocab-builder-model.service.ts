@@ -70,11 +70,6 @@ export class VocabBuilderModelService {
     }
 
     generateLevelQuiz(params: VocabBuilderSetting): Observable<any> {
-        if (!params.accountId || (!params.curatedLevelTestId && !params.levelTestSettingId)) {
-            this.logger.log("accountId and curatedLevelTestId or levelTestSettingId are required params");
-            return of(undefined);
-        }
-
         return of({
             "quizType": "levelTest",
             "wordListTypeId": 101232,
@@ -83,7 +78,7 @@ export class VocabBuilderModelService {
             "quizWords": [
                 {
                     "type": "XQuizWord",
-                    "modeId": 2,
+                    "modeId": 1,
                     "previouslyEncountered": false,
                     "word": {
                         "id": 2660,
@@ -472,7 +467,7 @@ export class VocabBuilderModelService {
                 },
                 {
                     "type": "XQuizWord",
-                    "modeId": 2,
+                    "modeId": 1,
                     "previouslyEncountered": false,
                     "word": {
                         "id": 16098,
@@ -880,7 +875,7 @@ export class VocabBuilderModelService {
                 },
                 {
                     "type": "XQuizWord",
-                    "modeId": 2,
+                    "modeId": 1,
                     "previouslyEncountered": false,
                     "word": {
                         "id": 20026,
@@ -1288,7 +1283,7 @@ export class VocabBuilderModelService {
                 },
                 {
                     "type": "XQuizWord",
-                    "modeId": 2,
+                    "modeId": 1,
                     "previouslyEncountered": false,
                     "word": {
                         "id": 28758,
@@ -1671,7 +1666,7 @@ export class VocabBuilderModelService {
                 },
                 {
                     "type": "XQuizWord",
-                    "modeId": 2,
+                    "modeId": 1,
                     "previouslyEncountered": false,
                     "word": {
                         "id": 38741,
@@ -2076,7 +2071,7 @@ export class VocabBuilderModelService {
                 },
                 {
                     "type": "XQuizWord",
-                    "modeId": 2,
+                    "modeId": 1,
                     "previouslyEncountered": false,
                     "word": {
                         "id": 39059,
@@ -2473,7 +2468,7 @@ export class VocabBuilderModelService {
                 },
                 {
                     "type": "XQuizWord",
-                    "modeId": 2,
+                    "modeId": 1,
                     "previouslyEncountered": false,
                     "word": {
                         "id": 40076,
@@ -2880,7 +2875,7 @@ export class VocabBuilderModelService {
                 },
                 {
                     "type": "XQuizWord",
-                    "modeId": 2,
+                    "modeId": 1,
                     "previouslyEncountered": false,
                     "word": {
                         "id": 40527,
@@ -3289,7 +3284,7 @@ export class VocabBuilderModelService {
                 },
                 {
                     "type": "XQuizWord",
-                    "modeId": 2,
+                    "modeId": 1,
                     "previouslyEncountered": false,
                     "word": {
                         "id": 42181,
@@ -3684,7 +3679,7 @@ export class VocabBuilderModelService {
                 },
                 {
                     "type": "XQuizWord",
-                    "modeId": 2,
+                    "modeId": 1,
                     "previouslyEncountered": false,
                     "word": {
                         "id": 46144,
@@ -4113,7 +4108,7 @@ export class VocabBuilderModelService {
                 },
                 {
                     "type": "XQuizWord",
-                    "modeId": 2,
+                    "modeId": 1,
                     "previouslyEncountered": false,
                     "word": {
                         "id": 49755,
@@ -4483,7 +4478,7 @@ export class VocabBuilderModelService {
                 },
                 {
                     "type": "XQuizWord",
-                    "modeId": 2,
+                    "modeId": 1,
                     "previouslyEncountered": false,
                     "word": {
                         "id": 49793,
@@ -4870,7 +4865,7 @@ export class VocabBuilderModelService {
                 },
                 {
                     "type": "XQuizWord",
-                    "modeId": 2,
+                    "modeId": 1,
                     "previouslyEncountered": false,
                     "word": {
                         "id": 61393,
@@ -5288,7 +5283,7 @@ export class VocabBuilderModelService {
                 },
                 {
                     "type": "XQuizWord",
-                    "modeId": 2,
+                    "modeId": 1,
                     "previouslyEncountered": false,
                     "word": {
                         "id": 62060,
@@ -5700,7 +5695,7 @@ export class VocabBuilderModelService {
                 },
                 {
                     "type": "XQuizWord",
-                    "modeId": 2,
+                    "modeId": 1,
                     "previouslyEncountered": false,
                     "word": {
                         "id": 62537,
@@ -6116,7 +6111,7 @@ export class VocabBuilderModelService {
                 },
                 {
                     "type": "XQuizWord",
-                    "modeId": 2,
+                    "modeId": 1,
                     "previouslyEncountered": false,
                     "word": {
                         "id": 69402,
@@ -6515,7 +6510,7 @@ export class VocabBuilderModelService {
                 },
                 {
                     "type": "XQuizWord",
-                    "modeId": 2,
+                    "modeId": 1,
                     "previouslyEncountered": false,
                     "word": {
                         "id": 69419,
@@ -6896,7 +6891,7 @@ export class VocabBuilderModelService {
                 },
                 {
                     "type": "XQuizWord",
-                    "modeId": 2,
+                    "modeId": 1,
                     "previouslyEncountered": false,
                     "word": {
                         "id": 88053,

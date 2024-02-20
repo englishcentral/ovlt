@@ -193,6 +193,8 @@ export class VocabBuilderProgressService {
 
         if (!examQuestionCheckedEvent.correct) {
             this.incorrect = true;
+        } else {
+            this.currentCorrect += 1;
         }
 
         this.answerStopWatch.stop();

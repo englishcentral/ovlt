@@ -5,8 +5,7 @@ import { first, takeUntil } from "rxjs/operators";
 import { Emitter } from "../common/emitter";
 import { Logger } from "../common/logger";
 import { BrowserMediaDeviceService } from "../common/browser-media-device.service";
-
-declare var videoJs;
+import videojs from "video.js";
 
 @Injectable({
     providedIn: "root"
@@ -30,7 +29,7 @@ export class VideoFactoryService {
         let namespace = this.generateNamespace(videoId);
         let videoElement = this.getVideoElement(videoId);
 
-        let player = videoJs(
+        let player = videojs(
             videoElement,
             videoOptions,
             readyFn
@@ -92,8 +91,8 @@ export class VideoFactoryService {
             return;
         }
 
-        if (typeof videoJs !== "undefined" && this.getVideoElement(videoId)) {
-            return videoJs(this.getVideoElement(videoId));
+        if (typeof videojs !== "undefined" && this.getVideoElement(videoId)) {
+            return videojs(this.getVideoElement(videoId));
         }
 
         return undefined;
@@ -101,11 +100,11 @@ export class VideoFactoryService {
 
     destroy(videoId: string): void {
         this.logger.log("Attempting to destroy video instance", videoId);
-        if (!videoId) {
+        if (!videoId || !this.getVideoElement(videoId)) {
             return;
         }
 
-        let previousInstance = videoJs(this.getVideoElement(videoId));
+        let previousInstance = videojs(this.getVideoElement(videoId));
 
         try {
             if (previousInstance) {

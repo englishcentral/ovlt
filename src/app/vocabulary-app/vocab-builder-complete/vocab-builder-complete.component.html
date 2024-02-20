@@ -92,28 +92,6 @@
                                     *ngTemplateOutlet="levelIndicator; context: {difficultyLevel: getUserLevel()}"></ng-container>
                         </ng-template>
 
-                        <ng-template [ngIf]="!isFirstLevel()">
-                            <span class="d-block" *ngIf="!isLevelUpdated() && !isLevelUpdateProcessing()" i18n>You seem to be having trouble, would you like to try a lower difficulty level?</span>
-                            <div *ngIf="!isLevelUpdated()" class="d-flex flex-wrap justify-content-center mt-3">
-                                <ng-template [ngIf]="!isLevelUpdateProcessing()">
-                                    <button class="level-control-button btn" (click)="goToMyEnglish()" i18n>Stay at
-                                        current level
-                                    </button>
-                                    <button class="level-control-button btn"
-                                            (click)="updateLevel(getUserPreviousLevel())" i18n>Go to
-                                        Level {{ getUserLevel() - 1 }}
-                                    </button>
-                                </ng-template>
-
-                                <ng-template [ngIf]="isLevelUpdateProcessing()">
-                                    <span i18n>Updating your level...</span>
-                                    <div class="loading ms-2 d-inline">
-                                        <i class="fas fa-2x fa-spin fa-spinner"></i>
-                                    </div>
-                                </ng-template>
-                            </div>
-                        </ng-template>
-
                         <ng-template [ngIf]="isLevelUpdated()">
                             <span class="d-block" i18n>Your new level is</span>
                             <ng-container
@@ -222,50 +200,6 @@
                     <span i18n>Back to Course</span>
                 </button>
             </div>
-
-            <div class="course-view-words-navigation" *ngIf="!isPerfect()">
-                <button class="adaptive-quiz-button btn btn-primary mt-4 flex-grow-1 py-2 w-100"
-                        (click)="onClickViewWords()">
-                    <span i18n>Review your Missed Words</span>
-                </button>
-            </div>
-        </ng-template>
-
-        <!-- Control buttons for non practice quizzes-->
-        <ng-template
-                [ngIf]="!isPronunciationQuiz() && !isErrorState() && !isPractice() && !isScoreCalculationLoading()">
-            <button class="adaptive-quiz-button btn btn-primary mt-4 flex-grow-1 py-2 w-100"
-                    *ngIf="!isPerfect()"
-                    (click)="goToViewWordsUrl()">
-                <span i18n>Review your Missed Words</span>
-            </button>
-
-            <button class="adaptive-quiz-button btn btn-primary mt-4"
-                    *ngIf="isPerfect() && !isLastLevelTest()"
-                    (click)="goToVocabBuilder()">
-                <span i18n>Study More Words</span>
-            </button>
-
-            <button class="adaptive-quiz-button btn btn-white mt-4 text-primary border border-primary"
-                    [class.btn-primary]="isLastLevelTest()"
-                    *ngIf="isPerfect()"
-                    (click)="goToVideos()">
-                <span i18n>Study More Videos</span>
-            </button>
-        </ng-template>
-
-        <!-- Control buttons for pronunciation quiz-->
-        <ng-template [ngIf]="isPronunciationQuiz() && !isBandComplete()">
-            <button class="adaptive-quiz-button btn btn-primary mt-4 flex-grow-1 py-2 w-100"
-                    *ngIf="isWordPronunciationQuiz()"
-                    (click)="goToPreviousActivity()">
-                <span i18n>Review your Weak Words</span>
-            </button>
-            <button class="adaptive-quiz-button btn btn-primary mt-4 flex-grow-1 py-2 w-100"
-                    *ngIf="isPhonemePronunciationQuiz()"
-                    (click)="goToViewWordsUrl()">
-                <span i18n>Review your Weak Sounds</span>
-            </button>
         </ng-template>
     </div>
 </div>

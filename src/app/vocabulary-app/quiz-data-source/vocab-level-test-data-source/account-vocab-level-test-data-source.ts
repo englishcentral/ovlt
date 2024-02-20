@@ -22,15 +22,11 @@ export class AccountVocabLevelTestDataSource extends VocabLevelTestDataSourceAbs
     }
 
     generateQuiz(accountId: number, currentSettings: VocabBuilderSetting): Observable<XWordQuiz | undefined> {
-        if (!currentSettings || isEmpty(currentSettings)) {
-            return of(undefined);
-        }
-
         const params = {
-            accountId: currentSettings.accountId,
-            curatedLevelTestId: currentSettings.curatedLevelTestId,
-            levelTestSettingId: currentSettings.levelTestSettingId,
-            vocabBuilderModeIds: currentSettings.vocabBuilderModeIds
+            accountId: currentSettings?.accountId,
+            curatedLevelTestId: currentSettings?.curatedLevelTestId,
+            levelTestSettingId: currentSettings?.levelTestSettingId,
+            vocabBuilderModeIds: currentSettings?.vocabBuilderModeIds
         };
 
         return this.vocabBuilderModelService.generateLevelQuiz(params);
@@ -45,7 +41,7 @@ export class AccountVocabLevelTestDataSource extends VocabLevelTestDataSourceAbs
     }
 
     shouldAutoAdvancedToNextQuiz(): boolean {
-        return true;
+        return false;
     }
 
     shouldShowBand(): boolean {

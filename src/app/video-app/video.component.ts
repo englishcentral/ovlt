@@ -143,7 +143,7 @@ export class VideoComponent implements AfterViewInit, OnChanges, OnDestroy {
 
         this.setReady(false);
 
-        let blankPlaceholderVideo = "./blank.mp4";
+        let blankPlaceholderVideo = "./assets/blank.mp4";
         let videoUrl = this.getVideoUrl();
         this.currentSrc = videoUrl;
 

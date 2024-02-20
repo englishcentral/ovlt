@@ -11,6 +11,7 @@ import { FormsModule } from "@angular/forms";
 import { VirtualKeyboardModule } from "../../virtual-keyboard/virtual-keyboard.module";
 import { VirtualLetterInputModule } from "../../virtual-letter-input/virtual-letter-input.module";
 import { TranscriptComponent } from "./transcript.component";
+import { FocusWhenDirective } from "../../common/focus-when.directive";
 
 @NgModule({
     imports: [
@@ -24,7 +25,8 @@ import { TranscriptComponent } from "./transcript.component";
     ],
     declarations: [
         ExamQuestionComponent,
-        TranscriptComponent
+        TranscriptComponent,
+        FocusWhenDirective
     ],
     exports: [
         ExamQuestionComponent

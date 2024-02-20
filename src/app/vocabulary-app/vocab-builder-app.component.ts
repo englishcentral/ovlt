@@ -74,6 +74,7 @@ export class VocabBuilderAppComponent extends SubscriptionAbstract implements On
     // wordInstanceIds to be quizzed, it is used for Pronunciation Quizzes
     @Input() wordInstanceIds: number[];
     @Input() wordIds: number[];
+    @Input() shouldAutoStart: boolean = true;
 
     // It is used for modeId which is available in client but not in services, it helps in mode-handler-adapter
     @Input() questionModeId: number = 0;
@@ -105,7 +106,6 @@ export class VocabBuilderAppComponent extends SubscriptionAbstract implements On
     private startingRank: number;
     private startingBand: number;
     private listRank: number;
-    private shouldAutoStart: boolean = false;
     private isWordsPreSelected: boolean = false;
     private backButtonEnabled: boolean = false;
     private reviewItemRatio: number | undefined;
@@ -184,6 +184,10 @@ export class VocabBuilderAppComponent extends SubscriptionAbstract implements On
         }
 
         this.initializeVocabBuilder();
+
+        if (this.shouldAutoStart) {
+            this.startQuiz(true);
+        }
     }
 
     private initializeSubscriptions(): void {
@@ -226,10 +230,8 @@ export class VocabBuilderAppComponent extends SubscriptionAbstract implements On
                 this.vocabBuilderProgressService.sendActivityQuizEvents(VocabBuilderProgressService.EVENT_ON_COMPLETE_QUIZ, this.courseId);
             }
 
-            if (this.shouldTriggerCompleteEndpoint()) {
-                this.vocabBuilderStateService.setLoading(true);
-                this.completeQuiz(accountId, adaptiveQuizWord);
-            }
+            this.vocabBuilderStateService.setLoading(true);
+            this.completeQuiz(accountId, adaptiveQuizWord);
         });
 
         this.vocabBuilderStateService.subscribe(VocabBuilderStateService.EVENT_APPEND_QUIZDATA, (VocabBuilderQuiz) => {
@@ -331,7 +333,7 @@ export class VocabBuilderAppComponent extends SubscriptionAbstract implements On
     private initializeProgressPublishers(): void {
         map(VocabBuilderProgressService.PROGRESS_DATA_EVENTS, (eventName: string) => {
             this.vocabBuilderProgressService.subscribe(eventName, (event) => {
-                this.logger.log("sending evet", event);
+                this.logger.log("sending event", event);
             });
         });
     }
@@ -597,7 +599,7 @@ export class VocabBuilderAppComponent extends SubscriptionAbstract implements On
         stopWatch.start();
 
         this.updateCurrentSetting(currentSettings);
-
+        this.logger.log("Generating Quiz Words", this.vocabBuilderStateService.getQuizDataSource());
         return this.vocabBuilderStateService
             .getQuizDataSource()
             .generateQuiz(accountId, currentSettings)

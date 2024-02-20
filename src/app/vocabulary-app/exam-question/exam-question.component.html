@@ -31,7 +31,7 @@
     <ng-template [ngIf]="!isLoading()">
         <div class="exit-button"
              *ngIf="isExitButtonEnabled()">
-                <span class="fal fa-times cursor-pointer"
+                <span class="fas fa-times cursor-pointer"
                       id="exit-quiz-button"
                       aria-label="Exit Quiz"
                       (click)="launchModal(vocabQuizExit, {centered: true})"
@@ -41,7 +41,7 @@
         <ng-template #vocabQuizExit let-close="close">
             <div class="modal-body p-4">
                 <div class="exit-button">
-                    <span class="fal fa-times cursor-pointer"
+                    <span class="fas fa-times cursor-pointer"
                           id="exit-quiz"
                           aria-label="Exit Quiz"
                           (click)="close()"
@@ -161,6 +161,7 @@
                    [class.uncertain]="isUncertain(i)"
                    [class.text-uppercase]="isUppercase(i) && !getPre()"
                    [class.blinking-cursor]="shouldShowBlinkingCursor(i)"
+                   [ecFocusWhen]="isSelected(i)"
             />
             </span>
             </div>
@@ -354,7 +355,7 @@
 
                         <i *ngIf="showVirtualKeyboard() && !isChecked()" (click)="onBackSpace()"
                            id="virtual-keyboard-backspace"
-                           class="far fa-backspace"></i>
+                           class="fas fa-backspace"></i>
                     </div>
 
                     <button class="continue-button btn"
