@@ -218,7 +218,7 @@ export class VocabBuilderCompleteComponent extends SubscriptionAbstract implemen
         if (this.isActivityQuiz() || this.pronunciationQuiz) {
             return this.vocabBuilderProgressService.getTotalAnsweredQuestionsLength();
         }
-        return this.vocabBuilderProgressService.getCurrentTotal() || this.vocabBuilderProgressService.getTotalAnsweredQuestionsLength();
+        return this.vocabBuilderProgressService.getTotalAnsweredQuestionsLength() || this.vocabBuilderProgressService.getCurrentTotal();
     }
 
     getCurrentWordListTypeId(): number {
